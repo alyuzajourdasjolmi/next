@@ -1,22 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
+import { supabase } from '../lib/supabase';
 
-const productsData = [
-  { id:1, name:"Nugget Ayam", desc:"Nugget ayam crispy premium, 500gr. Cocok untuk camilan keluarga.", price:32000, category:"frozen", img:"/assets/images/nugget.png" },
-  { id:2, name:"Sosis Sapi", desc:"Sosis sapi berkualitas, 300gr. Praktis untuk bekal dan masakan.", price:28000, category:"frozen", img:"/assets/images/sosis.png" },
-  { id:3, name:"Bakso Sapi", desc:"Bakso sapi kenyal isi 25 butir. Bahan pilihan, tanpa pengawet.", price:35000, category:"frozen", img:"/assets/images/bakso.png" },
-  { id:4, name:"Dimsum Ayam", desc:"Dimsum ayam isi udang, 10 pcs. Tinggal kukus, siap saji!", price:25000, category:"frozen", img:"/assets/images/nugget.png" },
-  { id:5, name:"Kentang Goreng", desc:"Kentang goreng crinkle cut 1kg. Renyah dan lezat.", price:42000, category:"frozen", img:"/assets/images/sosis.png" },
-  { id:6, name:"Otak-otak", desc:"Otak-otak ikan tenggiri, 10 pcs. Bumbu rempah khas.", price:22000, category:"frozen", img:"/assets/images/bakso.png" },
-  { id:7, name:"Buku Tulis", desc:"Buku tulis 58 lembar, sampul tebal. Tersedia bergaris dan kotak.", price:5000, category:"atk", img:"/assets/images/buku-tulis.png" },
-  { id:8, name:"Pulpen Pilot", desc:"Pulpen Pilot 0.5mm, tinta smooth. Nyaman digunakan menulis lama.", price:8000, category:"atk", img:"/assets/images/pulpen.png" },
-  { id:9, name:"Kertas HVS A4", desc:"Kertas HVS A4 70gsm, 500 lembar/rim. Untuk print dan fotokopi.", price:48000, category:"atk", img:"/assets/images/buku-tulis.png" },
-  { id:10, name:"Pensil 2B", desc:"Pensil 2B Faber Castell, 12 pcs/box. Cocok untuk ujian.", price:24000, category:"atk", img:"/assets/images/pulpen.png" },
-  { id:11, name:"Map Plastik", desc:"Map plastik kancing F4, tebal dan tahan lama. Aneka warna.", price:3500, category:"atk", img:"/assets/images/buku-tulis.png" },
-  { id:12, name:"Spidol Snowman", desc:"Spidol whiteboard Snowman, 12 warna. Mudah dihapus.", price:36000, category:"atk", img:"/assets/images/pulpen.png" },
-  { id:13, name:"Tisu Wajah", desc:"Tisu wajah lembut, 250 sheets.", price:12000, category:"other", img:"/assets/images/buku-tulis.png" },
-  { id:14, name:"Botol Minum", desc:"Botol minum plastik BPA Free 1L.", price:25000, category:"other", img:"/assets/images/pulpen.png" }
-];
+
 
 const WA_NUMBER = "6285263965031";
 const STORE_NAME = "Hijrah Toko";
@@ -47,6 +33,8 @@ function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
+  const [productsData, setProductsData] = useState<any[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   const [theme, setTheme] = useState('light');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
@@ -76,14 +64,22 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
+    
+    // Fetch data from Supabase
+    const fetchData = async () => {
+      const { data: products } = await supabase.from('products').select('*').order('id', { ascending: true });
+      if (products) setProductsData(products);
+      setLoadingProducts(false);
+
+      const { data: revs } = await supabase.from('reviews').select('*').order('id', { ascending: true });
+      if (revs) setReviews(revs);
+    };
+    fetchData();
     setTheme(localStorage.getItem('hijrahTokoTheme') || 'light');
     setCart(JSON.parse(localStorage.getItem('hijrahTokoCart') || '[]'));
     setOrderInfo(JSON.parse(localStorage.getItem('hijrahTokoOrderInfo') || '{}'));
     setInbox(JSON.parse(localStorage.getItem('hijrahTokoInbox') || '{"title":"","message":""}'));
-    const savedReviews = JSON.parse(localStorage.getItem('hijrahTokoReviews') || '[]');
-    if(savedReviews.length) {
-      setReviews(prev => [...prev, ...savedReviews]);
-    }
+    
 
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -214,7 +210,7 @@ export default function Home() {
     alert('Terima kasih atas ulasan Anda!');
   };
 
-  const submitOrder = (e: any) => {
+  const submitOrder = async (e: any) => {
     e.preventDefault();
     if (!cart.length) return alert('Keranjang masih kosong.');
     if (orderInfo.deliveryMethod === 'delivery' && shipInfo.status === 'missing-location') return alert('Gunakan lokasi terlebih dahulu.');
@@ -367,6 +363,7 @@ export default function Home() {
     <button className={`filter-btn ${activeTab === 'atk' ? 'active' : ''}`} onClick={() => setActiveTab('atk')}>📝 ATK</button>
     <button className={`filter-btn ${activeTab === 'other' ? 'active' : ''}`} onClick={() => setActiveTab('other')}>📦 Other</button>
   </div>
+  {loadingProducts && <div style={{textAlign: 'center', width: '100%', gridColumn: '1 / -1'}}>Memuat produk...</div>}
   <div className="products-grid" id="productsGrid">
     {productsData.filter((p: any) => activeTab === 'all' || p.category === activeTab).map((p: any, i: number) => (
       <div key={p.id} className="product-card fade-in visible" style={{ transitionDelay: `${i * 0.08}s` }} data-category={p.category}>
