@@ -96,6 +96,13 @@ export default function Home() {
       setActiveSection(current);
     };
     window.addEventListener('scroll', handleScroll);
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    setTimeout(() => {
+      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    }, 100);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -258,7 +265,7 @@ export default function Home() {
 
 
 {/*  Navbar  */}
-<nav className="navbar" id="navbar">
+<nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="navbar">
   <div className="nav-container">
     <a href="#" className="nav-logo">
       <img src="/assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" className="brand-logo" />
@@ -269,9 +276,9 @@ export default function Home() {
       <li className="dropdown">
         <a href="#produk" className="dropbtn">Produk <svg className="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
         <div className="dropdown-content">
-          <a href="#frozen" >Frozen Food</a>
-          <a href="#atk" >ATK</a>
-          <a href="#other" >Other</a>
+          <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>Frozen Food</a>
+          <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>ATK</a>
+          <a href="#other" onClick={(e) => navToCategory(e, 'other')}>Other</a>
         </div>
       </li>
       <li><a href="#testimoni">Testimoni</a></li>
@@ -280,14 +287,14 @@ export default function Home() {
       <li><a href="#kontak">Kontak</a></li>
     </ul>
     <div className="nav-right">
-      <button className="theme-toggle" id="themeToggle" type="button" aria-label="Ubah tema">
-        <span className="theme-icon" id="themeIcon">🌙</span>
+      <button className="theme-toggle" id="themeToggle" type="button" aria-label="Ubah tema" onClick={toggleTheme}>
+        <span className="theme-icon" id="themeIcon">{theme === 'dark' ? '☀️' : '🌙'}</span>
       </button>
-      <button className="cart-btn" >
+      <button className="cart-btn" onClick={() => document.getElementById('checkout')?.scrollIntoView({ behavior: 'smooth' })}>
         <svg fill="none" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/></svg>
-        <span className="cart-count" id="cartCount">0</span>
+        <span className="cart-count" id="cartCount">{cartCount}</span>
       </button>
-      <button className="mobile-toggle" id="mobileToggle" aria-label="Menu">
+      <button className="mobile-toggle" id="mobileToggle" aria-label="Menu" onClick={() => setMobileNavOpen(true)}>
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -295,9 +302,9 @@ export default function Home() {
 </nav>
 
 {/*  Mobile Nav  */}
-<div className="mobile-nav" id="mobileNav">
+<div className={`mobile-nav ${mobileNavOpen ? 'open' : ''}`} id="mobileNav">
   <div className="mobile-nav-content">
-    <button className="mobile-nav-close" id="mobileClose">&times;</button>
+    <button className="mobile-nav-close" id="mobileClose" onClick={() => setMobileNavOpen(false)}>&times;</button>
     <ul className="mobile-nav-links">
       <li><a href="#home" >Home</a></li>
       <li className="dropdown">
@@ -355,12 +362,32 @@ export default function Home() {
     <div className="underline"></div>
   </div>
   <div className="filter-tabs fade-in">
-    <button className="filter-btn active" >🏪 Semua</button>
-    <button className="filter-btn" >🧊 Frozen Food</button>
-    <button className="filter-btn" >📝 ATK</button>
-    <button className="filter-btn" >📦 Other</button>
+    <button className={`filter-btn ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>🏪 Semua</button>
+    <button className={`filter-btn ${activeTab === 'frozen' ? 'active' : ''}`} onClick={() => setActiveTab('frozen')}>🧊 Frozen Food</button>
+    <button className={`filter-btn ${activeTab === 'atk' ? 'active' : ''}`} onClick={() => setActiveTab('atk')}>📝 ATK</button>
+    <button className={`filter-btn ${activeTab === 'other' ? 'active' : ''}`} onClick={() => setActiveTab('other')}>📦 Other</button>
   </div>
-  <div className="products-grid" id="productsGrid"></div>
+  <div className="products-grid" id="productsGrid">
+    {productsData.filter((p: any) => activeTab === 'all' || p.category === activeTab).map((p: any, i: number) => (
+      <div key={p.id} className="product-card fade-in visible" style={{ transitionDelay: `${i * 0.08}s` }} data-category={p.category}>
+        <span className={`card-badge badge-${p.category}`}>
+          {p.category === 'frozen' ? '🧊 Frozen Food' : p.category === 'atk' ? '📝 ATK' : '📦 Other'}
+        </span>
+        <div className="card-img-wrap"><img src={p.img} alt={p.name} className="card-img" loading="lazy" /></div>
+        <div className="card-body">
+          <h3>{p.name}</h3>
+          <p className="desc">{p.desc}</p>
+        </div>
+        <div className="card-footer">
+          <span className="price">Rp {p.price.toLocaleString('id-ID')}</span>
+          <button type="button" className="btn-wa" onClick={() => addToCart(p.id)}>
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.61.606l4.584-1.47A11.96 11.96 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.239 0-4.332-.726-6.033-1.96l-.424-.316-2.727.874.892-2.654-.346-.55A9.955 9.955 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            Tambah
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
 </section>
 
 {/*  Features  */}
@@ -403,27 +430,34 @@ export default function Home() {
   </div>
   <div className="testimoni-grid">
     <div className="testimoni-list fade-in" id="testimoniList">
-      {/*  Reviews rendered here  */}
-    </div>
+    {reviews.map((r: any, i: number) => (
+      <div key={i} className="testimoni-card">
+        <div className="stars">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</div>
+        <h4>{r.name}</h4>
+        <p>{r.text}</p>
+        <small style={{ color: 'var(--gray)', fontSize: '0.8rem', marginTop: '0.5rem', display: 'block' }}>
+          {new Date(r.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}
+        </small>
+      </div>
+    ))}
+  </div>
     <div className="testimoni-form-card fade-in">
       <h3>Berikan Ulasan Anda</h3>
       <p style={{"color":"var(--gray)","fontSize":"0.9rem","marginBottom":"1rem"}}>Bagaimana pengalaman Anda berbelanja di sini?</p>
-      <form id="reviewForm" className="order-form">
+      <form id="reviewForm" className="order-form" onSubmit={submitReview}>
         <div className="star-rating-input" id="starInput">
-          <span className="star active" data-value="1">★</span>
-          <span className="star active" data-value="2">★</span>
-          <span className="star active" data-value="3">★</span>
-          <span className="star active" data-value="4">★</span>
-          <span className="star active" data-value="5">★</span>
+          {[1, 2, 3, 4, 5].map(val => (
+    <span key={val} className={`star ${val <= reviewForm.rating ? 'active' : ''}`} onClick={() => setReviewForm({...reviewForm, rating: val})}>★</span>
+  ))}
         </div>
-        <input type="hidden" id="reviewRating" value="5" />
+        <input type="hidden" id="reviewRating" value={reviewForm.rating} />
         <div className="form-group">
           <label htmlFor="reviewName">Nama</label>
-          <input type="text" id="reviewName" placeholder="Nama Anda" required />
+          <input type="text" id="reviewName" placeholder="Nama Anda" required value={reviewForm.name} onChange={e => setReviewForm({...reviewForm, name: e.target.value})} />
         </div>
         <div className="form-group">
           <label htmlFor="reviewText">Ulasan</label>
-          <textarea id="reviewText" rows={3} placeholder="Tuliskan ulasan Anda tentang toko atau produk kami" required></textarea>
+          <textarea id="reviewText" rows={3} placeholder="Tuliskan ulasan Anda tentang toko atau produk kami" required value={reviewForm.text} onChange={e => setReviewForm({...reviewForm, text: e.target.value})}></textarea>
         </div>
         <button className="btn-primary" type="submit" style={{"width":"100%","justifyContent":"center","marginTop":"0.5rem"}}>Kirim Ulasan</button>
       </form>
@@ -445,17 +479,35 @@ export default function Home() {
           <h3>Keranjang Anda</h3>
           <p>Daftar barang tersimpan otomatis meski halaman di-refresh.</p>
         </div>
-        <button className="btn-secondary btn-small" type="button" >Kosongkan</button>
+        <button className="btn-secondary btn-small" type="button" onClick={clearCart}>Kosongkan</button>
       </div>
-      <div className="cart-items" id="cartItems"></div>
+      <div className="cart-items" id="cartItems">
+    {!cart.length ? (
+      <div className="empty-cart">Keranjang masih kosong. Tambahkan produk dari katalog di atas.</div>
+    ) : (
+      cart.map((item: any) => (
+        <div key={item.id} className="cart-item">
+          <div>
+            <h4>{item.name}</h4>
+            <p>Rp {item.price.toLocaleString('id-ID')} x {item.qty}</p>
+          </div>
+          <div className="cart-item-actions">
+            <button type="button" onClick={() => changeQuantity(item.id, -1)}>-</button>
+            <span>{item.qty}</span>
+            <button type="button" onClick={() => changeQuantity(item.id, 1)}>+</button>
+          </div>
+        </div>
+      ))
+    )}
+  </div>
       <div className="cart-summary">
         <div>
           <span>Total Item</span>
-          <strong id="checkoutItemCount">0</strong>
+          <strong id="checkoutItemCount">{cartCount}</strong>
         </div>
         <div>
           <span>Total Harga</span>
-          <strong id="checkoutTotal">Rp 0</strong>
+          <strong id="checkoutTotal">Rp {getCartSubtotal().toLocaleString('id-ID')}</strong>
         </div>
       </div>
     </div>
@@ -467,43 +519,43 @@ export default function Home() {
           <p>Lengkapi informasi agar admin bisa memproses pesanan Anda.</p>
         </div>
       </div>
-      <form id="orderForm" className="order-form">
+      <form id="orderForm" className="order-form" onSubmit={submitOrder}>
         <div className="form-group">
           <label htmlFor="customerName">Nama</label>
-          <input type="text" id="customerName" name="customerName" placeholder="Masukkan nama lengkap" required />
+          <input type="text" id="customerName" name="customerName" placeholder="Masukkan nama lengkap" required value={orderInfo.customerName} onChange={e => setOrderInfo({...orderInfo, customerName: e.target.value})} />
         </div>
         <div className="form-group">
           <label htmlFor="customerPhone">Nomor Telepon</label>
-          <input type="tel" id="customerPhone" name="customerPhone" placeholder="08xxxxxxxxxx" required />
+          <input type="tel" id="customerPhone" name="customerPhone" placeholder="08xxxxxxxxxx" required value={orderInfo.customerPhone} onChange={e => setOrderInfo({...orderInfo, customerPhone: e.target.value})} />
         </div>
         <div className="form-group">
           <label htmlFor="pickupDate">Tanggal Pengambilan / Pengiriman</label>
-          <input type="date" id="pickupDate" name="pickupDate" required />
+          <input type="date" id="pickupDate" name="pickupDate" required value={orderInfo.pickupDate} onChange={e => setOrderInfo({...orderInfo, pickupDate: e.target.value})} />
         </div>
 
         <div className="form-group">
           <label>Metode Pengambilan</label>
           <div className="option-grid">
             <label className="option-card">
-              <input type="radio" name="deliveryMethod" value="pickup" checked />
+              <input type="radio" name="deliveryMethod" value="pickup" checked={orderInfo.deliveryMethod === "pickup"} onChange={() => setOrderInfo({...orderInfo, deliveryMethod: "pickup"})} />
               <span>Ambil di Kedai</span>
               <small>Tanpa ongkir, ambil langsung ke toko.</small>
             </label>
             <label className="option-card">
-              <input type="radio" name="deliveryMethod" value="delivery" />
+              <input type="radio" name="deliveryMethod" value="delivery" checked={orderInfo.deliveryMethod === "delivery"} onChange={() => setOrderInfo({...orderInfo, deliveryMethod: "delivery"})} />
               <span>Diantarkan ke Alamat</span>
               <small>Ongkir dihitung otomatis dari lokasi Anda.</small>
             </label>
           </div>
         </div>
 
-        <div id="deliveryFields" className="delivery-fields hidden">
+        <div id="deliveryFields" className={`delivery-fields ${orderInfo.deliveryMethod === 'delivery' ? '' : 'hidden'}`}>
           <div className="form-group">
             <label htmlFor="customerAddress">Alamat Lengkap / Lokasi</label>
             <textarea id="customerAddress" name="customerAddress" rows={4} placeholder="Masukkan alamat lengkap atau gunakan lokasi saat ini"></textarea>
           </div>
           <div className="location-tools">
-            <button className="btn-secondary" type="button" id="useLocationBtn">Gunakan Lokasi Saya</button>
+            <button className="btn-secondary" type="button" id="useLocationBtn" onClick={useCurrentLocation}>Gunakan Lokasi Saya</button>
             <p className="location-status" id="locationStatus">Lokasi belum diambil.</p>
           </div>
         </div>
@@ -512,17 +564,17 @@ export default function Home() {
           <label>Metode Pembayaran</label>
           <div className="option-grid">
             <label className="option-card">
-              <input type="radio" name="paymentMethod" value="COD" checked />
+              <input type="radio" name="paymentMethod" value="COD" checked={orderInfo.paymentMethod === "COD"} onChange={() => setOrderInfo({...orderInfo, paymentMethod: "COD"})} />
               <span>COD (Bayar di Tempat)</span>
               <small>Bayar saat barang diterima atau diambil.</small>
             </label>
             <label className="option-card">
-              <input type="radio" name="paymentMethod" value="Mandiri" />
+              <input type="radio" name="paymentMethod" value="Mandiri" checked={orderInfo.paymentMethod === "Mandiri"} onChange={() => setOrderInfo({...orderInfo, paymentMethod: "Mandiri"})} />
               <span>Transfer Bank Mandiri</span>
               <small>Transfer ke rekening Mandiri.</small>
             </label>
             <label className="option-card">
-              <input type="radio" name="paymentMethod" value="BSI" />
+              <input type="radio" name="paymentMethod" value="BSI" checked={orderInfo.paymentMethod === "BSI"} onChange={() => setOrderInfo({...orderInfo, paymentMethod: "BSI"})} />
               <span>Transfer Bank BSI</span>
               <small>Transfer ke rekening BSI.</small>
             </label>
@@ -530,18 +582,18 @@ export default function Home() {
         </div>
         <div className="payment-instructions" id="paymentInstructions">
           <h4>Instruksi Pembayaran</h4>
-          <p id="paymentInstructionText">Pilih metode pembayaran untuk melihat instruksi pembayaran.</p>
+          <p id="paymentInstructionText">{PAYMENT_INFO[orderInfo.paymentMethod as keyof typeof PAYMENT_INFO]}</p>
         </div>
 
         <div className="cost-breakdown">
-          <div><span>Subtotal Barang</span><strong id="subtotalPrice">Rp 0</strong></div>
-          <div><span>Ongkir</span><strong id="shippingCost">Rp 0</strong></div>
-          <div><span>Diskon Ongkir</span><strong id="shippingDiscount">Rp 0</strong></div>
-          <div><span>Total Bayar</span><strong id="grandTotal">Rp 0</strong></div>
+          <div><span>Subtotal Barang</span><strong id="subtotalPrice">Rp {getCartSubtotal().toLocaleString('id-ID')}</strong></div>
+          <div><span>Ongkir</span><strong id="shippingCost">{shipInfo.shippingCost === null ? '-' : `Rp ${shipInfo.shippingCost.toLocaleString('id-ID')}`}</strong></div>
+          <div><span>Diskon Ongkir</span><strong id="shippingDiscount">Rp {shipInfo.discount.toLocaleString('id-ID')}</strong></div>
+          <div><span>Total Bayar</span><strong id="grandTotal">Rp {grandTotal.toLocaleString('id-ID')}</strong></div>
         </div>
         <div className="shipping-meta">
-          <p id="distanceInfo">Jarak tempuh: -</p>
-          <p id="shippingDetail">Detail ongkir akan muncul setelah lokasi dipilih.</p>
+          <p id="distanceInfo">Jarak tempuh: {shipInfo.distanceKm === null ? '-' : `${shipInfo.distanceKm.toLocaleString('id-ID')} km`}</p>
+          <p id="shippingDetail">{shipInfo.detail}</p>
         </div>
         <input type="hidden" id="customerLatitude" name="customerLatitude" />
         <input type="hidden" id="customerLongitude" name="customerLongitude" />
@@ -583,11 +635,11 @@ export default function Home() {
     <p>Status pesanan terbaru Anda akan tampil di sini setelah pesanan dikirim.</p>
     <div className="underline"></div>
   </div>
-  <div className="inbox-card fade-in" id="inboxCard">
+  <div className={`inbox-card fade-in ${inbox.title ? 'active' : ''}`} id="inboxCard">
     <div className="inbox-icon">📨</div>
     <div>
-      <h3 id="inboxTitle">Belum ada pesanan</h3>
-      <p id="inboxMessage">Silakan pilih produk dan kirim pesanan Anda melalui form checkout.</p>
+      <h3 id="inboxTitle">{inbox.title || 'Belum ada pesanan'}</h3>
+      <p id="inboxMessage">{inbox.message || 'Silakan pilih produk dan kirim pesanan Anda melalui form checkout.'}</p>
     </div>
   </div>
 </section>
@@ -642,7 +694,7 @@ export default function Home() {
 </footer>
 
 {/*  Scroll to Top  */}
-<button className="scroll-top" id="scrollTop" aria-label="Scroll to top">
+<button className={`scroll-top ${scrolled ? 'visible' : ''}`} id="scrollTop" aria-label="Scroll to top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
   <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7"/></svg>
 </button>
 
