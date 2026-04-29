@@ -34,8 +34,8 @@ const PAYMENT_INFO = {
   BSI: "Transfer Bank BSI ke 7123456789 a.n. Hijrah Toko. Mohon kirim bukti transfer setelah pembayaran."
 };
 
-function haversineDistanceKm(lat1, lon1, lat2, lon2) {
-  const toRad = (value) => value * (Math.PI / 180);
+function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const toRad = (value: number) => value * (Math.PI / 180);
   const earthRadiusKm = 6371;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
@@ -116,24 +116,24 @@ export default function Home() {
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
-  const addToCart = (id) => {
+  const addToCart = (id: number) => {
     const product = productsData.find(p => p.id === id);
     if (!product) return;
-    setCart(prev => {
-      const existing = prev.find(item => item.id === id);
-      if (existing) return prev.map(item => item.id === id ? { ...item, qty: item.qty + 1 } : item);
+    setCart((prev: any) => {
+      const existing = prev.find((item: any) => item.id === id);
+      if (existing) return prev.map((item: any) => item.id === id ? { ...item, qty: item.qty + 1 } : item);
       return [...prev, { ...product, qty: 1 }];
     });
   };
 
-  const changeQuantity = (id, delta) => {
-    setCart(prev => prev.map(item => item.id === id ? { ...item, qty: item.qty + delta } : item).filter(item => item.qty > 0));
+  const changeQuantity = (id: number, delta: number) => {
+    setCart((prev: any) => prev.map((item: any) => item.id === id ? { ...item, qty: item.qty + delta } : item).filter((item: any) => item.qty > 0));
   };
 
   const clearCart = () => setCart([]);
 
-  const getCartSubtotal = () => cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+  const getCartSubtotal = () => cart.reduce((sum: number, item: any) => sum + (item.price * item.qty), 0);
+  const cartCount = cart.reduce((sum: number, item: any) => sum + item.qty, 0);
 
   const calculateShipping = () => {
     const subtotal = getCartSubtotal();
@@ -183,12 +183,12 @@ export default function Home() {
       alert('Browser ini tidak mendukung geolocation.');
       return;
     }
-    navigator.geolocation.getCurrentPosition(async (pos) => {
+    navigator.geolocation.getCurrentPosition(async (pos: any) => {
       const { latitude, longitude } = pos.coords;
       const link = `https://www.google.com/maps?q=${latitude},${longitude}`;
-      let address = \`Koordinat: \${latitude}, \${longitude}\`;
+      let address = `Koordinat: ${latitude}, ${longitude}`;
       try {
-        const res = await fetch(\`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=\${latitude}&lon=\${longitude}\`);
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
         const data = await res.json();
         if(data.display_name) address = data.display_name;
       } catch (e) {}
@@ -196,7 +196,7 @@ export default function Home() {
     }, () => alert('Izin lokasi ditolak.'));
   };
 
-  const submitReview = (e) => {
+  const submitReview = (e: any) => {
     e.preventDefault();
     const newReview = { ...reviewForm, date: new Date().toISOString().split('T')[0] };
     const saved = JSON.parse(localStorage.getItem('hijrahTokoReviews') || '[]');
@@ -207,34 +207,34 @@ export default function Home() {
     alert('Terima kasih atas ulasan Anda!');
   };
 
-  const submitOrder = (e) => {
+  const submitOrder = (e: any) => {
     e.preventDefault();
     if (!cart.length) return alert('Keranjang masih kosong.');
     if (orderInfo.deliveryMethod === 'delivery' && shipInfo.status === 'missing-location') return alert('Gunakan lokasi terlebih dahulu.');
     if (orderInfo.deliveryMethod === 'delivery' && shipInfo.status === 'too-far') return alert('Lokasi terlalu jauh.');
 
-    const itemsText = cart.map(item => \`\${item.name} x \${item.qty}\`).join('\\n');
+    const itemsText = cart.map((item: any) => `${item.name} x ${item.qty}`).join('\n');
     const msg = [
-      \`PESANAN BARU - \${STORE_NAME}\`, '',
-      \`Nama Pemesan: \${orderInfo.customerName}\`,
-      \`Metode: \${orderInfo.deliveryMethod === 'pickup' ? 'Ambil di Kedai' : 'Diantarkan'}\`, '',
+      `PESANAN BARU - ${STORE_NAME}`, '',
+      `Nama Pemesan: ${orderInfo.customerName}`,
+      `Metode: ${orderInfo.deliveryMethod === 'pickup' ? 'Ambil di Kedai' : 'Diantarkan'}`, '',
       'List Barang:', itemsText, '',
-      \`Pembayaran: \${orderInfo.paymentMethod}\`,
-      \`Jadwal: \${orderInfo.pickupDate}\`, '',
+      `Pembayaran: ${orderInfo.paymentMethod}`,
+      `Jadwal: ${orderInfo.pickupDate}`, '',
       'Rincian Biaya:',
-      \`Subtotal: Rp \${subtotal.toLocaleString('id-ID')}\`,
-      \`Jarak Tempuh: \${shipInfo.distanceKm || '-'}\`,
-      \`Ongkir: Rp \${(shipInfo.shippingCost || 0).toLocaleString('id-ID')}\`,
-      \`Diskon Ongkir: Rp \${shipInfo.discount.toLocaleString('id-ID')}\`,
-      \`Total Bayar: Rp \${grandTotal.toLocaleString('id-ID')}\`, '',
-      \`Lokasi: \${orderInfo.deliveryMethod === 'delivery' ? orderInfo.customerMapsLink : 'Tidak diperlukan'}\`
-    ].join('\\n');
+      `Subtotal: Rp ${subtotal.toLocaleString('id-ID')}`,
+      `Jarak Tempuh: ${shipInfo.distanceKm || '-'}`,
+      `Ongkir: Rp ${(shipInfo.shippingCost || 0).toLocaleString('id-ID')}`,
+      `Diskon Ongkir: Rp ${shipInfo.discount.toLocaleString('id-ID')}`,
+      `Total Bayar: Rp ${grandTotal.toLocaleString('id-ID')}`, '',
+      `Lokasi: ${orderInfo.deliveryMethod === 'delivery' ? orderInfo.customerMapsLink : 'Tidak diperlukan'}`
+    ].join('\n');
 
-    const whatsappUrl = \`https://wa.me/\${WA_NUMBER}?text=\${encodeURIComponent(msg)}\`;
+    const whatsappUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
     
     const inboxData = {
       title: 'Pesanan sedang diproses',
-      message: \`Terima kasih, \${orderInfo.customerName}! Pesanan Anda telah kami teruskan ke Admin. Total Rp \${grandTotal.toLocaleString('id-ID')}.\`
+      message: `Terima kasih, ${orderInfo.customerName}! Pesanan Anda telah kami teruskan ke Admin. Total Rp ${grandTotal.toLocaleString('id-ID')}.`
     };
     setInbox(inboxData);
     localStorage.setItem('hijrahTokoInbox', JSON.stringify(inboxData));
@@ -244,7 +244,7 @@ export default function Home() {
     document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const navToCategory = (e, cat) => {
+  const navToCategory = (e: any, cat: string) => {
     e.preventDefault();
     document.getElementById('produk')?.scrollIntoView({ behavior: 'smooth' });
     setActiveTab(cat);
@@ -423,7 +423,7 @@ export default function Home() {
         </div>
         <div className="form-group">
           <label htmlFor="reviewText">Ulasan</label>
-          <textarea id="reviewText" rows="3" placeholder="Tuliskan ulasan Anda tentang toko atau produk kami" required></textarea>
+          <textarea id="reviewText" rows={3} placeholder="Tuliskan ulasan Anda tentang toko atau produk kami" required></textarea>
         </div>
         <button className="btn-primary" type="submit" style={{"width":"100%","justifyContent":"center","marginTop":"0.5rem"}}>Kirim Ulasan</button>
       </form>
@@ -500,7 +500,7 @@ export default function Home() {
         <div id="deliveryFields" className="delivery-fields hidden">
           <div className="form-group">
             <label htmlFor="customerAddress">Alamat Lengkap / Lokasi</label>
-            <textarea id="customerAddress" name="customerAddress" rows="4" placeholder="Masukkan alamat lengkap atau gunakan lokasi saat ini"></textarea>
+            <textarea id="customerAddress" name="customerAddress" rows={4} placeholder="Masukkan alamat lengkap atau gunakan lokasi saat ini"></textarea>
           </div>
           <div className="location-tools">
             <button className="btn-secondary" type="button" id="useLocationBtn">Gunakan Lokasi Saya</button>
@@ -571,7 +571,7 @@ export default function Home() {
         src="https://www.google.com/maps?q=Hijrah%20TOKO%20Pariaman%200.5939347,100.2128799&z=18&output=embed"
         loading="lazy"
         allowFullScreen
-        referrerpolicy="no-referrer-when-downgrade"></iframe>
+        referrerPolicy="no-referrer-when-downgrade"></iframe>
     </div>
   </div>
 </section>
