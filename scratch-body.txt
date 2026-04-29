@@ -1,0 +1,390 @@
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="#" class="nav-logo">
+      <img src="assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" class="brand-logo">
+      <span class="brand-text">Hijrah<span>Toko</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#home" class="active">Home</a></li>
+      <li class="dropdown">
+        <a href="#produk" class="dropbtn">Produk <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
+        <div class="dropdown-content">
+          <a href="#frozen" onclick="navToCategory(event, 'frozen')">Frozen Food</a>
+          <a href="#atk" onclick="navToCategory(event, 'atk')">ATK</a>
+          <a href="#other" onclick="navToCategory(event, 'other')">Other</a>
+        </div>
+      </li>
+      <li><a href="#testimoni">Testimoni</a></li>
+      <li><a href="#checkout">Checkout</a></li>
+      <li><a href="#lokasi">Lokasi Kami</a></li>
+      <li><a href="#kontak">Kontak</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Ubah tema">
+        <span class="theme-icon" id="themeIcon">🌙</span>
+      </button>
+      <button class="cart-btn" onclick="scrollToProducts()">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/></svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-content">
+    <button class="mobile-nav-close" id="mobileClose">&times;</button>
+    <ul class="mobile-nav-links">
+      <li><a href="#home" onclick="closeMobile()">Home</a></li>
+      <li class="dropdown">
+        <a href="#produk" class="dropbtn" onclick="closeMobile()">Produk <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
+        <div class="dropdown-content">
+          <a href="#frozen" onclick="navToCategory(event, 'frozen'); closeMobile()">Frozen Food</a>
+          <a href="#atk" onclick="navToCategory(event, 'atk'); closeMobile()">ATK</a>
+          <a href="#other" onclick="navToCategory(event, 'other'); closeMobile()">Other</a>
+        </div>
+      </li>
+      <li><a href="#testimoni" onclick="closeMobile()">Testimoni</a></li>
+      <li><a href="#checkout" onclick="closeMobile()">Checkout</a></li>
+      <li><a href="#lokasi" onclick="closeMobile()">Lokasi Kami</a></li>
+      <li><a href="#kontak" onclick="closeMobile()">Kontak</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Hero -->
+<section class="hero" id="home">
+  <div class="hero-container">
+    <div class="hero-content fade-in">
+      <div class="hero-brand-badge">
+        <img src="assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" class="hero-logo">
+        <span>Brand Resmi Hijrah Toko</span>
+      </div>
+      <h1>Solusi <span class="highlight">Dapur & Meja Kerja</span> dalam Satu Pintu.</h1>
+      <p>Hijrah Toko menyediakan frozen food berkualitas dan alat tulis kantor lengkap dengan harga terjangkau. Belanja mudah, langsung via WhatsApp!</p>
+      <div class="hero-buttons">
+        <a href="#produk" class="btn-primary">🛒 Lihat Produk</a>
+        <a href="https://wa.me/6285263965031" class="btn-secondary" target="_blank">💬 Hubungi Kami</a>
+      </div>
+    </div>
+    <div class="hero-image fade-in">
+      <img src="assets/images/hero-banner.png" alt="Hijrah Toko Products">
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="stats-bar">
+  <div class="stats-container">
+    <div class="stat-item fade-in"><h3>500+</h3><p>Produk Tersedia</p></div>
+    <div class="stat-item fade-in"><h3>1000+</h3><p>Pelanggan Puas</p></div>
+    <div class="stat-item fade-in"><h3>⭐ 4.9</h3><p>Rating Toko</p></div>
+    <div class="stat-item fade-in"><h3>24 Jam</h3><p>Respon Cepat</p></div>
+  </div>
+</div>
+
+<!-- Products Section -->
+<section class="section" id="produk">
+  <div class="section-header fade-in">
+    <h2>Produk Kami</h2>
+    <p>Pilihan lengkap untuk kebutuhan dapur dan kantor Anda</p>
+    <div class="underline"></div>
+  </div>
+  <div class="filter-tabs fade-in">
+    <button class="filter-btn active" onclick="filterProducts('all', this)">🏪 Semua</button>
+    <button class="filter-btn" onclick="filterProducts('frozen', this)">🧊 Frozen Food</button>
+    <button class="filter-btn" onclick="filterProducts('atk', this)">📝 ATK</button>
+    <button class="filter-btn" onclick="filterProducts('other', this)">📦 Other</button>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- Features -->
+<section class="section features-section" id="features">
+  <div class="section-header fade-in">
+    <h2>Kenapa Hijrah Toko?</h2>
+    <p>Keunggulan berbelanja di toko kami</p>
+    <div class="underline"></div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">🚚</div>
+      <h3>Pengiriman Cepat</h3>
+      <p>Pesanan diantar langsung ke alamat Anda dengan cepat dan aman</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">💰</div>
+      <h3>Harga Bersahabat</h3>
+      <p>Harga kompetitif dengan kualitas produk yang terjamin</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">✅</div>
+      <h3>Produk Berkualitas</h3>
+      <p>Semua produk terjamin kualitas dan keamanannya</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">💬</div>
+      <h3>Order via WhatsApp</h3>
+      <p>Pemesanan mudah langsung melalui WhatsApp</p>
+    </div>
+  </div>
+</section>
+
+<!-- Testimoni -->
+<section class="section testimoni-section" id="testimoni">
+  <div class="section-header fade-in">
+    <h2>Testimoni Pelanggan</h2>
+    <p>Apa kata mereka yang sudah berbelanja di Hijrah Toko?</p>
+    <div class="underline"></div>
+  </div>
+  <div class="testimoni-grid">
+    <div class="testimoni-list fade-in" id="testimoniList">
+      <!-- Reviews rendered here -->
+    </div>
+    <div class="testimoni-form-card fade-in">
+      <h3>Berikan Ulasan Anda</h3>
+      <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 1rem;">Bagaimana pengalaman Anda berbelanja di sini?</p>
+      <form id="reviewForm" class="order-form">
+        <div class="star-rating-input" id="starInput">
+          <span class="star active" data-value="1">★</span>
+          <span class="star active" data-value="2">★</span>
+          <span class="star active" data-value="3">★</span>
+          <span class="star active" data-value="4">★</span>
+          <span class="star active" data-value="5">★</span>
+        </div>
+        <input type="hidden" id="reviewRating" value="5">
+        <div class="form-group">
+          <label for="reviewName">Nama</label>
+          <input type="text" id="reviewName" placeholder="Nama Anda" required>
+        </div>
+        <div class="form-group">
+          <label for="reviewText">Ulasan</label>
+          <textarea id="reviewText" rows="3" placeholder="Tuliskan ulasan Anda tentang toko atau produk kami" required></textarea>
+        </div>
+        <button class="btn-primary" type="submit" style="width: 100%; justify-content: center; margin-top: 0.5rem;">Kirim Ulasan</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Checkout -->
+<section class="section checkout-section" id="checkout">
+  <div class="section-header fade-in">
+    <h2>Checkout Pesanan</h2>
+    <p>Periksa keranjang, isi data pemesan, lalu kirim pesanan langsung ke WhatsApp admin.</p>
+    <div class="underline"></div>
+  </div>
+  <div class="checkout-grid">
+    <div class="checkout-card fade-in">
+      <div class="checkout-card-head">
+        <div>
+          <h3>Keranjang Anda</h3>
+          <p>Daftar barang tersimpan otomatis meski halaman di-refresh.</p>
+        </div>
+        <button class="btn-secondary btn-small" type="button" onclick="clearCart()">Kosongkan</button>
+      </div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-summary">
+        <div>
+          <span>Total Item</span>
+          <strong id="checkoutItemCount">0</strong>
+        </div>
+        <div>
+          <span>Total Harga</span>
+          <strong id="checkoutTotal">Rp 0</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="checkout-card fade-in">
+      <div class="checkout-card-head form-head">
+        <div>
+          <h3>Data Pemesan</h3>
+          <p>Lengkapi informasi agar admin bisa memproses pesanan Anda.</p>
+        </div>
+      </div>
+      <form id="orderForm" class="order-form">
+        <div class="form-group">
+          <label for="customerName">Nama</label>
+          <input type="text" id="customerName" name="customerName" placeholder="Masukkan nama lengkap" required>
+        </div>
+        <div class="form-group">
+          <label for="customerPhone">Nomor Telepon</label>
+          <input type="tel" id="customerPhone" name="customerPhone" placeholder="08xxxxxxxxxx" required>
+        </div>
+        <div class="form-group">
+          <label for="pickupDate">Tanggal Pengambilan / Pengiriman</label>
+          <input type="date" id="pickupDate" name="pickupDate" required>
+        </div>
+
+        <div class="form-group">
+          <label>Metode Pengambilan</label>
+          <div class="option-grid">
+            <label class="option-card">
+              <input type="radio" name="deliveryMethod" value="pickup" checked>
+              <span>Ambil di Kedai</span>
+              <small>Tanpa ongkir, ambil langsung ke toko.</small>
+            </label>
+            <label class="option-card">
+              <input type="radio" name="deliveryMethod" value="delivery">
+              <span>Diantarkan ke Alamat</span>
+              <small>Ongkir dihitung otomatis dari lokasi Anda.</small>
+            </label>
+          </div>
+        </div>
+
+        <div id="deliveryFields" class="delivery-fields hidden">
+          <div class="form-group">
+            <label for="customerAddress">Alamat Lengkap / Lokasi</label>
+            <textarea id="customerAddress" name="customerAddress" rows="4" placeholder="Masukkan alamat lengkap atau gunakan lokasi saat ini"></textarea>
+          </div>
+          <div class="location-tools">
+            <button class="btn-secondary" type="button" id="useLocationBtn">Gunakan Lokasi Saya</button>
+            <p class="location-status" id="locationStatus">Lokasi belum diambil.</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Metode Pembayaran</label>
+          <div class="option-grid">
+            <label class="option-card">
+              <input type="radio" name="paymentMethod" value="COD" checked>
+              <span>COD (Bayar di Tempat)</span>
+              <small>Bayar saat barang diterima atau diambil.</small>
+            </label>
+            <label class="option-card">
+              <input type="radio" name="paymentMethod" value="Mandiri">
+              <span>Transfer Bank Mandiri</span>
+              <small>Transfer ke rekening Mandiri.</small>
+            </label>
+            <label class="option-card">
+              <input type="radio" name="paymentMethod" value="BSI">
+              <span>Transfer Bank BSI</span>
+              <small>Transfer ke rekening BSI.</small>
+            </label>
+          </div>
+        </div>
+        <div class="payment-instructions" id="paymentInstructions">
+          <h4>Instruksi Pembayaran</h4>
+          <p id="paymentInstructionText">Pilih metode pembayaran untuk melihat instruksi pembayaran.</p>
+        </div>
+
+        <div class="cost-breakdown">
+          <div><span>Subtotal Barang</span><strong id="subtotalPrice">Rp 0</strong></div>
+          <div><span>Ongkir</span><strong id="shippingCost">Rp 0</strong></div>
+          <div><span>Diskon Ongkir</span><strong id="shippingDiscount">Rp 0</strong></div>
+          <div><span>Total Bayar</span><strong id="grandTotal">Rp 0</strong></div>
+        </div>
+        <div class="shipping-meta">
+          <p id="distanceInfo">Jarak tempuh: -</p>
+          <p id="shippingDetail">Detail ongkir akan muncul setelah lokasi dipilih.</p>
+        </div>
+        <input type="hidden" id="customerLatitude" name="customerLatitude">
+        <input type="hidden" id="customerLongitude" name="customerLongitude">
+        <input type="hidden" id="customerMapsLink" name="customerMapsLink">
+        <button class="btn-primary submit-order-btn" type="submit">Kirim Pesanan</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Location -->
+<section class="section location-section" id="lokasi">
+  <div class="section-header fade-in">
+    <h2>Lokasi Kami</h2>
+    <p>Lihat posisi toko dan rute menuju Hijrah Toko melalui peta di bawah ini.</p>
+    <div class="underline"></div>
+  </div>
+  <div class="location-card fade-in">
+    <div class="location-info">
+      <h3>Hijrah Toko</h3>
+      <p>C647+95W, Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik, Kabupaten Padang Pariaman, Sumatera Barat 25574</p>
+      <a class="btn-secondary" href="https://www.google.com/maps/place/Hijrah+TOKO/@0.5939347,100.2128799,19z" target="_blank" rel="noopener noreferrer">Buka di Google Maps</a>
+    </div>
+    <div class="map-embed">
+      <iframe
+        title="Lokasi Hijrah Toko"
+        src="https://www.google.com/maps?q=Hijrah%20TOKO%20Pariaman%200.5939347,100.2128799&z=18&output=embed"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- Inbox Notification -->
+<section class="section inbox-section" id="inbox">
+  <div class="section-header fade-in">
+    <h2>Pesan & Notifikasi</h2>
+    <p>Status pesanan terbaru Anda akan tampil di sini setelah pesanan dikirim.</p>
+    <div class="underline"></div>
+  </div>
+  <div class="inbox-card fade-in" id="inboxCard">
+    <div class="inbox-icon">📨</div>
+    <div>
+      <h3 id="inboxTitle">Belum ada pesanan</h3>
+      <p id="inboxMessage">Silakan pilih produk dan kirim pesanan Anda melalui form checkout.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer" id="kontak">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-brand-head">
+        <img src="assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" class="footer-logo">
+        <h4>Hijrah Toko</h4>
+      </div>
+      <p>Toko serba ada yang menyediakan frozen food berkualitas dan alat tulis kantor lengkap untuk kebutuhan Anda sehari-hari.</p>
+      <div class="social-links">
+        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+        <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h4>Menu</h4>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#produk">Produk</a></li>
+        <li><a href="#frozen" onclick="navToCategory(event, 'frozen')">Frozen Food</a></li>
+        <li><a href="#atk" onclick="navToCategory(event, 'atk')">ATK</a></li>
+        <li><a href="#other" onclick="navToCategory(event, 'other')">Other</a></li>
+        <li><a href="#testimoni">Testimoni</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Jam Operasional</h4>
+      <ul>
+        <li>Senin - Sabtu</li>
+        <li>08:00 - 21:00 WIB</li>
+        <li style="margin-top:0.5rem">Minggu</li>
+        <li>09:00 - 17:00 WIB</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Kontak</h4>
+      <ul>
+        <li>📍 C647+95W, Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik, Kabupaten Padang Pariaman, Sumatera Barat 25574</li>
+        <li>📱 0852-6396-5031</li>
+        <li>📧 hijrahtoko@gmail.com</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Hijrah Toko. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- Scroll to Top -->
+<button class="scroll-top" id="scrollTop" aria-label="Scroll to top">
+  <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+</button>
+
