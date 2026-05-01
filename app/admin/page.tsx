@@ -187,7 +187,7 @@ export default function AdminDashboard() {
   };
 
   const totalRevenue = orders
-    .filter(o => o.status === 'confirmed')
+    .filter(o => o.status === 'completed' || o.status === 'confirmed')
     .reduce((sum, o) => sum + o.grand_total, 0);
   
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
@@ -379,10 +379,19 @@ export default function AdminDashboard() {
                               </div>
                             </td>
                             <td>
-                              <span className={`status-pill status-${order.status}`}>
-                                {order.status === 'pending' ? '🟡 ' : order.status === 'confirmed' ? '🟢 ' : '🔴 '}
-                                {order.status.toUpperCase()}
-                              </span>
+                              <select 
+                                className={`status-pill status-${order.status}`}
+                                value={order.status}
+                                onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                style={{ border: 'none', cursor: 'pointer', fontWeight: '700' }}
+                              >
+                                <option value="pending">PENDING</option>
+                                <option value="confirmed">CONFIRMED</option>
+                                <option value="processing">PROSES</option>
+                                <option value="shipped">DIKIRIM</option>
+                                <option value="completed">SELESAI</option>
+                                <option value="cancelled">BATAL</option>
+                              </select>
                             </td>
                             <td><strong>Rp {order.grand_total.toLocaleString('id-ID')}</strong></td>
                             <td>
@@ -531,6 +540,9 @@ export default function AdminDashboard() {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
+        .status-processing { background: #DBEAFE; color: #1E40AF; }
+        .status-shipped { background: #E0E7FF; color: #3730A3; }
+        .status-completed { background: #D1FAE5; color: #065F46; }
       `}</style>
     </div>
   );

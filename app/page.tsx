@@ -42,6 +42,9 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [inbox, setInbox] = useState({ title: '', message: '' });
+  const [trackingPhone, setTrackingPhone] = useState('');
+  const [userOrders, setUserOrders] = useState<any[]>([]);
+  const [isTracking, setIsTracking] = useState(false);
 
   const [orderInfo, setOrderInfo] = useState({
     customerName: '',
@@ -153,7 +156,34 @@ export default function Home() {
     setTimeout(() => {
       document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
     }, 100);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    // Setup Realtime subscription for tracking orders
+    const ordersSubscription = supabase
+      .channel('public:orders')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
+        console.log('Realtime update:', payload);
+        setUserOrders(current => 
+          current.map(o => o.id === payload.new.id ? { ...o, ...payload.new } : o)
+        );
+        
+        // Show notification if status changed to 'shipped'
+        if (payload.new.status === 'shipped' && payload.old.status !== 'shipped') {
+          setInbox({
+            title: '📦 Pesanan Sedang Dikirim!',
+            message: `Pesanan atas nama ${payload.new.customer_name} sedang dalam perjalanan.`
+          });
+          localStorage.setItem('hijrahTokoInbox', JSON.stringify({
+            title: '📦 Pesanan Sedang Dikirim!',
+            message: `Pesanan atas nama ${payload.new.customer_name} sedang dalam perjalanan.`
+          }));
+        }
+      })
+      .subscribe();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      supabase.removeChannel(ordersSubscription);
+    };
   }, []);
 
   useEffect(() => {
@@ -316,7 +346,7 @@ export default function Home() {
           payment_method: orderInfo.paymentMethod,
           pickup_date: orderInfo.pickupDate,
           subtotal: subtotal,
-          shipping_cost: shipInfo.shippingCost,
+          shipping_cost: shipInfo.shippingCost || 0,
           shipping_discount: shipInfo.discount,
           grand_total: grandTotal,
           status: 'pending'
@@ -340,17 +370,22 @@ export default function Home() {
           .insert(orderItems);
 
         if (itemsError) throw itemsError;
+
+        // Add to tracking
+        setTrackingPhone(orderInfo.customerPhone);
+        fetchUserOrders(orderInfo.customerPhone);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving order:', error);
-      alert('Gagal menyimpan pesanan ke database, tapi Anda tetap bisa memesan via WhatsApp.');
+      alert('Gagal menyimpan pesanan ke database: ' + error.message);
+      return; // Stop if db save fails
     }
 
     const whatsappUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
     
     const inboxData = {
       title: 'Pesanan sedang diproses',
-      message: `Terima kasih, ${orderInfo.customerName}! Pesanan Anda telah kami teruskan ke Admin. Total Rp ${grandTotal.toLocaleString('id-ID')}.`
+      message: `Terima kasih, ${orderInfo.customerName}! Pesanan Anda telah kami simpan dan sedang diteruskan ke Admin via WhatsApp.`
     };
     setInbox(inboxData);
     localStorage.setItem('hijrahTokoInbox', JSON.stringify(inboxData));
@@ -358,6 +393,31 @@ export default function Home() {
     clearCart();
     window.open(whatsappUrl, '_blank');
     document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const fetchUserOrders = async (phone: string) => {
+    if (!phone) return;
+    setIsTracking(true);
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*, order_items(*)')
+        .eq('customer_phone', phone)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setUserOrders(data || []);
+      if (data && data.length > 0) {
+        document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        alert('Tidak ditemukan pesanan dengan nomor telepon tersebut.');
+      }
+    } catch (error) {
+      console.error('Error tracking order:', error);
+      alert('Gagal melacak pesanan.');
+    } finally {
+      setIsTracking(false);
+    }
   };
 
   const navToCategory = (e: any, cat: string) => {
@@ -392,6 +452,7 @@ export default function Home() {
       </li>
       <li><a href="#testimoni">Testimoni</a></li>
       <li><a href="#checkout">Checkout</a></li>
+      <li><a href="#inbox">Lacak Pesanan</a></li>
       <li><a href="#lokasi">Lokasi Kami</a></li>
       <li><a href="#kontak">Kontak</a></li>
       <li><a href="/admin" className="admin-nav-link">Admin</a></li>
@@ -416,20 +477,21 @@ export default function Home() {
   <div className="mobile-nav-content">
     <button className="mobile-nav-close" id="mobileClose" onClick={() => setMobileNavOpen(false)}>&times;</button>
     <ul className="mobile-nav-links">
-      <li><a href="#home" >Home</a></li>
+      <li><a href="#home" onClick={() => setMobileNavOpen(false)}>Home</a></li>
       <li className="dropdown">
-        <a href="#produk" className="dropbtn" >Produk <svg className="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
+        <a href="#produk" className="dropbtn">Produk <svg className="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
         <div className="dropdown-content">
-          <a href="#frozen" >Frozen Food</a>
-          <a href="#atk" >ATK</a>
-          <a href="#other" >Other</a>
+          <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>Frozen Food</a>
+          <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>ATK</a>
+          <a href="#other" onClick={(e) => navToCategory(e, 'other')}>Other</a>
         </div>
       </li>
-      <li><a href="#testimoni" >Testimoni</a></li>
-      <li><a href="#checkout" >Checkout</a></li>
-      <li><a href="#lokasi" >Lokasi Kami</a></li>
-      <li><a href="#kontak" >Kontak</a></li>
-      <li><a href="/admin" >Admin</a></li>
+      <li><a href="#testimoni" onClick={() => setMobileNavOpen(false)}>Testimoni</a></li>
+      <li><a href="#checkout" onClick={() => setMobileNavOpen(false)}>Checkout</a></li>
+      <li><a href="#inbox" onClick={() => setMobileNavOpen(false)}>Lacak Pesanan</a></li>
+      <li><a href="#lokasi" onClick={() => setMobileNavOpen(false)}>Lokasi Kami</a></li>
+      <li><a href="#kontak" onClick={() => setMobileNavOpen(false)}>Kontak</a></li>
+      <li><a href="/admin" onClick={() => setMobileNavOpen(false)}>Admin</a></li>
     </ul>
   </div>
 </div>
@@ -740,19 +802,86 @@ export default function Home() {
   </div>
 </section>
 
-{/*  Inbox Notification  */}
+{/*  Inbox Notification & Order Tracking  */}
 <section className="section inbox-section" id="inbox">
   <div className="section-header fade-in">
-    <h2>Pesan & Notifikasi</h2>
-    <p>Status pesanan terbaru Anda akan tampil di sini setelah pesanan dikirim.</p>
+    <h2>Lacak & Notifikasi</h2>
+    <p>Pantau status pesanan Anda secara realtime di sini.</p>
     <div className="underline"></div>
   </div>
-  <div className={`inbox-card fade-in ${inbox.title ? 'active' : ''}`} id="inboxCard">
-    <div className="inbox-icon">📨</div>
-    <div>
-      <h3 id="inboxTitle">{inbox.title || 'Belum ada pesanan'}</h3>
-      <p id="inboxMessage">{inbox.message || 'Silakan pilih produk dan kirim pesanan Anda melalui form checkout.'}</p>
+
+  <div className="inbox-container">
+    {/* Realtime Notification Card */}
+    <div className={`inbox-card fade-in ${inbox.title ? 'active' : ''}`} id="inboxCard" style={{ marginBottom: '2rem' }}>
+      <div className="inbox-icon">{inbox.title.includes('Dikirim') ? '🚚' : '📨'}</div>
+      <div>
+        <h3 id="inboxTitle">{inbox.title || 'Belum ada notifikasi baru'}</h3>
+        <p id="inboxMessage">{inbox.message || 'Silakan lakukan pemesanan atau lacak nomor HP Anda.'}</p>
+      </div>
     </div>
+
+    {/* Tracking Form */}
+    <div className="testimoni-form-card fade-in" style={{ maxWidth: '600px', margin: '0 auto 2rem' }}>
+      <h3>Lacak Riwayat Pesanan</h3>
+      <div className="form-group" style={{ marginTop: '1rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <input 
+            type="tel" 
+            placeholder="Masukkan nomor HP Anda (contoh: 0812...)" 
+            value={trackingPhone} 
+            onChange={(e) => setTrackingPhone(e.target.value)} 
+            onKeyPress={(e) => e.key === 'Enter' && fetchUserOrders(trackingPhone)}
+          />
+          <button className="btn-primary" onClick={() => fetchUserOrders(trackingPhone)} disabled={isTracking}>
+            {isTracking ? '...' : 'Lacak'}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {/* Order History List */}
+    {userOrders.length > 0 && (
+      <div className="user-orders-list fade-in">
+        {userOrders.map((order: any) => (
+          <div key={order.id} className="checkout-card" style={{ marginBottom: '1rem', padding: '1.25rem', borderLeft: `5px solid ${
+            order.status === 'shipped' ? '#3730A3' : order.status === 'completed' ? '#065F46' : 'var(--mint)'
+          }` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h4 style={{ margin: 0 }}>Pesanan #{order.id.toString().slice(-4)}</h4>
+                <p style={{ fontSize: '0.8rem', color: 'var(--gray)' }}>{new Date(order.created_at).toLocaleString('id-ID')}</p>
+              </div>
+              <span className={`status-pill status-${order.status}`} style={{ margin: 0 }}>
+                {order.status.toUpperCase()}
+              </span>
+            </div>
+            
+            <div style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+              <p><strong>Status:</strong> {
+                order.status === 'pending' ? 'Menunggu konfirmasi admin.' :
+                order.status === 'confirmed' ? 'Pesanan dikonfirmasi.' :
+                order.status === 'processing' ? 'Pesanan sedang diproses/disiapkan.' :
+                order.status === 'shipped' ? '📦 Pesanan sedang dalam perjalanan!' :
+                order.status === 'completed' ? 'Pesanan telah selesai diterima.' :
+                'Pesanan dibatalkan.'
+              }</p>
+              <div style={{ marginTop: '0.5rem', background: 'var(--hero-bg)', padding: '0.75rem', borderRadius: '8px' }}>
+                {order.order_items?.map((item: any) => (
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>{item.product_name} x {item.qty}</span>
+                    <span>Rp {(item.price * item.qty).toLocaleString('id-ID')}</span>
+                  </div>
+                ))}
+                <div style={{ borderTop: '1px solid var(--border)', marginTop: '0.5rem', paddingTop: '0.5rem', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Total Bayar</span>
+                  <span>Rp {order.grand_total.toLocaleString('id-ID')}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
   </div>
 </section>
 
