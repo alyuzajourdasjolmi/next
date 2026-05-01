@@ -41,7 +41,7 @@ export default function Home() {
   const [cart, setCart] = useState([]);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [inbox, setInbox] = useState({ title: '', message: '' });
+  const [inbox, setInbox] = useState({ title: '', message: '', icon: '📨' });
   const [trackingPhone, setTrackingPhone] = useState('');
   const [userOrders, setUserOrders] = useState<any[]>([]);
   const [isTracking, setIsTracking] = useState(false);
@@ -135,7 +135,7 @@ export default function Home() {
     setTheme(localStorage.getItem('hijrahTokoTheme') || 'light');
     setCart(JSON.parse(localStorage.getItem('hijrahTokoCart') || '[]'));
     setOrderInfo(JSON.parse(localStorage.getItem('hijrahTokoOrderInfo') || '{}'));
-    setInbox(JSON.parse(localStorage.getItem('hijrahTokoInbox') || '{"title":"","message":""}'));
+    setInbox(JSON.parse(localStorage.getItem('hijrahTokoInbox') || '{"title":"","message":"","icon":"📨"}'));
     
 
     const handleScroll = () => {
@@ -166,16 +166,49 @@ export default function Home() {
           current.map(o => o.id === payload.new.id ? { ...o, ...payload.new } : o)
         );
         
-        // Show notification if status changed to 'shipped'
-        if (payload.new.status === 'shipped' && payload.old.status !== 'shipped') {
-          setInbox({
-            title: '📦 Pesanan Sedang Dikirim!',
-            message: `Pesanan atas nama ${payload.new.customer_name} sedang dalam perjalanan.`
-          });
-          localStorage.setItem('hijrahTokoInbox', JSON.stringify({
-            title: '📦 Pesanan Sedang Dikirim!',
-            message: `Pesanan atas nama ${payload.new.customer_name} sedang dalam perjalanan.`
-          }));
+        // Handle notification for status changes
+        if (payload.new.status !== payload.old.status) {
+          let title = '';
+          let message = '';
+          let icon = '📨';
+
+          switch (payload.new.status) {
+            case 'confirmed':
+              title = '✅ Pesanan Dikonfirmasi';
+              message = `Pesanan Anda telah dikonfirmasi dan sedang masuk antrean pengerjaan.`;
+              icon = '✅';
+              break;
+            case 'processing':
+              title = '⏳ Pesanan Sedang Diproses';
+              message = `Pesanan Anda sedang diproses dan disiapkan oleh tim kami.`;
+              icon = '⏳';
+              break;
+            case 'shipped':
+              title = '🚚 Pesanan Sedang Dikirim';
+              message = `Pesanan Anda sedang dalam perjalanan menuju lokasi Anda. Mohon ditunggu!`;
+              icon = '🚚';
+              break;
+            case 'completed':
+              title = '✨ Pesanan Selesai';
+              message = `Pesanan Anda telah selesai. Terima kasih telah berbelanja di Hijrah Toko!`;
+              icon = '✨';
+              break;
+            case 'cancelled':
+              title = '❌ Pesanan Dibatalkan';
+              message = `Mohon maaf, pesanan Anda telah dibatalkan. Hubungi admin untuk informasi lebih lanjut.`;
+              icon = '❌';
+              break;
+            default:
+              title = '📋 Update Status Pesanan';
+              message = `Status pesanan Anda saat ini adalah: ${payload.new.status}.`;
+          }
+
+          const newInbox = { title, message, icon };
+          setInbox(newInbox);
+          localStorage.setItem('hijrahTokoInbox', JSON.stringify(newInbox));
+          
+          // Optionally scroll to notification
+          document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
         }
       })
       .subscribe();
@@ -385,7 +418,8 @@ export default function Home() {
     
     const inboxData = {
       title: 'Pesanan sedang diproses',
-      message: `Terima kasih, ${orderInfo.customerName}! Pesanan Anda telah kami simpan dan sedang diteruskan ke Admin via WhatsApp.`
+      message: `Terima kasih, ${orderInfo.customerName}! Pesanan Anda telah kami simpan dan sedang diteruskan ke Admin via WhatsApp.`,
+      icon: '⏳'
     };
     setInbox(inboxData);
     localStorage.setItem('hijrahTokoInbox', JSON.stringify(inboxData));
@@ -813,7 +847,7 @@ export default function Home() {
   <div className="inbox-container">
     {/* Realtime Notification Card */}
     <div className={`inbox-card fade-in ${inbox.title ? 'active' : ''}`} id="inboxCard" style={{ marginBottom: '2rem' }}>
-      <div className="inbox-icon">{inbox.title.includes('Dikirim') ? '🚚' : '📨'}</div>
+      <div className="inbox-icon">{inbox.icon || '📨'}</div>
       <div>
         <h3 id="inboxTitle">{inbox.title || 'Belum ada notifikasi baru'}</h3>
         <p id="inboxMessage">{inbox.message || 'Silakan lakukan pemesanan atau lacak nomor HP Anda.'}</p>
