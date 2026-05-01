@@ -513,10 +513,10 @@ export default function Home() {
       </li>
       <li><a href="#testimoni">Testimoni</a></li>
       <li><a href="#checkout">Checkout</a></li>
-      <li><a href="#inbox">Lacak Pesanan</a></li>
-      <li><a href="#lokasi">Lokasi Kami</a></li>
+      <li><a href="#inbox">Lacak</a></li>
+      <li><a href="#lokasi">Lokasi</a></li>
       <li><a href="#kontak">Kontak</a></li>
-      <li><a href="/admin" className="admin-nav-link">Admin</a></li>
+      <li><a href="/admin" className="admin-nav-link">Dashboard</a></li>
     </ul>
     <div className="nav-right">
       <button className="theme-toggle" id="themeToggle" type="button" aria-label="Ubah tema" onClick={toggleTheme}>
@@ -538,21 +538,21 @@ export default function Home() {
   <div className="mobile-nav-content">
     <button className="mobile-nav-close" id="mobileClose" onClick={() => setMobileNavOpen(false)}>&times;</button>
     <ul className="mobile-nav-links">
-      <li><a href="#home" onClick={() => setMobileNavOpen(false)}>Home</a></li>
+      <li><a href="#home" onClick={() => setMobileNavOpen(false)}><span>🏠 Home</span></a></li>
       <li className="dropdown">
-        <a href="#produk" className="dropbtn">Produk <svg className="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
+        <a href="#produk" className="dropbtn"><span>📦 Produk</span> <svg className="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
         <div className="dropdown-content">
-          <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>Frozen Food</a>
-          <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>ATK</a>
-          <a href="#other" onClick={(e) => navToCategory(e, 'other')}>Other</a>
+          <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>🧊 Frozen Food</a>
+          <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>📝 ATK</a>
+          <a href="#other" onClick={(e) => navToCategory(e, 'other')}>📦 Other</a>
         </div>
       </li>
-      <li><a href="#testimoni" onClick={() => setMobileNavOpen(false)}>Testimoni</a></li>
-      <li><a href="#checkout" onClick={() => setMobileNavOpen(false)}>Checkout</a></li>
-      <li><a href="#inbox" onClick={() => setMobileNavOpen(false)}>Lacak Pesanan</a></li>
-      <li><a href="#lokasi" onClick={() => setMobileNavOpen(false)}>Lokasi Kami</a></li>
-      <li><a href="#kontak" onClick={() => setMobileNavOpen(false)}>Kontak</a></li>
-      <li><a href="/admin" onClick={() => setMobileNavOpen(false)}>Admin</a></li>
+      <li><a href="#testimoni" onClick={() => setMobileNavOpen(false)}><span>⭐ Testimoni</span></a></li>
+      <li><a href="#checkout" onClick={() => setMobileNavOpen(false)}><span>🛒 Checkout</span></a></li>
+      <li><a href="#inbox" onClick={() => setMobileNavOpen(false)}><span>🔍 Lacak Pesanan</span></a></li>
+      <li><a href="#lokasi" onClick={() => setMobileNavOpen(false)}><span>📍 Lokasi Kami</span></a></li>
+      <li><a href="#kontak" onClick={() => setMobileNavOpen(false)}><span>📞 Kontak</span></a></li>
+      <li><a href="/admin" onClick={() => setMobileNavOpen(false)} style={{ color: 'var(--mint)' }}><span>🛡️ Admin Panel</span></a></li>
     </ul>
   </div>
 </div>
