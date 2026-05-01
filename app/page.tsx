@@ -287,6 +287,48 @@ export default function Home() {
       `Lokasi: ${orderInfo.deliveryMethod === 'delivery' ? orderInfo.customerMapsLink : 'Tidak diperlukan'}`
     ].join('\n');
 
+    // Save order to Supabase
+    try {
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          customer_name: orderInfo.customerName,
+          customer_phone: orderInfo.customerPhone,
+          delivery_method: orderInfo.deliveryMethod,
+          customer_address: orderInfo.customerAddress,
+          payment_method: orderInfo.paymentMethod,
+          pickup_date: orderInfo.pickupDate,
+          subtotal: subtotal,
+          shipping_cost: shipInfo.shippingCost,
+          shipping_discount: shipInfo.discount,
+          grand_total: grandTotal,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      if (order) {
+        const orderItems = cart.map((item: any) => ({
+          order_id: order.id,
+          product_id: item.id,
+          product_name: item.name,
+          qty: item.qty,
+          price: item.price
+        }));
+
+        const { error: itemsError } = await supabase
+          .from('order_items')
+          .insert(orderItems);
+
+        if (itemsError) throw itemsError;
+      }
+    } catch (error) {
+      console.error('Error saving order:', error);
+      alert('Gagal menyimpan pesanan ke database, tapi Anda tetap bisa memesan via WhatsApp.');
+    }
+
     const whatsappUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
     
     const inboxData = {
@@ -740,7 +782,7 @@ export default function Home() {
     </div>
   </div>
   <div className="footer-bottom">
-    <p>&copy; 2026 Hijrah Toko. All rights reserved.</p>
+    <p>&copy; 2026 Hijrah Toko. All rights reserved. | <a href="/admin" style={{ color: 'inherit', opacity: 0.5, fontSize: '0.7rem' }}>Admin</a></p>
   </div>
 </footer>
 
