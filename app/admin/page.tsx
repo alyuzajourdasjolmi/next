@@ -186,6 +186,13 @@ export default function AdminDashboard() {
     }
   };
 
+  const totalRevenue = orders
+    .filter(o => o.status === 'confirmed')
+    .reduce((sum, o) => sum + o.grand_total, 0);
+  
+  const pendingOrders = orders.filter(o => o.status === 'pending').length;
+  const totalProducts = products.length;
+
   if (!user) {
     return (
       <div className="admin-login-wrapper">
@@ -247,7 +254,6 @@ export default function AdminDashboard() {
           </div>
         </div>
         
-        {/* Animated Background Decoration */}
         <style jsx>{`
           .animate-spin {
             animation: spin 1s linear infinite;
@@ -264,197 +270,268 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="admin-dashboard" style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div>
-          <h1>Dashboard Admin Hijrah Toko</h1>
-          <p style={{ color: 'var(--gray)', fontSize: '0.9rem' }}>Logged in as: {user.email}</p>
+    <div className="admin-layout">
+      {/* Sidebar Nav */}
+      <aside className="admin-sidebar">
+        <div className="sidebar-logo">
+          <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" />
+          <span>Hijrah Admin</span>
         </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <a href="/" className="btn-secondary" style={{ textDecoration: 'none' }}>🏠 Kembali ke Toko</a>
-          <button className="btn-secondary" onClick={handleLogout}>Logout</button>
+        
+        <nav className="sidebar-nav">
+          <div 
+            className={`sidebar-link ${activeTab === 'orders' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('orders')}
+          >
+            <span>📋</span> <span>Pesanan</span>
+          </div>
+          <div 
+            className={`sidebar-link ${activeTab === 'products' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('products')}
+          >
+            <span>📦</span> <span>Produk</span>
+          </div>
+        </nav>
+
+        <div className="sidebar-footer">
+          <a href="/" className="sidebar-link">
+            <span>🏠</span> <span>Ke Toko</span>
+          </a>
+          <div className="sidebar-link" onClick={handleLogout} style={{ color: '#EF4444' }}>
+            <span>🚪</span> <span>Logout</span>
+          </div>
         </div>
-      </header>
+      </aside>
 
-      <div className="filter-tabs" style={{ marginBottom: '2rem' }}>
-        <button className={`filter-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>📋 Pesanan</button>
-        <button className={`filter-btn ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}>📦 Produk</button>
-      </div>
+      {/* Main Content Area */}
+      <main className="admin-main">
+        <header className="admin-header">
+          <div>
+            <h1>Dashboard Overview</h1>
+            <p>Welcome back, <strong>{user.email}</strong></p>
+          </div>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button className="btn-secondary" onClick={fetchData} disabled={loading}>
+              {loading ? 'Refreshing...' : '🔄 Refresh Data'}
+            </button>
+          </div>
+        </header>
 
-      {loading ? (
-        <div style={{ textAlign: 'center' }}>Memuat data...</div>
-      ) : (
-        <>
-          {activeTab === 'orders' && (
-            <div className="orders-section">
-              <div className="section-header">
-                <h2>Kelola Pesanan</h2>
-                <p>Konfirmasi dan pantau status pesanan pelanggan</p>
-              </div>
-              <div className="orders-list">
-                {orders.length === 0 ? (
-                  <p>Belum ada pesanan.</p>
-                ) : (
-                  orders.map(order => (
-                    <div key={order.id} className="checkout-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1rem' }}>
-                        <div>
-                          <h3 style={{ margin: 0 }}>{order.customer_name}</h3>
-                          <p style={{ margin: 0, color: 'var(--gray)', fontSize: '0.9rem' }}>{order.customer_phone} | {new Date(order.created_at).toLocaleString('id-ID')}</p>
-                        </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <span className={`card-badge`} style={{ background: order.status === 'confirmed' ? '#22c55e' : '#eab308', color: 'white', display: 'inline-block' }}>
-                            {order.status.toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="order-details">
-                        <p><strong>Metode:</strong> {order.delivery_method === 'pickup' ? 'Ambil di Kedai' : 'Diantarkan'}</p>
-                        <p><strong>Alamat:</strong> {order.customer_address || '-'}</p>
-                        <p><strong>Pembayaran:</strong> {order.payment_method}</p>
-                        
-                        <div style={{ marginTop: '1rem' }}>
-                          <strong>Item:</strong>
-                          <ul style={{ paddingLeft: '1.5rem' }}>
-                            {order.order_items?.map((item: any) => (
-                              <li key={item.id}>{item.product_name} x {item.qty} (Rp {item.price.toLocaleString('id-ID')})</li>
-                            ))}
-                          </ul>
-                        </div>
-                        
-                        <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <strong>Total: Rp {order.grand_total.toLocaleString('id-ID')}</strong>
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            {order.status === 'pending' && (
-                              <button className="btn-primary btn-small" onClick={() => updateOrderStatus(order.id, 'confirmed')}>Konfirmasi</button>
-                            )}
-                            {order.status !== 'cancelled' && (
-                              <button className="btn-secondary btn-small" onClick={() => updateOrderStatus(order.id, 'cancelled')}>Batalkan</button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
+        {/* Stats Grid */}
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="icon-box" style={{ background: '#DCFCE7', color: '#166534' }}>💰</div>
+            <h3>Total Revenue</h3>
+            <div className="value">Rp {totalRevenue.toLocaleString('id-ID')}</div>
+          </div>
+          <div className="stat-card">
+            <div className="icon-box" style={{ background: '#FEF3C7', color: '#92400E' }}>⏳</div>
+            <h3>Pending Orders</h3>
+            <div className="value">{pendingOrders}</div>
+          </div>
+          <div className="stat-card">
+            <div className="icon-box" style={{ background: '#DBEAFE', color: '#1E40AF' }}>📦</div>
+            <h3>Total Products</h3>
+            <div className="value">{totalProducts}</div>
+          </div>
+        </div>
 
-          {activeTab === 'products' && (
-            <div className="products-section">
-              <div className="section-header">
-                <h2>Kelola Produk</h2>
-                <p>Tambah, edit, atau hapus produk dari katalog</p>
-              </div>
-
-              <div className="checkout-card" style={{ marginBottom: '2rem', padding: '1.5rem' }}>
-                <h3>{editingProductId ? 'Edit Produk' : 'Tambah Produk Baru'}</h3>
-                <form onSubmit={saveProduct} className="order-form">
-                  <div className="form-group">
-                    <label>Nama Produk</label>
-                    <input type="text" value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} required />
-                  </div>
-                  <div className="form-group">
-                    <label>Deskripsi</label>
-                    <textarea value={productForm.desc} onChange={e => setProductForm({...productForm, desc: e.target.value})} rows={2} required />
-                  </div>
-                  <div className="grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <div className="form-group">
-                      <label>Harga (Rp)</label>
-                      <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} required />
-                    </div>
-                    <div className="form-group">
-                      <label>Kategori</label>
-                      <select value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} style={{ padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--card-bg)', color: 'var(--text)' }}>
-                        <option value="frozen">Frozen Food</option>
-                        <option value="atk">ATK</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="form-group">
-                    <label>Gambar Produk</label>
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <input 
-                        type="text" 
-                        value={productForm.img} 
-                        onChange={e => setProductForm({...productForm, img: e.target.value})} 
-                        placeholder="URL Gambar atau unggah file..." 
-                        style={{ flex: 1 }}
-                      />
-                      <label className="btn-secondary btn-small" style={{ cursor: 'pointer', margin: 0 }}>
-                        📁 Unggah File
-                        <input type="file" onChange={handleFileUpload} accept="image/*" style={{ display: 'none' }} />
-                      </label>
-                    </div>
-                    {isUploading && (
-                      <div style={{ width: '100%', height: '4px', background: 'var(--border)', borderRadius: '2px', marginTop: '0.5rem', overflow: 'hidden' }}>
-                        <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'var(--mint)', transition: 'width 0.3s ease' }}></div>
-                      </div>
-                    )}
-                    {productForm.img && (
-                      <div style={{ marginTop: '1rem' }}>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--gray)', marginBottom: '0.5rem' }}>Pratinjau:</p>
-                        <img src={productForm.img} alt="Preview" style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border)' }} />
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                    <button className="btn-primary" type="submit" style={{ flex: 1, justifyContent: 'center' }}>
-                      {editingProductId ? 'Perbarui Produk' : 'Tambah Produk'}
-                    </button>
-                    {editingProductId && (
-                      <button className="btn-secondary" type="button" onClick={() => { setEditingProductId(null); setProductForm({ name: '', desc: '', price: 0, category: 'frozen', img: '' }); }}>Batal</button>
-                    )}
-                  </div>
-                </form>
-              </div>
-
-              <div className="products-list">
-                <h3>Daftar Produk ({products.length})</h3>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--gray)' }}>
+            <div className="animate-spin" style={{ fontSize: '2rem', marginBottom: '1rem' }}>⌛</div>
+            Memuat data...
+          </div>
+        ) : (
+          <>
+            {activeTab === 'orders' && (
+              <div className="admin-content-card">
+                <div className="card-header">
+                  <h2>Kelola Pesanan</h2>
+                </div>
                 <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
+                  <table className="modern-table">
                     <thead>
-                      <tr style={{ textAlign: 'left', borderBottom: '2px solid var(--border)' }}>
-                        <th style={{ padding: '1rem' }}>Produk</th>
-                        <th style={{ padding: '1rem' }}>Kategori</th>
-                        <th style={{ padding: '1rem' }}>Harga</th>
-                        <th style={{ padding: '1rem' }}>Aksi</th>
+                      <tr>
+                        <th>Customer</th>
+                        <th>Details</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {products.map(p => (
-                        <tr key={p.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                          <td style={{ padding: '1rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                              <img src={p.img} alt={p.name} style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover' }} />
-                              <strong>{p.name}</strong>
-                            </div>
-                          </td>
-                          <td style={{ padding: '1rem' }}>{p.category}</td>
-                          <td style={{ padding: '1rem' }}>Rp {p.price.toLocaleString('id-ID')}</td>
-                          <td style={{ padding: '1rem' }}>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                              <button className="btn-secondary btn-small" onClick={() => {
-                                setEditingProductId(p.id);
-                                setProductForm({ name: p.name, desc: p.desc, price: p.price, category: p.category, img: p.img });
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                              }}>Edit</button>
-                              <button className="btn-secondary btn-small" style={{ color: '#ef4444' }} onClick={() => deleteProduct(p.id)}>Hapus</button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                      {orders.length === 0 ? (
+                        <tr><td colSpan={5} style={{ textAlign: 'center', padding: '3rem' }}>Belum ada pesanan.</td></tr>
+                      ) : (
+                        orders.map(order => (
+                          <tr key={order.id}>
+                            <td>
+                              <div className="product-item-info">
+                                <h4>{order.customer_name}</h4>
+                                <p>{order.customer_phone}</p>
+                                <p style={{ fontSize: '0.75rem' }}>{new Date(order.created_at).toLocaleString('id-ID')}</p>
+                              </div>
+                            </td>
+                            <td>
+                              <div style={{ fontSize: '0.85rem' }}>
+                                <p><strong>Metode:</strong> {order.delivery_method === 'pickup' ? 'Ambil' : 'Antar'}</p>
+                                <p><strong>Item:</strong> {order.order_items?.length} jenis produk</p>
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`status-pill status-${order.status}`}>
+                                {order.status === 'pending' ? '🟡 ' : order.status === 'confirmed' ? '🟢 ' : '🔴 '}
+                                {order.status.toUpperCase()}
+                              </span>
+                            </td>
+                            <td><strong>Rp {order.grand_total.toLocaleString('id-ID')}</strong></td>
+                            <td>
+                              <div className="action-btn-group">
+                                {order.status === 'pending' && (
+                                  <button className="icon-btn" title="Konfirmasi" onClick={() => updateOrderStatus(order.id, 'confirmed')}>✅</button>
+                                )}
+                                {order.status !== 'cancelled' && (
+                                  <button className="icon-btn delete" title="Batalkan" onClick={() => updateOrderStatus(order.id, 'cancelled')}>❌</button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
               </div>
-            </div>
-          )}
-        </>
-      )}
+            )}
+
+            {activeTab === 'products' && (
+              <div className="products-view">
+                {/* Form Card */}
+                <div className="admin-content-card" style={{ marginBottom: '2.5rem' }}>
+                  <div className="card-header">
+                    <h2>{editingProductId ? 'Edit Produk' : 'Tambah Produk Baru'}</h2>
+                  </div>
+                  <div style={{ padding: '2rem' }}>
+                    <form onSubmit={saveProduct} className="order-form">
+                      <div className="form-group">
+                        <label>Nama Produk</label>
+                        <input type="text" value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} placeholder="Contoh: Bakso Sapi Super" required />
+                      </div>
+                      <div className="form-group">
+                        <label>Deskripsi</label>
+                        <textarea value={productForm.desc} onChange={e => setProductForm({...productForm, desc: e.target.value})} rows={2} placeholder="Detail produk..." required />
+                      </div>
+                      <div className="grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                        <div className="form-group">
+                          <label>Harga (Rp)</label>
+                          <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} required />
+                        </div>
+                        <div className="form-group">
+                          <label>Kategori</label>
+                          <select value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="modern-input">
+                            <option value="frozen">Frozen Food</option>
+                            <option value="atk">ATK</option>
+                            <option value="other">Other</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="form-group">
+                        <label>Gambar Produk</label>
+                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                          <input 
+                            type="text" 
+                            className="modern-input"
+                            value={productForm.img} 
+                            onChange={e => setProductForm({...productForm, img: e.target.value})} 
+                            placeholder="URL Gambar atau unggah..." 
+                            style={{ flex: 1 }}
+                          />
+                          <label className="btn-secondary" style={{ cursor: 'pointer', margin: 0 }}>
+                            📁 Upload
+                            <input type="file" onChange={handleFileUpload} accept="image/*" style={{ display: 'none' }} />
+                          </label>
+                        </div>
+                        {isUploading && (
+                          <div style={{ width: '100%', height: '6px', background: 'var(--border)', borderRadius: '3px', marginTop: '0.75rem', overflow: 'hidden' }}>
+                            <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'var(--mint)', transition: 'width 0.3s ease' }}></div>
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                        <button className="btn-primary" type="submit" style={{ flex: 1, justifyContent: 'center' }}>
+                          {editingProductId ? 'Perbarui Produk' : 'Simpan Produk'}
+                        </button>
+                        {editingProductId && (
+                          <button className="btn-secondary" type="button" onClick={() => { setEditingProductId(null); setProductForm({ name: '', desc: '', price: 0, category: 'frozen', img: '' }); }}>Batal</button>
+                        )}
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                {/* Table Card */}
+                <div className="admin-content-card">
+                  <div className="card-header">
+                    <h2>Katalog Produk</h2>
+                  </div>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table className="modern-table">
+                      <thead>
+                        <tr>
+                          <th>Produk</th>
+                          <th>Kategori</th>
+                          <th>Harga</th>
+                          <th>Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {products.map(p => (
+                          <tr key={p.id}>
+                            <td>
+                              <div className="product-item-meta">
+                                <img src={p.img} alt={p.name} onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/48')} />
+                                <div className="product-item-info">
+                                  <h4>{p.name}</h4>
+                                  <p>{p.desc.substring(0, 50)}...</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`card-badge badge-${p.category}`}>{p.category.toUpperCase()}</span>
+                            </td>
+                            <td><strong>Rp {p.price.toLocaleString('id-ID')}</strong></td>
+                            <td>
+                              <div className="action-btn-group">
+                                <button className="icon-btn" title="Edit" onClick={() => {
+                                  setEditingProductId(p.id);
+                                  setProductForm({ name: p.name, desc: p.desc, price: p.price, category: p.category, img: p.img });
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}>✏️</button>
+                                <button className="icon-btn delete" title="Hapus" onClick={() => deleteProduct(p.id)}>🗑️</button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </main>
+
+      <style jsx>{`
+        .animate-spin {
+          animation: spin 1s linear infinite;
+          display: inline-block;
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
