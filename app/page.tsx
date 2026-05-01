@@ -253,15 +253,32 @@ export default function Home() {
     }, () => alert('Izin lokasi ditolak.'));
   };
 
-  const submitReview = (e: any) => {
+  const submitReview = async (e: any) => {
     e.preventDefault();
-    const newReview = { ...reviewForm, date: new Date().toISOString().split('T')[0] };
-    const saved = JSON.parse(localStorage.getItem('hijrahTokoReviews') || '[]');
-    saved.push(newReview);
-    localStorage.setItem('hijrahTokoReviews', JSON.stringify(saved));
-    setReviews([newReview, ...reviews]);
-    setReviewForm({ name: '', text: '', rating: 5 });
-    alert('Terima kasih atas ulasan Anda!');
+    const newReview = { 
+      name: reviewForm.name, 
+      text: reviewForm.text, 
+      rating: reviewForm.rating, 
+      date: new Date().toISOString().split('T')[0] 
+    };
+    
+    try {
+      const { data, error } = await supabase
+        .from('reviews')
+        .insert([newReview])
+        .select();
+
+      if (error) throw error;
+
+      if (data) {
+        setReviews([data[0], ...reviews]);
+        setReviewForm({ name: '', text: '', rating: 5 });
+        alert('Terima kasih atas ulasan Anda!');
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Gagal mengirim ulasan. Silakan coba lagi.');
+    }
   };
 
   const submitOrder = async (e: any) => {
