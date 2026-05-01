@@ -229,7 +229,10 @@ export default function AdminDashboard() {
           <h1>Dashboard Admin Hijrah Toko</h1>
           <p style={{ color: 'var(--gray)', fontSize: '0.9rem' }}>Logged in as: {user.email}</p>
         </div>
-        <button className="btn-secondary" onClick={handleLogout}>Logout</button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <a href="/" className="btn-secondary" style={{ textDecoration: 'none' }}>🏠 Kembali ke Toko</a>
+          <button className="btn-secondary" onClick={handleLogout}>Logout</button>
+        </div>
       </header>
 
       <div className="filter-tabs" style={{ marginBottom: '2rem' }}>
