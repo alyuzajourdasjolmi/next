@@ -22,6 +22,8 @@ export default function AdminDashboard() {
     img: ''
   });
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     // Check current session
@@ -118,6 +120,43 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Error deleting product:', error);
       alert('Gagal menghapus produk.');
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadProgress(10);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `product-images/${fileName}`;
+
+      const { error: uploadError, data } = await supabase.storage
+        .from('products')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      setUploadProgress(70);
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath);
+
+      setProductForm({ ...productForm, img: publicUrl });
+      setUploadProgress(100);
+      setTimeout(() => {
+        setIsUploading(false);
+        setUploadProgress(0);
+      }, 1000);
+    } catch (error: any) {
+      console.error('Error uploading image:', error);
+      alert('Gagal mengunggah gambar: ' + error.message);
+      setIsUploading(false);
     }
   };
 
@@ -292,8 +331,31 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label>URL Gambar</label>
-                    <input type="text" value={productForm.img} onChange={e => setProductForm({...productForm, img: e.target.value})} placeholder="/assets/images/..." required />
+                    <label>Gambar Produk</label>
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input 
+                        type="text" 
+                        value={productForm.img} 
+                        onChange={e => setProductForm({...productForm, img: e.target.value})} 
+                        placeholder="URL Gambar atau unggah file..." 
+                        style={{ flex: 1 }}
+                      />
+                      <label className="btn-secondary btn-small" style={{ cursor: 'pointer', margin: 0 }}>
+                        📁 Unggah File
+                        <input type="file" onChange={handleFileUpload} accept="image/*" style={{ display: 'none' }} />
+                      </label>
+                    </div>
+                    {isUploading && (
+                      <div style={{ width: '100%', height: '4px', background: 'var(--border)', borderRadius: '2px', marginTop: '0.5rem', overflow: 'hidden' }}>
+                        <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'var(--mint)', transition: 'width 0.3s ease' }}></div>
+                      </div>
+                    )}
+                    {productForm.img && (
+                      <div style={{ marginTop: '1rem' }}>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--gray)', marginBottom: '0.5rem' }}>Pratinjau:</p>
+                        <img src={productForm.img} alt="Preview" style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                      </div>
+                    )}
                   </div>
                   <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                     <button className="btn-primary" type="submit" style={{ flex: 1, justifyContent: 'center' }}>
