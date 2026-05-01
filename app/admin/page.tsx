@@ -8,8 +8,10 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
   
   // Product Form State
   const [productForm, setProductForm] = useState({
@@ -22,10 +24,26 @@ export default function AdminDashboard() {
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    // Check current session
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+    checkUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
       fetchData();
     }
-  }, [isLoggedIn]);
+  }, [user]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -52,13 +70,24 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin123') { // Simple password for now
-      setIsLoggedIn(true);
-    } else {
-      alert('Password salah!');
+    setIsLoginLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      alert('Login gagal: ' + error.message);
+    } finally {
+      setIsLoginLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
   };
 
   const updateOrderStatus = async (orderId: number, status: string) => {
@@ -118,11 +147,21 @@ export default function AdminDashboard() {
     }
   };
 
-  if (!isLoggedIn) {
+  if (!user) {
     return (
       <div className="admin-login-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--bg)' }}>
         <form className="checkout-card" onSubmit={handleLogin} style={{ width: '400px', padding: '2rem' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Admin Login</h2>
+          <div className="form-group">
+            <label>Email</label>
+            <input 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              placeholder="admin@hijrahtoko.com"
+              required 
+            />
+          </div>
           <div className="form-group">
             <label>Password</label>
             <input 
@@ -133,7 +172,12 @@ export default function AdminDashboard() {
               required 
             />
           </div>
-          <button className="btn-primary" type="submit" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>Login</button>
+          <button className="btn-primary" type="submit" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }} disabled={isLoginLoading}>
+            {isLoginLoading ? 'Memproses...' : 'Login'}
+          </button>
+          <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--gray)', textAlign: 'center' }}>
+            Pastikan akun sudah terdaftar di Supabase Auth.
+          </p>
         </form>
       </div>
     );
@@ -142,8 +186,11 @@ export default function AdminDashboard() {
   return (
     <div className="admin-dashboard" style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1>Dashboard Admin Hijrah Toko</h1>
-        <button className="btn-secondary" onClick={() => setIsLoggedIn(false)}>Logout</button>
+        <div>
+          <h1>Dashboard Admin Hijrah Toko</h1>
+          <p style={{ color: 'var(--gray)', fontSize: '0.9rem' }}>Logged in as: {user.email}</p>
+        </div>
+        <button className="btn-secondary" onClick={handleLogout}>Logout</button>
       </header>
 
       <div className="filter-tabs" style={{ marginBottom: '2rem' }}>

@@ -377,6 +377,7 @@ export default function Home() {
       <li><a href="#checkout">Checkout</a></li>
       <li><a href="#lokasi">Lokasi Kami</a></li>
       <li><a href="#kontak">Kontak</a></li>
+      <li><a href="/admin" className="admin-nav-link">Admin</a></li>
     </ul>
     <div className="nav-right">
       <button className="theme-toggle" id="themeToggle" type="button" aria-label="Ubah tema" onClick={toggleTheme}>
@@ -411,6 +412,7 @@ export default function Home() {
       <li><a href="#checkout" >Checkout</a></li>
       <li><a href="#lokasi" >Lokasi Kami</a></li>
       <li><a href="#kontak" >Kontak</a></li>
+      <li><a href="/admin" >Admin</a></li>
     </ul>
   </div>
 </div>
