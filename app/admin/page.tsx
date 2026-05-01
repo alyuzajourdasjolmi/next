@@ -199,6 +199,44 @@ export default function AdminDashboard() {
     .filter(o => o.status === 'completed' || o.status === 'confirmed')
     .reduce((sum, o) => sum + o.grand_total, 0);
   
+  // Calculate Monthly Revenue & Progress
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  
+  const monthlyRevenue = orders
+    .filter(o => {
+      const d = new Date(o.created_at);
+      return (o.status === 'completed' || o.status === 'confirmed') && 
+             d.getMonth() === currentMonth && 
+             d.getFullYear() === currentYear;
+    })
+    .reduce((sum, o) => sum + o.grand_total, 0);
+
+  const getRevenueByMonth = () => {
+    const months: any = {};
+    const last6Months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const name = d.toLocaleDateString('id-ID', { month: 'short' });
+      last6Months.push({ key, name, total: 0 });
+    }
+
+    orders.forEach(o => {
+      if (o.status !== 'completed' && o.status !== 'confirmed') return;
+      const d = new Date(o.created_at);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const monthObj = last6Months.find(m => m.key === key);
+      if (monthObj) monthObj.total += o.grand_total;
+    });
+
+    return last6Months;
+  };
+
+  const revenueHistory = getRevenueByMonth();
+  const maxRevenue = Math.max(...revenueHistory.map(m => m.total), 1);
+  
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
   const totalProducts = products.length;
 
@@ -342,6 +380,36 @@ export default function AdminDashboard() {
             <div className="icon-box" style={{ background: '#DBEAFE', color: '#1E40AF' }}>📦</div>
             <h3>Total Products</h3>
             <div className="value">{totalProducts}</div>
+          </div>
+          <div className="stat-card" style={{ borderLeft: '4px solid var(--mint)' }}>
+            <div className="icon-box" style={{ background: '#FEE2E2', color: '#B91C1C' }}>📊</div>
+            <h3>Revenue (Bulan Ini)</h3>
+            <div className="value">Rp {monthlyRevenue.toLocaleString('id-ID')}</div>
+          </div>
+        </div>
+
+        {/* Revenue Progress Chart */}
+        <div className="admin-content-card" style={{ marginBottom: '2rem' }}>
+          <div className="card-header">
+            <h2>Progress Pendapatan (6 Bulan Terakhir)</h2>
+            <div className="badge-pill">Trend Bisnis</div>
+          </div>
+          <div className="chart-container">
+            <div className="bar-chart">
+              {revenueHistory.map((data, idx) => (
+                <div key={idx} className="bar-wrapper">
+                  <div className="bar-value">Rp {(data.total / 1000).toFixed(0)}k</div>
+                  <div 
+                    className="bar" 
+                    style={{ height: `${(data.total / maxRevenue) * 150}px` }}
+                    title={`Rp ${data.total.toLocaleString('id-ID')}`}
+                  >
+                    <div className="bar-tooltip">Rp {data.total.toLocaleString('id-ID')}</div>
+                  </div>
+                  <div className="bar-label">{data.name}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -552,6 +620,77 @@ export default function AdminDashboard() {
         .status-processing { background: #DBEAFE; color: #1E40AF; }
         .status-shipped { background: #E0E7FF; color: #3730A3; }
         .status-completed { background: #D1FAE5; color: #065F46; }
+
+        .chart-container {
+          padding: 2.5rem 2rem;
+          background: var(--surface);
+        }
+        .bar-chart {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-around;
+          height: 200px;
+          gap: 1rem;
+          border-bottom: 2px solid var(--border);
+          padding-bottom: 0.5rem;
+        }
+        .bar-wrapper {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .bar {
+          width: 100%;
+          max-width: 40px;
+          background: linear-gradient(to top, var(--mint), #EF4444);
+          border-radius: 8px 8px 0 0;
+          transition: all 0.3s ease;
+          position: relative;
+          cursor: pointer;
+        }
+        .bar:hover {
+          filter: brightness(1.1);
+          transform: scaleX(1.05);
+        }
+        .bar-tooltip {
+          position: absolute;
+          top: -35px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: var(--dark);
+          color: white;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-size: 0.7rem;
+          white-space: nowrap;
+          opacity: 0;
+          transition: opacity 0.2s;
+          pointer-events: none;
+        }
+        .bar:hover .bar-tooltip {
+          opacity: 1;
+        }
+        .bar-value {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: var(--gray);
+        }
+        .bar-label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--dark);
+          text-transform: uppercase;
+        }
+        .badge-pill {
+          background: var(--mint-light);
+          color: var(--mint-dark);
+          padding: 0.25rem 0.75rem;
+          border-radius: 999px;
+          font-size: 0.75rem;
+          font-weight: 700;
+        }
       `}</style>
     </div>
   );
