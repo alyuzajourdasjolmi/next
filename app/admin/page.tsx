@@ -428,11 +428,11 @@ export default function AdminDashboard() {
                   <table className="modern-table">
                     <thead>
                       <tr>
-                        <th>Customer</th>
-                        <th>Details</th>
+                        <th>Pelanggan & Waktu</th>
+                        <th>Pesanan & Alamat</th>
                         <th>Status</th>
-                        <th>Total</th>
-                        <th>Actions</th>
+                        <th>Total Bayar</th>
+                        <th>Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -443,40 +443,74 @@ export default function AdminDashboard() {
                           <tr key={order.id}>
                             <td>
                               <div className="product-item-info">
-                                <h4>{order.customer_name}</h4>
-                                <p>{order.customer_phone}</p>
-                                <p style={{ fontSize: '0.75rem' }}>{new Date(order.created_at).toLocaleString('id-ID')}</p>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <span style={{ fontSize: '1.2rem' }}>👤</span>
+                                  <div>
+                                    <h4 style={{ margin: 0 }}>{order.customer_name}</h4>
+                                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--mint-dark)' }}>{order.customer_phone}</p>
+                                  </div>
+                                </div>
+                                <p style={{ fontSize: '0.75rem', marginTop: '8px', color: 'var(--gray)' }}>
+                                  📅 {new Date(order.created_at).toLocaleString('id-ID', { 
+                                    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+                                  })}
+                                </p>
                               </div>
                             </td>
-                            <td>
+                            <td style={{ maxWidth: '300px' }}>
                               <div style={{ fontSize: '0.85rem' }}>
-                                <p><strong>Metode:</strong> {order.delivery_method === 'pickup' ? 'Ambil' : 'Antar'}</p>
-                                <p><strong>Item:</strong> {order.order_items?.length} jenis produk</p>
+                                <div style={{ marginBottom: '8px' }}>
+                                  <span className={`status-pill ${order.delivery_method === 'pickup' ? 'status-shipped' : 'status-processing'}`} style={{ fontSize: '0.7rem' }}>
+                                    {order.delivery_method === 'pickup' ? '🏬 Ambil di Toko' : '🚚 Antar ke Alamat'}
+                                  </span>
+                                </div>
+                                <div className="order-items-list" style={{ background: 'var(--surface-soft)', padding: '8px', borderRadius: '8px', marginBottom: '8px' }}>
+                                  {order.order_items?.map((item: any, i: number) => (
+                                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', borderBottom: i < order.order_items.length - 1 ? '1px dashed var(--border)' : 'none', paddingBottom: '2px' }}>
+                                      <span>{item.product_name}</span>
+                                      <strong>x{item.qty}</strong>
+                                    </div>
+                                  ))}
+                                </div>
+                                {order.delivery_method === 'delivery' && (
+                                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--gray)', fontStyle: 'italic' }}>
+                                    📍 {order.customer_address}
+                                  </p>
+                                )}
                               </div>
                             </td>
                             <td>
-                              <select 
-                                className={`status-pill status-${order.status}`}
-                                value={order.status}
-                                onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                                style={{ border: 'none', cursor: 'pointer', fontWeight: '700' }}
-                              >
-                                <option value="pending">PENDING</option>
-                                <option value="confirmed">CONFIRMED</option>
-                                <option value="processing">PROSES</option>
-                                <option value="shipped">DIKIRIM</option>
-                                <option value="completed">SELESAI</option>
-                                <option value="cancelled">BATAL</option>
-                              </select>
+                              <div style={{ position: 'relative' }}>
+                                <select 
+                                  className={`status-pill status-${order.status}`}
+                                  value={order.status}
+                                  onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                  style={{ border: 'none', cursor: 'pointer', fontWeight: '700', width: '100%', appearance: 'none', paddingRight: '20px' }}
+                                >
+                                  <option value="pending">⏳ PENDING</option>
+                                  <option value="confirmed">✅ DIKONFIRMASI</option>
+                                  <option value="processing">🍳 DIPROSES</option>
+                                  <option value="shipped">🚚 DIKIRIM</option>
+                                  <option value="completed">✨ SELESAI</option>
+                                  <option value="cancelled">❌ BATAL</option>
+                                </select>
+                                <span style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', fontSize: '0.7rem' }}>▼</span>
+                              </div>
                             </td>
-                            <td><strong>Rp {order.grand_total.toLocaleString('id-ID')}</strong></td>
+                            <td>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--gray)' }}>Grand Total:</div>
+                                <strong style={{ fontSize: '1.1rem', color: 'var(--mint-dark)' }}>Rp {order.grand_total.toLocaleString('id-ID')}</strong>
+                              </div>
+                            </td>
                             <td>
                               <div className="action-btn-group">
                                 {order.status === 'pending' && (
-                                  <button className="icon-btn" title="Konfirmasi" onClick={() => updateOrderStatus(order.id, 'confirmed')}>✅</button>
-                                )}
-                                {order.status !== 'cancelled' && (
-                                  <button className="icon-btn delete" title="Batalkan" onClick={() => updateOrderStatus(order.id, 'cancelled')}>❌</button>
+                                  <button className="icon-btn" title="Konfirmasi Cepat" onClick={() => updateOrderStatus(order.id, 'confirmed')} style={{ background: '#DCFCE7', borderColor: '#166534' }}>✔️</button>
+                                Shank)}
+                                <button className="icon-btn" title="Cetak Struk (Coming Soon)" onClick={() => alert('Fitur cetak sedang dikembangkan!')}>🖨️</button>
+                                {order.status !== 'cancelled' && order.status !== 'completed' && (
+                                  <button className="icon-btn delete" title="Batalkan Pesanan" onClick={() => updateOrderStatus(order.id, 'cancelled')}>🗑️</button>
                                 )}
                               </div>
                             </td>
