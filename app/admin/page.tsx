@@ -213,8 +213,7 @@ export default function AdminDashboard() {
     .reduce((sum, o) => sum + o.grand_total, 0);
 
   const getRevenueByMonth = () => {
-    const months: any = {};
-    const last6Months = [];
+    const last6Months: any[] = [];
     for (let i = 5; i >= 0; i--) {
       const d = new Date();
       d.setMonth(d.getMonth() - i);
