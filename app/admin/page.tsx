@@ -94,16 +94,25 @@ export default function AdminDashboard() {
 
   const updateOrderStatus = async (orderId: number, status: string) => {
     try {
+      // Optimistic update for UI feel
+      const originalOrders = [...orders];
+      setOrders(orders.map(o => o.id === orderId ? { ...o, status } : o));
+
       const { error } = await supabase
         .from('orders')
         .update({ status })
         .eq('id', orderId);
       
-      if (error) throw error;
-      setOrders(orders.map(o => o.id === orderId ? { ...o, status } : o));
-    } catch (error) {
+      if (error) {
+        // Rollback on error
+        setOrders(originalOrders);
+        throw error;
+      }
+      
+      console.log('Status updated successfully:', orderId, status);
+    } catch (error: any) {
       console.error('Error updating order:', error);
-      alert('Gagal memperbarui status pesanan.');
+      alert('Gagal memperbarui status pesanan: ' + (error.message || 'Error tidak diketahui'));
     }
   };
 
