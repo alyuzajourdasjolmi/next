@@ -1387,4 +1387,80 @@ body.dark-mode .login-glass-card {
     padding: 2rem;
   }
 }
-$css
+
+/* Product Sold Label & Overlay */
+.sold-label {
+  font-size: 0.75rem;
+  color: var(--gray);
+  background: var(--surface-soft);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.card-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.3);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.3s;
+  cursor: pointer;
+  z-index: 5;
+}
+.card-overlay span {
+  color: white; font-weight: 600; font-size: 0.9rem;
+  background: rgba(0,0,0,0.5); padding: 0.5rem 1rem;
+  border-radius: 999px; backdrop-filter: blur(4px);
+}
+.card-img-wrap:hover .card-overlay { opacity: 1; }
+
+/* Product Detail Modal */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(2,6,23,0.7); backdrop-filter: blur(8px);
+  z-index: 2000; display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem; animation: fadeIn 0.3s ease;
+}
+.modal-content {
+  background: var(--surface);
+  width: 100%; max-width: 900px;
+  max-height: 90vh; overflow-y: auto;
+  border-radius: 24px; position: relative;
+  box-shadow: var(--shadow-strong);
+  animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.modal-close {
+  position: absolute; top: 1.25rem; right: 1.25rem;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--surface-soft); border: 1px solid var(--border);
+  font-size: 1.5rem; cursor: pointer; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.modal-close:hover { background: var(--mint); color: white; border-color: transparent; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1.2fr; }
+.modal-image { background: var(--surface-soft); padding: 2rem; display: flex; align-items: center; justify-content: center; }
+.modal-image img { width: 100%; max-height: 400px; object-fit: contain; border-radius: 16px; }
+.modal-info { padding: 3rem; }
+.modal-info h1 { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.2; }
+.modal-meta { margin-bottom: 2rem; }
+.modal-price { font-size: 1.75rem; font-weight: 800; color: var(--mint); display: block; margin-bottom: 0.5rem; }
+.modal-stats { display: flex; gap: 1rem; }
+.stat-pill { background: var(--surface-soft); padding: 0.3rem 0.8rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; color: var(--gray); border: 1px solid var(--border); }
+.modal-desc { margin-bottom: 2.5rem; }
+.modal-desc h4 { margin-bottom: 0.75rem; font-size: 1.1rem; }
+.modal-desc p { color: var(--gray); line-height: 1.7; font-size: 1rem; }
+.modal-actions { display: flex; gap: 1rem; }
+.modal-actions button, .modal-actions a { flex: 1; justify-content: center; }
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 768px) {
+  .modal-grid { grid-template-columns: 1fr; }
+  .modal-info { padding: 2rem; }
+  .modal-image { padding: 1.5rem; }
+  .modal-info h1 { font-size: 1.5rem; }
+  .modal-actions { flex-direction: column; }
+}
