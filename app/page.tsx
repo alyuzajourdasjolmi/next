@@ -57,6 +57,23 @@ export default function Home() {
     customerLongitude: '',
     customerMapsLink: ''
   });
+  
+  // Refs for realtime listener to avoid stale closures
+  const trackingPhoneRef = useRef(trackingPhone);
+  const customerPhoneRef = useRef(orderInfo.customerPhone);
+  const userOrdersRef = useRef(userOrders);
+
+  useEffect(() => {
+    trackingPhoneRef.current = trackingPhone;
+  }, [trackingPhone]);
+
+  useEffect(() => {
+    customerPhoneRef.current = orderInfo.customerPhone;
+  }, [orderInfo.customerPhone]);
+
+  useEffect(() => {
+    userOrdersRef.current = userOrders;
+  }, [userOrders]);
 
   const [reviews, setReviews] = useState([
     { name: "Budi Santoso", rating: 5, text: "Pelayanan sangat cepat, frozen food sampai dalam keadaan masih beku sempurna!", date: "2023-10-01" },
@@ -161,13 +178,20 @@ export default function Home() {
     const ordersSubscription = supabase
       .channel('public:orders')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
-        console.log('Realtime update:', payload);
-        setUserOrders(current => 
-          current.map(o => o.id === payload.new.id ? { ...o, ...payload.new } : o)
-        );
-        
-        // Handle notification for status changes
-        if (payload.new.status !== payload.old.status) {
+        // Update user orders list if the phone matches OR if it's already in our list
+        const currentTrackingPhone = trackingPhoneRef.current?.trim();
+        const currentCustomerPhone = customerPhoneRef.current?.trim();
+        const orderPhone = payload.new.customer_phone?.trim();
+        const isAlreadyInList = userOrdersRef.current.some(o => o.id === payload.new.id);
+
+        if (orderPhone === currentTrackingPhone || orderPhone === currentCustomerPhone || isAlreadyInList) {
+          console.log('Match found! Updating UI for order:', payload.new.id);
+          
+          setUserOrders(current => 
+            current.map(o => o.id === payload.new.id ? { ...o, ...payload.new } : o)
+          );
+          
+          // Handle notification for status changes
           let title = '';
           let message = '';
           let icon = '📨';
@@ -207,8 +231,11 @@ export default function Home() {
           setInbox(newInbox);
           localStorage.setItem('hijrahTokoInbox', JSON.stringify(newInbox));
           
-          // Optionally scroll to notification
-          document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
+          // Scroll to notification if it's an update to status
+          if (payload.new.status !== payload.old?.status) {
+             const inboxEl = document.getElementById('inbox');
+             if (inboxEl) inboxEl.scrollIntoView({ behavior: 'smooth' });
+          }
         }
       })
       .subscribe();
