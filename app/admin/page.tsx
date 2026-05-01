@@ -188,36 +188,77 @@ export default function AdminDashboard() {
 
   if (!user) {
     return (
-      <div className="admin-login-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--bg)' }}>
-        <form className="checkout-card" onSubmit={handleLogin} style={{ width: '400px', padding: '2rem' }}>
-          <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Admin Login</h2>
-          <div className="form-group">
-            <label>Email</label>
-            <input 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              placeholder="admin@hijrahtoko.com"
-              required 
-            />
+      <div className="admin-login-wrapper">
+        <div className="login-glass-card">
+          <div className="login-header">
+            <div className="login-logo-circle">
+              <img src="/assets/images/logo-hijrah-toko.png" alt="Hijrah Toko" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            </div>
+            <h2>Admin Portal</h2>
+            <p>Silakan login untuk mengelola toko Anda</p>
           </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input 
-              type="password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              placeholder="Masukkan password admin"
-              required 
-            />
+
+          <form onSubmit={handleLogin}>
+            <div className="modern-form-group">
+              <label>Email Address</label>
+              <div className="input-wrapper">
+                <input 
+                  type="email" 
+                  className="modern-input"
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  placeholder="admin@hijrahtoko.com"
+                  required 
+                />
+              </div>
+            </div>
+
+            <div className="modern-form-group">
+              <label>Password</label>
+              <div className="input-wrapper">
+                <input 
+                  type="password" 
+                  className="modern-input"
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  placeholder="••••••••"
+                  required 
+                />
+              </div>
+            </div>
+
+            <button className="login-btn" type="submit" disabled={isLoginLoading}>
+              {isLoginLoading ? (
+                <>
+                  <svg className="animate-spin" viewBox="0 0 24 24" style={{ width: '20px', height: '20px' }}>
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Memproses...
+                </>
+              ) : (
+                'Sign In to Dashboard'
+              )}
+            </button>
+          </form>
+
+          <div className="login-footer">
+            <p>© {new Date().getFullYear()} Hijrah Toko Admin • Secure Access</p>
           </div>
-          <button className="btn-primary" type="submit" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }} disabled={isLoginLoading}>
-            {isLoginLoading ? 'Memproses...' : 'Login'}
-          </button>
-          <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--gray)', textAlign: 'center' }}>
-            Pastikan akun sudah terdaftar di Supabase Auth.
-          </p>
-        </form>
+        </div>
+        
+        {/* Animated Background Decoration */}
+        <style jsx>{`
+          .animate-spin {
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          .opacity-25 { opacity: 0.25; }
+          .opacity-75 { opacity: 0.75; }
+        `}</style>
       </div>
     );
   }
