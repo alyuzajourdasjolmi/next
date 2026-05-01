@@ -45,6 +45,8 @@ export default function Home() {
   const [trackingPhone, setTrackingPhone] = useState('');
   const [userOrders, setUserOrders] = useState<any[]>([]);
   const [isTracking, setIsTracking] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [soldCounts, setSoldCounts] = useState<any>({});
 
   const [orderInfo, setOrderInfo] = useState({
     customerName: '',
@@ -115,6 +117,19 @@ export default function Home() {
         } else {
           console.log('Products loaded successfully:', products);
           setProductsData(products);
+
+          // Calculate sold counts
+          const { data: items, error: itemsError } = await supabase
+            .from('order_items')
+            .select('product_id, qty');
+          
+          if (!itemsError && items) {
+            const counts = items.reduce((acc: any, item: any) => {
+              acc[item.product_id] = (acc[item.product_id] || 0) + item.qty;
+              return acc;
+            }, {});
+            setSoldCounts(counts);
+          }
         }
         
         const { data: revs, error: revsError } = await supabase.from('reviews').select('*').order('id', { ascending: true });
@@ -608,10 +623,16 @@ export default function Home() {
         <span className={`card-badge badge-${p.category}`}>
           {p.category === 'frozen' ? '🧊 Frozen Food' : p.category === 'atk' ? '📝 ATK' : '📦 Other'}
         </span>
-        <div className="card-img-wrap"><img src={p.img} alt={p.name} className="card-img" loading="lazy" /></div>
+        <div className="card-img-wrap" onClick={() => setSelectedProduct(p)}>
+          <img src={p.img} alt={p.name} className="card-img" loading="lazy" />
+          <div className="card-overlay"><span>🔍 Lihat Detail</span></div>
+        </div>
         <div className="card-body">
-          <h3>{p.name}</h3>
-          <p className="desc">{p.desc}</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
+            <h3 onClick={() => setSelectedProduct(p)} style={{ cursor: 'pointer' }}>{p.name}</h3>
+            <span className="sold-label">Terjual {soldCounts[p.id] || 0}</span>
+          </div>
+          <p className="desc">{p.desc.length > 60 ? p.desc.substring(0, 60) + '...' : p.desc}</p>
         </div>
         <div className="card-footer">
           <span className="price">Rp {p.price.toLocaleString('id-ID')}</span>
@@ -1000,6 +1021,46 @@ export default function Home() {
   <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7"/></svg>
 </button>
 
+
+{/* Product Detail Modal */}
+{selectedProduct && (
+  <div className="modal-overlay" onClick={() => setSelectedProduct(null)}>
+    <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <button className="modal-close" onClick={() => setSelectedProduct(null)}>&times;</button>
+      <div className="modal-grid">
+        <div className="modal-image">
+          <img src={selectedProduct.img} alt={selectedProduct.name} />
+        </div>
+        <div className="modal-info">
+          <span className={`card-badge badge-${selectedProduct.category}`} style={{ position: 'static', display: 'inline-block', marginBottom: '1rem' }}>
+            {selectedProduct.category.toUpperCase()}
+          </span>
+          <h1>{selectedProduct.name}</h1>
+          <div className="modal-meta">
+            <span className="modal-price">Rp {selectedProduct.price.toLocaleString('id-ID')}</span>
+            <div className="modal-stats">
+              <span className="stat-pill">⭐ 4.9</span>
+              <span className="stat-pill">Terjual {soldCounts[selectedProduct.id] || 0}</span>
+            </div>
+          </div>
+          <div className="modal-desc">
+            <h4>Deskripsi Produk</h4>
+            <p>{selectedProduct.desc}</p>
+          </div>
+          <div className="modal-actions">
+            <button className="btn-primary" onClick={() => { addToCart(selectedProduct.id); setSelectedProduct(null); }}>
+              🛒 Tambah ke Keranjang
+            </button>
+            <a href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya ingin bertanya tentang produk: ${selectedProduct.name}`)}`} 
+               target="_blank" className="btn-secondary">
+              💬 Tanya Admin
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
     </>
   );
