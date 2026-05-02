@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
 
 const WA_NUMBER = "6285263965031";
 const STORE_NAME = "Hijrah Toko";
-const STORE_COORDINATES = { lat: 0.5939347, lon: 100.2128799 };
+const STORE_COORDINATES = { lat: -0.5843105, lon: 100.2442436 };
 const SHIPPING_NEAR_MAX_KM = 2;
 const SHIPPING_MAX_KM = 20;
 const SHIPPING_NEAR_BASE = 5000;
@@ -1062,13 +1062,14 @@ export default function Home() {
   <div className="location-card fade-in">
     <div className="location-info">
       <h3>Hijrah Toko</h3>
-      <p>C647+95W, Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik, Kabupaten Padang Pariaman, Sumatera Barat 25574</p>
-      <a className="btn-secondary" href="https://www.google.com/maps/place/Hijrah+TOKO/@0.5939347,100.2128799,19z" target="_blank" rel="noopener noreferrer">Buka di Google Maps</a>
+      <p>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik, Kabupaten Padang Pariaman, Sumatera Barat 25574</p>
+      <p style={{ fontSize: '0.8rem', opacity: 0.8 }}>Plus Code: C647+95W</p>
+      <a className="btn-secondary" href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5843105,100.2442436,19z" target="_blank" rel="noopener noreferrer">Buka di Google Maps</a>
     </div>
     <div className="map-embed">
       <iframe
         title="Lokasi Hijrah Toko"
-        src="https://www.google.com/maps?q=Hijrah%20TOKO%20Pariaman%200.5939347,100.2128799&z=18&output=embed"
+        src="https://www.google.com/maps?q=-0.5843105,100.2442436&z=17&output=embed"
         loading="lazy"
         allowFullScreen
         referrerPolicy="no-referrer-when-downgrade"></iframe>
