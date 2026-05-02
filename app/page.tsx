@@ -667,44 +667,62 @@ export default function Home() {
 {/*  Mobile Nav  */}
 <div className={`mobile-nav ${mobileNavOpen ? 'open' : ''}`} id="mobileNav">
   <div className="mobile-nav-content">
-    <button className="mobile-nav-close" id="mobileClose" onClick={() => setMobileNavOpen(false)}>&times;</button>
-    <ul className="mobile-nav-links">
-      <li><a href="#home" onClick={() => setMobileNavOpen(false)}><span>🏠 Home</span></a></li>
-      <li className="dropdown">
-        <a href="#produk" className="dropbtn"><span>📦 Produk</span> <svg className="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
-        <div className="dropdown-content">
-          <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>🧊 Frozen Food</a>
-          <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>📝 ATK</a>
-          <a href="#other" onClick={(e) => navToCategory(e, 'other')}>📦 Other</a>
-        </div>
-      </li>
-      <li><a href="#testimoni" onClick={() => setMobileNavOpen(false)}><span>⭐ Testimoni</span></a></li>
-      <li><a href="#checkout" onClick={() => setMobileNavOpen(false)}><span>🛒 Checkout</span></a></li>
-      <li><a href="#inbox" onClick={() => setMobileNavOpen(false)}><span>🔍 Lacak Pesanan</span></a></li>
-      <li><a href="#lokasi" onClick={() => setMobileNavOpen(false)}><span>📍 Lokasi Kami</span></a></li>
-      <li><a href="#kontak" onClick={() => setMobileNavOpen(false)}><span>📞 Kontak</span></a></li>
-      {user ? (
-        <>
-          <li>
-            <a href="#inbox" onClick={() => setMobileNavOpen(false)}>
-              <span>👤 {user.user_metadata?.full_name || 'Profil Saya'}</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); setMobileNavOpen(false); }} style={{ color: '#EF4444' }}>
-              <span>🚪 Logout</span>
-            </a>
-          </li>
-        </>
-      ) : (
-        <li>
-          <a href="#" onClick={(e) => { e.preventDefault(); setAuthModal({ isOpen: true, mode: 'login' }); setMobileNavOpen(false); }}>
-            <span>🔑 Login / Daftar</span>
-          </a>
+    <div className="mobile-nav-header">
+      <div className="mobile-nav-brand">
+        <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" />
+        <span>Hijrah Toko</span>
+      </div>
+      <button className="mobile-nav-close" id="mobileClose" onClick={() => setMobileNavOpen(false)}>&times;</button>
+    </div>
+
+    <div className="mobile-nav-scroll">
+      <ul className="mobile-nav-links">
+        <li><a href="#home" className={activeSection === 'home' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>🏠 Home</a></li>
+        <li className="dropdown">
+          <a href="#produk" className="dropbtn"><span>📦 Produk</span></a>
+          <div className="dropdown-content">
+            <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>🧊 Frozen Food</a>
+            <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>📝 ATK</a>
+            <a href="#other" onClick={(e) => navToCategory(e, 'other')}>📦 Other</a>
+          </div>
         </li>
+        <li><a href="#testimoni" className={activeSection === 'testimoni' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>⭐ Testimoni</a></li>
+        <li><a href="#checkout" className={activeSection === 'checkout' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>🛒 Checkout</a></li>
+        <li><a href="#inbox" className={activeSection === 'inbox' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</a></li>
+        <li><a href="#lokasi" className={activeSection === 'lokasi' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>📍 Lokasi Kami</a></li>
+        <li><a href="#kontak" className={activeSection === 'kontak' ? 'active' : ''} onClick={() => setMobileNavOpen(false)}>📞 Kontak</a></li>
+        {user && (
+          <li><a href="/admin" onClick={() => setMobileNavOpen(false)} style={{ color: 'var(--mint)' }}>🛡️ Admin Panel</a></li>
+        )}
+      </ul>
+    </div>
+
+    <div className="mobile-nav-footer">
+      {user ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0 0.5rem' }}>
+            <div className="user-avatar" style={{ width: '40px', height: '40px' }}>
+              {user.user_metadata?.full_name?.charAt(0).toUpperCase() || 'U'}
+            </div>
+            <div>
+              <strong style={{ display: 'block', fontSize: '0.9rem' }}>{user.user_metadata?.full_name || 'User'}</strong>
+              <small style={{ color: 'var(--gray)', fontSize: '0.75rem' }}>{user.email}</small>
+            </div>
+          </div>
+          <button 
+            className="mobile-auth-btn" 
+            style={{ background: '#FEE2E2', color: '#EF4444', boxShadow: 'none' }}
+            onClick={() => { handleLogout(); setMobileNavOpen(false); }}
+          >
+            🚪 Logout
+          </button>
+        </div>
+      ) : (
+        <button className="mobile-auth-btn" onClick={() => { setAuthModal({ isOpen: true, mode: 'login' }); setMobileNavOpen(false); }}>
+          🔑 Login / Daftar
+        </button>
       )}
-      <li><a href="/admin" onClick={() => setMobileNavOpen(false)} style={{ color: 'var(--mint)' }}><span>🛡️ Admin Panel</span></a></li>
-    </ul>
+    </div>
   </div>
 </div>
 
