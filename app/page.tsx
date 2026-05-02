@@ -776,13 +776,15 @@ export default function Home() {
         </div>
       </div>
       <form id="orderForm" className="order-form" onSubmit={submitOrder}>
-        <div className="form-group">
-          <label htmlFor="customerName">Nama</label>
-          <input type="text" id="customerName" name="customerName" placeholder="Masukkan nama lengkap" required value={orderInfo.customerName} onChange={e => setOrderInfo({...orderInfo, customerName: e.target.value})} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="customerPhone">Nomor Telepon</label>
-          <input type="tel" id="customerPhone" name="customerPhone" placeholder="08xxxxxxxxxx" required value={orderInfo.customerPhone} onChange={e => setOrderInfo({...orderInfo, customerPhone: e.target.value})} />
+        <div className="form-grid">
+          <div className="form-group">
+            <label htmlFor="customerName">Nama Lengkap</label>
+            <input type="text" id="customerName" name="customerName" placeholder="Masukkan nama" required value={orderInfo.customerName} onChange={e => setOrderInfo({...orderInfo, customerName: e.target.value})} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="customerPhone">Nomor Telepon</label>
+            <input type="tel" id="customerPhone" name="customerPhone" placeholder="08xxxxxxxxxx" required value={orderInfo.customerPhone} onChange={e => setOrderInfo({...orderInfo, customerPhone: e.target.value})} />
+          </div>
         </div>
         <div className="form-group">
           <label htmlFor="pickupDate">Tanggal Pengambilan / Pengiriman</label>
