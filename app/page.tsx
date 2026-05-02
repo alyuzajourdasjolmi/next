@@ -511,7 +511,7 @@ export default function Home() {
         <div className="preloader">
           <div className="preloader-content">
             <div className="preloader-logo-wrap">
-              <img src="/logo.png" alt="Logo" className="preloader-logo" />
+              <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" className="preloader-logo" />
               <div className="preloader-ring"></div>
             </div>
             <h2 className="preloader-text">Hijrah Toko</h2>
