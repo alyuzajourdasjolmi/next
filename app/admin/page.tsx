@@ -110,6 +110,108 @@ export default function AdminDashboard() {
     await supabase.auth.signOut();
   };
 
+  const printReceipt = (order: any) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const itemsHtml = order.order_items.map((item: any) => `
+      <tr>
+        <td style="padding: 5px 0;">${item.product_name} x${item.qty}</td>
+        <td style="text-align: right; padding: 5px 0;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}</td>
+      </tr>
+    `).join('');
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Struk #${order.id}</title>
+          <style>
+            @page { size: 80mm auto; margin: 0; }
+            body { 
+              font-family: 'Courier New', Courier, monospace; 
+              width: 80mm; 
+              margin: 0; 
+              padding: 10px; 
+              color: #000; 
+              font-size: 12px;
+              line-height: 1.2;
+            }
+            .header { text-align: center; margin-bottom: 10px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
+            .header h1 { font-size: 16px; margin: 0 0 5px 0; text-transform: uppercase; }
+            .header p { margin: 2px 0; font-size: 10px; }
+            .info { margin-bottom: 10px; }
+            .info p { margin: 2px 0; }
+            table { width: 100%; border-collapse: collapse; }
+            th { text-align: left; border-bottom: 1px solid #000; padding: 5px 0; }
+            .total-section { margin-top: 10px; border-top: 1px dashed #000; padding-top: 5px; }
+            .total-row { display: flex; justify-content: space-between; margin: 2px 0; }
+            .grand-total { font-weight: bold; font-size: 14px; margin-top: 5px; border-top: 1px solid #000; padding-top: 5px; }
+            .footer { margin-top: 20px; border-top: 1px dashed #000; padding-top: 10px; text-align: center; font-size: 10px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>HIJRAH TOKO</h1>
+            <p>Frozen Food & Alat Tulis Kantor</p>
+            <p>Admin: admin.hijrahtoko@gmail.com</p>
+          </div>
+          <div class="info">
+            <p><strong>No. Pesanan: #${order.id}</strong></p>
+            <p>Tanggal: ${new Date(order.created_at).toLocaleString('id-ID')}</p>
+            <p>Pelanggan: ${order.customer_name}</p>
+            <p>No. WA: ${order.customer_phone}</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th style="text-align: right;">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+          <div class="total-section">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span>Rp ${order.subtotal.toLocaleString('id-ID')}</span>
+            </div>
+            <div class="total-row">
+              <span>Ongkos Kirim</span>
+              <span>Rp ${(order.shipping_cost || 0).toLocaleString('id-ID')}</span>
+            </div>
+            ${order.shipping_discount > 0 ? `
+            <div class="total-row" style="color: #000;">
+              <span>Diskon Ongkir</span>
+              <span>-Rp ${order.shipping_discount.toLocaleString('id-ID')}</span>
+            </div>` : ''}
+            <div class="total-row grand-total">
+              <span>GRAND TOTAL</span>
+              <span>Rp ${order.grand_total.toLocaleString('id-ID')}</span>
+            </div>
+          </div>
+          <div class="info" style="margin-top: 10px; border-top: 1px dashed #000; padding-top: 10px;">
+            <p>Metode Bayar: ${order.payment_method}</p>
+            <p>Pengambilan: ${order.delivery_method === 'pickup' ? 'Ambil di Toko' : 'Diantarkan'}</p>
+            ${order.customer_address ? `<p>Alamat: ${order.customer_address}</p>` : ''}
+          </div>
+          <div class="footer">
+            <p>Terima Kasih Telah Berbelanja di Hijrah Toko!</p>
+            <p>Semoga Berkah</p>
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(() => { window.close(); }, 500);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   const updateOrderStatus = async (orderId: number, status: string) => {
     try {
       // Optimistic update for UI feel
@@ -566,7 +668,7 @@ export default function AdminDashboard() {
                                 {order.status === 'pending' && (
                                   <button className="icon-btn" title="Konfirmasi Cepat" onClick={() => updateOrderStatus(order.id, 'confirmed')} style={{ background: '#DCFCE7', borderColor: '#166534' }}>✔️</button>
                                 )}
-                                <button className="icon-btn" title="Cetak Struk (Coming Soon)" onClick={() => alert('Fitur cetak sedang dikembangkan!')}>🖨️</button>
+                                <button className="icon-btn" title="Cetak Struk" onClick={() => printReceipt(order)} style={{ background: '#E0F2FE', borderColor: '#0369A1' }}>🖨️</button>
                                 {order.status !== 'cancelled' && order.status !== 'completed' && (
                                   <button className="icon-btn delete" title="Batalkan Pesanan" onClick={() => updateOrderStatus(order.id, 'cancelled')}>🗑️</button>
                                 )}
