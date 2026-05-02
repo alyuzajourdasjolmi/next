@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
 
 const WA_NUMBER = "6285263965031";
 const STORE_NAME = "Hijrah Toko";
-const STORE_COORDINATES = { lat: -0.5843105, lon: 100.2442436 };
+const STORE_COORDINATES = { lat: -0.5940091, lon: 100.2129566 };
 const SHIPPING_NEAR_MAX_KM = 2;
 const SHIPPING_MAX_KM = 20;
 const SHIPPING_NEAR_BASE = 5000;
@@ -1163,7 +1163,7 @@ export default function Home() {
       
       <div className="map-frame-wrap" style={{ position: 'relative', marginBottom: '2rem' }}>
         <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.658742838734!2d100.210691214753!3d0.5939346995666792!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd527877c8e9b67%3A0xe8c1f3c3a3a3a3a3!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714545678901!5m2!1sid!2sid" 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.658!2d100.2129566!3d-0.5940091!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4e1d5048135eb%3A0xdc1dba685f9fa4f4!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714545678901!5m2!1sid!2sid" 
           width="100%" 
           height="450" 
           style={{ border: 0, borderRadius: '24px' }} 
@@ -1174,7 +1174,7 @@ export default function Home() {
       </div>
       
       <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <a href="https://maps.app.goo.gl/uP4VvFkXyXyXyXyXy" target="_blank" className="btn-primary" style={{ minWidth: '220px', justifyContent: 'center' }}>
+        <a href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5940091,100.2129566,17z" target="_blank" className="btn-primary" style={{ minWidth: '220px', justifyContent: 'center' }}>
           📍 Buka di Google Maps
         </a>
         <a href="https://www.google.com/local/place/fid/0x2fd4e1d5048135eb:0xdc1dba685f9fa4f4/photosphere?iu=https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid%3DCI_z5Ct0J_GinjA__ASq-A%26cb_client%3Dsearch.gws-prod.gps%26yaw%3D134.1935%26pitch%3D0%26thumbfov%3D100%26w%3D0%26h%3D0&ik=CAISFkNJX3o1Q3QwSl9HaW5qQV9fQVNxLUE%3D&sa=X" target="_blank" className="btn-secondary" style={{ minWidth: '220px', justifyContent: 'center' }}>
