@@ -1143,43 +1143,45 @@ export default function Home() {
     <div className="underline"></div>
   </div>
   <div className="container fade-in">
-    <div className="location-card" style={{ padding: '2.5rem' }}>
-      <div className="location-info-pills">
-        <div className="info-pill">
-          <span>📍</span>
-          <div>
-            <p>Jl. Raya Pariaman - Sicincin</p>
-            <small style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>Sungai Sariak, VII Koto Sungai Sarik, Kab. Padang Pariaman</small>
+    <div className="location-card">
+      <div className="location-details">
+        <div className="location-info-pills">
+          <div className="info-pill">
+            <span>📍</span>
+            <div className="info-pill-content">
+              <h4>Alamat Toko</h4>
+              <p>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik, Kab. Padang Pariaman</p>
+            </div>
+          </div>
+          <div className="info-pill">
+            <span>🕒</span>
+            <div className="info-pill-content">
+              <h4>Jam Operasional</h4>
+              <p>Buka Setiap Hari: 08:00 - 21:00 WIB</p>
+              <div className="status-badge">
+                <span className="status-dot"></span>
+                <span>Buka Sekarang</span>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="info-pill">
-          <span>🕒</span>
-          <div>
-            <p>Buka Setiap Hari</p>
-            <small style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>08:00 - 21:00 WIB</small>
-          </div>
+        
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+          <a href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5940091,100.2129566,17z" target="_blank" className="btn-primary" style={{ flex: 1, minWidth: '180px', justifyContent: 'center' }}>
+            📍 Navigasi
+          </a>
+          <a href="https://www.google.com/local/place/fid/0x2fd4e1d5048135eb:0xdc1dba685f9fa4f4/photosphere?iu=https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid%3DCI_z5Ct0J_GinjA__ASq-A%26cb_client%3Dsearch.gws-prod.gps%26yaw%3D134.1935%26pitch%3D0%26thumbfov%3D100%26w%3D0%26h%3D0&ik=CAISFkNJX3o1Q3QwSl9HaW5qQV9fQVNxLUE%3D&sa=X" target="_blank" className="btn-secondary" style={{ flex: 1, minWidth: '180px', justifyContent: 'center' }}>
+            📸 Tur 360°
+          </a>
         </div>
       </div>
       
-      <div className="map-frame-wrap" style={{ position: 'relative', marginBottom: '2rem' }}>
+      <div className="location-map-side">
         <iframe 
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.658!2d100.2129566!3d-0.5940091!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4e1d5048135eb%3A0xdc1dba685f9fa4f4!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714545678901!5m2!1sid!2sid" 
-          width="100%" 
-          height="450" 
-          style={{ border: 0, borderRadius: '24px' }} 
-          allowFullScreen 
           loading="lazy" 
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
-      </div>
-      
-      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-        <a href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5940091,100.2129566,17z" target="_blank" className="btn-primary" style={{ minWidth: '220px', justifyContent: 'center' }}>
-          📍 Buka di Google Maps
-        </a>
-        <a href="https://www.google.com/local/place/fid/0x2fd4e1d5048135eb:0xdc1dba685f9fa4f4/photosphere?iu=https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid%3DCI_z5Ct0J_GinjA__ASq-A%26cb_client%3Dsearch.gws-prod.gps%26yaw%3D134.1935%26pitch%3D0%26thumbfov%3D100%26w%3D0%26h%3D0&ik=CAISFkNJX3o1Q3QwSl9HaW5qQV9fQVNxLUE%3D&sa=X" target="_blank" className="btn-secondary" style={{ minWidth: '220px', justifyContent: 'center' }}>
-          📸 Lihat Tur 360° (Street View)
-        </a>
       </div>
     </div>
   </div>
