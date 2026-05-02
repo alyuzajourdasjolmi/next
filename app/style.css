@@ -1938,6 +1938,7 @@ body.dark-mode .login-glass-card {
 .auth-header p {
   font-size: 0.85rem;
   color: var(--gray);
+  text-align: center;
 }
 
 .auth-submit {
@@ -1946,6 +1947,8 @@ body.dark-mode .login-glass-card {
   margin-top: 0.5rem;
   font-size: 1rem !important;
   border-radius: 16px !important;
+  justify-content: center;
+  text-align: center;
 }
 
 .auth-modal-content .form-group {
@@ -1955,6 +1958,13 @@ body.dark-mode .login-glass-card {
 .auth-modal-content .form-group label {
   margin-bottom: 0.4rem;
   font-size: 0.75rem;
+  text-align: center;
+  display: block;
+}
+
+.auth-modal-content input, 
+.auth-modal-content textarea {
+  text-align: center;
 }
 
 .auth-footer {
