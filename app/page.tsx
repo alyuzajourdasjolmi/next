@@ -47,6 +47,7 @@ export default function Home() {
   const [isTracking, setIsTracking] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [soldCounts, setSoldCounts] = useState<any>({});
+  const [isLocating, setIsLocating] = useState(false);
 
   const [orderInfo, setOrderInfo] = useState({
     customerName: '',
@@ -338,24 +339,41 @@ export default function Home() {
 
   const useCurrentLocation = () => {
     if (orderInfo.deliveryMethod !== 'delivery') {
-      alert('Pilih metode "Diantarkan ke Alamat" untuk memakai lokasi.');
+      alert('Pilih metode "Diantarkan ke Alamat" terlebih dahulu.');
       return;
     }
     if (!navigator.geolocation) {
       alert('Browser ini tidak mendukung geolocation.');
       return;
     }
+
+    setIsLocating(true);
     navigator.geolocation.getCurrentPosition(async (pos: any) => {
       const { latitude, longitude } = pos.coords;
       const link = `https://www.google.com/maps?q=${latitude},${longitude}`;
       let address = `Koordinat: ${latitude}, ${longitude}`;
+      
       try {
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
         const data = await res.json();
         if(data.display_name) address = data.display_name;
-      } catch (e) {}
-      setOrderInfo({ ...orderInfo, customerLatitude: latitude, customerLongitude: longitude, customerMapsLink: link, customerAddress: address });
-    }, () => alert('Izin lokasi ditolak.'));
+      } catch (e) {
+        console.error("Geocoding error:", e);
+      }
+
+      setOrderInfo(prev => ({ 
+        ...prev, 
+        customerLatitude: latitude, 
+        customerLongitude: longitude, 
+        customerMapsLink: link, 
+        customerAddress: address 
+      }));
+      setIsLocating(false);
+    }, (err) => {
+      setIsLocating(false);
+      alert('Izin lokasi ditolak atau gagal mengambil koordinat.');
+      console.error("Location error:", err);
+    }, { enableHighAccuracy: true });
   };
 
   const submitReview = async (e: any) => {
@@ -810,11 +828,15 @@ export default function Home() {
         <div id="deliveryFields" className={`delivery-fields ${orderInfo.deliveryMethod === 'delivery' ? '' : 'hidden'}`}>
           <div className="form-group">
             <label htmlFor="customerAddress">Alamat Lengkap / Lokasi</label>
-            <textarea id="customerAddress" name="customerAddress" rows={4} placeholder="Masukkan alamat lengkap atau gunakan lokasi saat ini"></textarea>
+            <textarea id="customerAddress" name="customerAddress" rows={4} placeholder="Masukkan alamat lengkap atau gunakan lokasi saat ini" value={orderInfo.customerAddress} onChange={e => setOrderInfo({...orderInfo, customerAddress: e.target.value})}></textarea>
           </div>
           <div className="location-tools">
-            <button className="btn-secondary" type="button" id="useLocationBtn" onClick={useCurrentLocation}>Gunakan Lokasi Saya</button>
-            <p className="location-status" id="locationStatus">Lokasi belum diambil.</p>
+            <button className="btn-secondary" type="button" id="useLocationBtn" onClick={useCurrentLocation} disabled={isLocating}>
+              {isLocating ? '⌛ Sedang Mengambil Lokasi...' : '📍 Gunakan Lokasi Saya'}
+            </button>
+            <p className="location-status" id="locationStatus">
+              {orderInfo.customerLatitude ? `✅ Lokasi Berhasil Diambil (${Number(orderInfo.customerLatitude).toFixed(4)}, ${Number(orderInfo.customerLongitude).toFixed(4)})` : '❌ Lokasi belum diambil.'}
+            </p>
           </div>
         </div>
 
