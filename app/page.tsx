@@ -1301,7 +1301,7 @@ export default function Home() {
                 <label>Nama Lengkap</label>
                 <input 
                   type="text" 
-                  placeholder="Nama" 
+                  placeholder="Masukkan nama lengkap" 
                   required 
                   value={authForm.name} 
                   onChange={e => setAuthForm({ ...authForm, name: e.target.value })} 
@@ -1311,7 +1311,7 @@ export default function Home() {
                 <label>No. WhatsApp</label>
                 <input 
                   type="tel" 
-                  placeholder="08..." 
+                  placeholder="0812..." 
                   required 
                   value={authForm.phone} 
                   onChange={e => setAuthForm({ ...authForm, phone: e.target.value })} 
@@ -1321,7 +1321,7 @@ export default function Home() {
             <div className="form-group" style={{ marginBottom: '1rem' }}>
               <label>Alamat Lengkap</label>
               <textarea 
-                placeholder="Alamat pengiriman..." 
+                placeholder="Masukkan alamat pengiriman Anda" 
                 required 
                 rows={2}
                 style={{ minHeight: '80px' }}

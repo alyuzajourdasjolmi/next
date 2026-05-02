@@ -1962,11 +1962,6 @@ body.dark-mode .login-glass-card {
   display: block;
 }
 
-.auth-modal-content input, 
-.auth-modal-content textarea {
-  text-align: center;
-}
-
 .auth-footer {
   margin-top: 2rem;
   text-align: center;
