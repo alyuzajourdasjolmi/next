@@ -48,7 +48,6 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [soldCounts, setSoldCounts] = useState<any>({});
   const [isLocating, setIsLocating] = useState(false);
-  const [showPreloader, setShowPreloader] = useState(true);
 
   const [orderInfo, setOrderInfo] = useState({
     customerName: '',
@@ -145,12 +144,9 @@ export default function Home() {
         } else {
           setReviews(revs);
         }
-        
-        // Hide preloader after small delay to ensure rendering
-        setTimeout(() => setShowPreloader(false), 1200);
+        }
       } catch (err) {
         console.error('Unexpected error in fetchData:', err);
-        setShowPreloader(false);
       }
     };
 
@@ -598,21 +594,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Premium Preloader */}
-      {showPreloader && (
-        <div className="preloader">
-          <div className="preloader-content">
-            <div className="preloader-logo-wrap">
-              <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" className="preloader-logo" />
-              <div className="preloader-ring"></div>
-            </div>
-            <h2 className="preloader-text">Hijrah Toko</h2>
-            <div className="preloader-bar">
-              <div className="preloader-progress"></div>
-            </div>
-          </div>
-        </div>
-      )}
 
 {/*  Navbar  */}
 <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="navbar">
