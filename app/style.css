@@ -1029,8 +1029,13 @@ body.dark-mode .mobile-toggle span {
   .testimoni-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
-  .nav-links { display: none; }
+  .nav-links, .nav-actions { display: none; }
   .mobile-toggle, .mobile-nav { display: block; }
+  .nav-container { padding: 0.75rem 1rem; }
+  .nav-right { gap: 0.4rem; }
+  .brand-text { font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+  .brand-logo { width: 34px; height: 34px; border-radius: 8px; }
+  .theme-toggle, .cart-btn, .mobile-toggle { width: 36px; height: 36px; border-radius: 8px; font-size: 0.9rem; }
   .hero-content h1 { font-size: 2.2rem; }
   .stats-container { grid-template-columns: repeat(2,1fr); }
   .footer-grid { grid-template-columns: 1fr; }
