@@ -759,10 +759,10 @@ export default function Home() {
       <div className="cart-summary">
         <div>
           <span>Total Item</span>
-          <strong id="checkoutItemCount">{cartCount}</strong>
+          <strong id="checkoutItemCount">{cartCount} Item</strong>
         </div>
-        <div>
-          <span>Total Harga</span>
+        <div className="total-price">
+          <span>Subtotal</span>
           <strong id="checkoutTotal">Rp {getCartSubtotal().toLocaleString('id-ID')}</strong>
         </div>
       </div>
@@ -843,9 +843,14 @@ export default function Home() {
 
         <div className="cost-breakdown">
           <div><span>Subtotal Barang</span><strong id="subtotalPrice">Rp {getCartSubtotal().toLocaleString('id-ID')}</strong></div>
-          <div><span>Ongkir</span><strong id="shippingCost">{shipInfo.shippingCost === null ? '-' : `Rp ${shipInfo.shippingCost.toLocaleString('id-ID')}`}</strong></div>
-          <div><span>Diskon Ongkir</span><strong id="shippingDiscount">Rp {shipInfo.discount.toLocaleString('id-ID')}</strong></div>
-          <div><span>Total Bayar</span><strong id="grandTotal">Rp {grandTotal.toLocaleString('id-ID')}</strong></div>
+          <div><span>Ongkos Kirim</span><strong id="shippingCost">{shipInfo.shippingCost === null ? 'Pilih Alamat' : `Rp ${shipInfo.shippingCost.toLocaleString('id-ID')}`}</strong></div>
+          {shipInfo.discount > 0 && (
+            <div style={{ color: '#059669' }}><span>Diskon Ongkir</span><strong id="shippingDiscount">- Rp {shipInfo.discount.toLocaleString('id-ID')}</strong></div>
+          )}
+          <div className="total-row">
+            <span>Total Bayar</span>
+            <strong id="grandTotal">Rp {grandTotal.toLocaleString('id-ID')}</strong>
+          </div>
         </div>
         <div className="shipping-meta">
           <p id="distanceInfo">Jarak tempuh: {shipInfo.distanceKm === null ? '-' : `${shipInfo.distanceKm.toLocaleString('id-ID')} km`}</p>
