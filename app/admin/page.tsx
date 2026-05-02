@@ -214,6 +214,19 @@ export default function AdminDashboard() {
 
   const updateOrderStatus = async (orderId: number, status: string) => {
     try {
+      if (status === 'cancelled') {
+        if (!confirm('Pesanan ini akan dibatalkan dan DIHAPUS permanen dari database. Lanjutkan?')) return;
+        
+        const { error } = await supabase
+          .from('orders')
+          .delete()
+          .eq('id', orderId);
+        
+        if (error) throw error;
+        setOrders(orders.filter(o => o.id !== orderId));
+        return;
+      }
+
       // Optimistic update for UI feel
       const originalOrders = [...orders];
       setOrders(orders.map(o => o.id === orderId ? { ...o, status } : o));
