@@ -437,11 +437,17 @@ export default function Home() {
 
   const submitReview = async (e: any) => {
     e.preventDefault();
+    if (!user) {
+      alert('Anda harus login untuk memberikan ulasan.');
+      setAuthModal({ isOpen: true, mode: 'login' });
+      return;
+    }
     const newReview = { 
-      name: reviewForm.name, 
+      name: user.user_metadata?.full_name || reviewForm.name, 
       text: reviewForm.text, 
       rating: reviewForm.rating, 
-      date: new Date().toISOString().split('T')[0] 
+      date: new Date().toISOString().split('T')[0],
+      user_id: user.id
     };
     
     try {
@@ -830,23 +836,35 @@ export default function Home() {
     <div className="testimoni-form-card fade-in">
       <h3>Berikan Ulasan Anda</h3>
       <p style={{"color":"var(--gray)","fontSize":"0.9rem","marginBottom":"1rem"}}>Bagaimana pengalaman Anda berbelanja di sini?</p>
-      <form id="reviewForm" className="order-form" onSubmit={submitReview}>
-        <div className="star-rating-input" id="starInput">
-          {[1, 2, 3, 4, 5].map(val => (
-    <span key={val} className={`star ${val <= reviewForm.rating ? 'active' : ''}`} onClick={() => setReviewForm({...reviewForm, rating: val})}>★</span>
-  ))}
+      
+      {!user ? (
+        <div className="login-required-checkout" style={{ padding: '2rem 1rem' }}>
+          <div className="lock-icon">📝</div>
+          <h4>Login untuk Mengulas</h4>
+          <p>Silakan masuk ke akun Anda untuk membagikan pengalaman belanja Anda di Hijrah Toko.</p>
+          <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
+            Masuk Sekarang
+          </button>
         </div>
-        <input type="hidden" id="reviewRating" value={reviewForm.rating} />
-        <div className="form-group">
-          <label htmlFor="reviewName">Nama</label>
-          <input type="text" id="reviewName" placeholder="Nama Anda" required value={reviewForm.name} onChange={e => setReviewForm({...reviewForm, name: e.target.value})} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="reviewText">Ulasan</label>
-          <textarea id="reviewText" rows={3} placeholder="Tuliskan ulasan Anda tentang toko atau produk kami" required value={reviewForm.text} onChange={e => setReviewForm({...reviewForm, text: e.target.value})}></textarea>
-        </div>
-        <button className="btn-primary" type="submit" style={{"width":"100%","justifyContent":"center","marginTop":"0.5rem"}}>Kirim Ulasan</button>
-      </form>
+      ) : (
+        <form id="reviewForm" className="order-form" onSubmit={submitReview}>
+          <div className="star-rating-input" id="starInput">
+            {[1, 2, 3, 4, 5].map(val => (
+              <span key={val} className={`star ${val <= reviewForm.rating ? 'active' : ''}`} onClick={() => setReviewForm({...reviewForm, rating: val})}>★</span>
+            ))}
+          </div>
+          <input type="hidden" id="reviewRating" value={reviewForm.rating} />
+          <div className="form-group">
+            <label htmlFor="reviewName">Nama</label>
+            <input type="text" id="reviewName" placeholder="Nama Anda" required disabled value={user.user_metadata?.full_name || reviewForm.name} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="reviewText">Ulasan</label>
+            <textarea id="reviewText" rows={3} placeholder="Tuliskan ulasan Anda tentang toko atau produk kami" required value={reviewForm.text} onChange={e => setReviewForm({...reviewForm, text: e.target.value})}></textarea>
+          </div>
+          <button className="btn-primary" type="submit" style={{"width":"100%","justifyContent":"center","marginTop":"0.5rem"}}>Kirim Ulasan</button>
+        </form>
+      )}
     </div>
   </div>
 </section>
