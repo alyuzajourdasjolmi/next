@@ -1733,61 +1733,69 @@ body.dark-mode .login-glass-card {
 }
 .location-info-pills {
   display: flex;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 .info-pill {
   background: var(--surface-soft);
-  padding: 1.25rem;
+  padding: 1.25rem 1.5rem;
   border-radius: 20px;
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  align-items: center;
+  gap: 1.25rem;
   border: 1px solid var(--border);
   transition: all 0.3s ease;
+  width: 100%;
 }
 .info-pill:hover {
   border-color: var(--mint);
   background: var(--surface);
+  transform: translateX(8px);
 }
 .info-pill span {
   font-size: 1.25rem;
   background: var(--surface);
-  width: 44px; height: 44px;
+  width: 48px; height: 48px;
   display: flex; align-items: center; justify-content: center;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: var(--shadow-soft);
   flex-shrink: 0;
 }
+.info-pill-content {
+  display: flex;
+  flex-direction: column;
+}
 .info-pill-content h4 {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--dark);
-  margin-bottom: 0.25rem;
+  margin: 0;
+  line-height: 1.2;
 }
 .info-pill-content p {
   font-size: 0.85rem;
   color: var(--gray);
-  line-height: 1.5;
+  margin-top: 0.35rem;
+  line-height: 1.4;
 }
 .status-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.25rem 0.6rem;
+  padding: 0.35rem 0.75rem;
   background: #DCFCE7;
   color: #166534;
   border-radius: 50px;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
+  width: fit-content;
 }
 .status-dot {
-  width: 6px; height: 6px;
+  width: 8px; height: 8px;
   background: #22C55E;
   border-radius: 50%;
-  animation: pulse 1.5s infinite;
+  animation: pulse 2s infinite;
 }
 @keyframes pulse {
   0% { transform: scale(1); opacity: 1; }

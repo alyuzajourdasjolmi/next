@@ -1166,11 +1166,11 @@ export default function Home() {
           </div>
         </div>
         
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
-          <a href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5940091,100.2129566,17z" target="_blank" className="btn-primary" style={{ flex: 1, minWidth: '180px', justifyContent: 'center' }}>
+        <div className="location-actions" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '2rem' }}>
+          <a href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5940091,100.2129566,17z" target="_blank" className="btn-primary" style={{ flex: '1', minWidth: '160px', justifyContent: 'center' }}>
             📍 Navigasi
           </a>
-          <a href="https://www.google.com/local/place/fid/0x2fd4e1d5048135eb:0xdc1dba685f9fa4f4/photosphere?iu=https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid%3DCI_z5Ct0J_GinjA__ASq-A%26cb_client%3Dsearch.gws-prod.gps%26yaw%3D134.1935%26pitch%3D0%26thumbfov%3D100%26w%3D0%26h%3D0&ik=CAISFkNJX3o1Q3QwSl9HaW5qQV9fQVNxLUE%3D&sa=X" target="_blank" className="btn-secondary" style={{ flex: 1, minWidth: '180px', justifyContent: 'center' }}>
+          <a href="https://www.google.com/local/place/fid/0x2fd4e1d5048135eb:0xdc1dba685f9fa4f4/photosphere?iu=https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid%3DCI_z5Ct0J_GinjA__ASq-A%26cb_client%3Dsearch.gws-prod.gps%26yaw%3D134.1935%26pitch%3D0%26thumbfov%3D100%26w%3D0%26h%3D0&ik=CAISFkNJX3o1Q3QwSl9HaW5qQV9fQVNxLUE%3D&sa=X" target="_blank" className="btn-secondary" style={{ flex: '1', minWidth: '160px', justifyContent: 'center' }}>
             📸 Tur 360°
           </a>
         </div>
