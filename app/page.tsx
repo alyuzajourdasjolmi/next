@@ -164,7 +164,7 @@ export default function Home() {
           customerName: session.user.user_metadata?.full_name || prev.customerName,
           customerPhone: session.user.phone || prev.customerPhone
         }));
-        fetchUserOrders(session.user.id);
+        fetchUserOrders(session.user.id, false);
       }
     };
 
@@ -180,7 +180,7 @@ export default function Home() {
           customerName: session.user.user_metadata?.full_name || prev.customerName,
           customerPhone: session.user.phone || prev.customerPhone
         }));
-        fetchUserOrders(session.user.id);
+        fetchUserOrders(session.user.id, false);
       } else {
         setUserOrders([]);
       }
@@ -532,7 +532,7 @@ export default function Home() {
 
         // Add to tracking
         setTrackingPhone(orderInfo.customerPhone);
-        fetchUserOrders(orderInfo.customerPhone);
+        fetchUserOrders(orderInfo.customerPhone, false);
       }
     } catch (error: any) {
       console.error('Error saving order:', error);
@@ -555,7 +555,7 @@ export default function Home() {
     document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const fetchUserOrders = async (identifier: string) => {
+  const fetchUserOrders = async (identifier: string, showAlert: boolean = true) => {
     if (!identifier) return;
     setIsTracking(true);
     try {
@@ -575,13 +575,13 @@ export default function Home() {
       if (error) throw error;
       setUserOrders(data || []);
       if (data && data.length > 0) {
-        document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
+        if (showAlert) document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
       } else {
-        alert('Tidak ditemukan pesanan dengan nomor telepon tersebut.');
+        if (showAlert) alert('Tidak ditemukan pesanan dengan nomor telepon/ID tersebut.');
       }
     } catch (error) {
       console.error('Error tracking order:', error);
-      alert('Gagal melacak pesanan.');
+      if (showAlert) alert('Gagal melacak pesanan.');
     } finally {
       setIsTracking(false);
     }
@@ -1082,9 +1082,9 @@ export default function Home() {
             placeholder="Masukkan nomor HP Anda (contoh: 0812...)" 
             value={trackingPhone} 
             onChange={(e) => setTrackingPhone(e.target.value)} 
-            onKeyPress={(e) => e.key === 'Enter' && fetchUserOrders(trackingPhone)}
+            onKeyPress={(e) => e.key === 'Enter' && fetchUserOrders(trackingPhone, true)}
           />
-          <button className="btn-primary" onClick={() => fetchUserOrders(trackingPhone)} disabled={isTracking}>
+          <button className="btn-primary" onClick={() => fetchUserOrders(trackingPhone, true)} disabled={isTracking}>
             {isTracking ? '...' : 'Lacak'}
           </button>
         </div>
