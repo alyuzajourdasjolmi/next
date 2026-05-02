@@ -21,6 +21,9 @@ export default function AdminDashboard() {
     category: 'frozen',
     img: ''
   });
+  const [activeTab, setActiveTab] = useState('orders');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -421,26 +424,66 @@ export default function AdminDashboard() {
           <>
             {activeTab === 'orders' && (
               <div className="admin-content-card">
-                <div className="card-header">
-                  <h2>Kelola Pesanan</h2>
+                <div className="card-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                    <h2>Manajemen Pesanan</h2>
+                    <div className="badge-pill" style={{ background: 'var(--mint)', color: 'white' }}>{orders.length} Total</div>
+                  </div>
+                  
+                  {/* Search & Filter Bar */}
+                  <div className="filter-bar">
+                    <div className="search-box">
+                      <span>🔍</span>
+                      <input 
+                        type="text" 
+                        placeholder="Cari nama atau nomor HP..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                    <div className="status-tabs">
+                      {['all', 'pending', 'confirmed', 'processing', 'shipped', 'completed', 'cancelled'].map(status => (
+                        <button 
+                          key={status}
+                          className={`status-tab ${statusFilter === status ? 'active' : ''}`}
+                          onClick={() => setStatusFilter(status)}
+                        >
+                          {status === 'all' ? 'Semua' : status.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
+
                 <div style={{ overflowX: 'auto' }}>
                   <table className="modern-table">
                     <thead>
                       <tr>
-                        <th>Pelanggan & Waktu</th>
-                        <th>Pesanan & Alamat</th>
-                        <th>Status</th>
-                        <th>Total Bayar</th>
-                        <th>Aksi</th>
+                        <th style={{ width: '25%' }}>Pelanggan & Waktu</th>
+                        <th style={{ width: '35%' }}>Pesanan & Alamat</th>
+                        <th style={{ width: '15%' }}>Status</th>
+                        <th style={{ width: '15%' }}>Total</th>
+                        <th style={{ width: '10%' }}>Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {orders.length === 0 ? (
-                        <tr><td colSpan={5} style={{ textAlign: 'center', padding: '3rem' }}>Belum ada pesanan.</td></tr>
-                      ) : (
-                        orders.map(order => (
-                          <tr key={order.id}>
+                      {(() => {
+                        const filtered = orders.filter(o => {
+                          const matchesSearch = o.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                              o.customer_phone.includes(searchTerm);
+                          const matchesStatus = statusFilter === 'all' || o.status === statusFilter;
+                          return matchesSearch && matchesStatus;
+                        });
+
+                        if (filtered.length === 0) {
+                          return <tr><td colSpan={5} style={{ textAlign: 'center', padding: '4rem', color: 'var(--gray)' }}>
+                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🍃</div>
+                            Tidak ada pesanan yang ditemukan.
+                          </td></tr>;
+                        }
+
+                        return filtered.map(order => (
+                          <tr key={order.id} className="order-row">
                             <td>
                               <div className="product-item-info">
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -723,6 +766,69 @@ export default function AdminDashboard() {
           border-radius: 999px;
           font-size: 0.75rem;
           font-weight: 700;
+        }
+
+        .filter-bar {
+          display: flex;
+          width: 100%;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+        .search-box {
+          flex: 1;
+          min-width: 250px;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          background: var(--surface-soft);
+          border: 1px solid var(--border);
+          padding: 0.75rem 1rem;
+          border-radius: 12px;
+        }
+        .search-box input {
+          background: transparent;
+          border: none;
+          outline: none;
+          width: 100%;
+          color: var(--dark);
+          font-family: inherit;
+        }
+        .status-tabs {
+          display: flex;
+          gap: 0.5rem;
+          overflow-x: auto;
+          padding-bottom: 0.25rem;
+        }
+        .status-tab {
+          padding: 0.6rem 1rem;
+          border-radius: 10px;
+          border: 1px solid var(--border);
+          background: var(--surface);
+          color: var(--gray);
+          font-size: 0.75rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+          white-space: nowrap;
+        }
+        .status-tab:hover {
+          border-color: var(--mint);
+          color: var(--mint);
+        }
+        .status-tab.active {
+          background: var(--mint);
+          color: white;
+          border-color: var(--mint);
+        }
+        .order-row:hover {
+          background: rgba(220, 38, 38, 0.02) !important;
+        }
+        .order-items-list::-webkit-scrollbar {
+          width: 4px;
+        }
+        .order-items-list::-webkit-scrollbar-thumb {
+          background: var(--border);
+          border-radius: 10px;
         }
       `}</style>
     </div>
