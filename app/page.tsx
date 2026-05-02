@@ -144,7 +144,6 @@ export default function Home() {
         } else {
           setReviews(revs);
         }
-        }
       } catch (err) {
         console.error('Unexpected error in fetchData:', err);
       }
