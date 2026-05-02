@@ -515,9 +515,7 @@ export default function Home() {
           shipping_discount: shipInfo.discount,
           grand_total: grandTotal,
           status: 'pending',
-          user_id: user.id,
-          latitude: orderInfo.customerLatitude ? parseFloat(orderInfo.customerLatitude) : null,
-          longitude: orderInfo.customerLongitude ? parseFloat(orderInfo.customerLongitude) : null
+          user_id: user.id
         })
         .select()
         .single();
@@ -1134,54 +1132,6 @@ export default function Home() {
         ))}
       </div>
     )}
-  </div>
-</section>
-
-{/*  Blog / Tips Section (Feature #6)  */}
-<section className="section" id="blog" style={{ background: 'var(--section-tint)' }}>
-  <div className="section-header fade-in">
-    <h2>Tips & Informasi</h2>
-    <p>Inspirasi dapur dan solusi meja kerja untuk keseharian Anda.</p>
-    <div className="underline"></div>
-  </div>
-  <div className="container">
-    <div className="blog-grid">
-      {[
-        { 
-          id: 1, 
-          title: "Cara Menyimpan Frozen Food agar Tetap Segar & Hemat Tempat", 
-          date: "12 April 2024", 
-          img: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800",
-          cat: "Tips Dapur"
-        },
-        { 
-          id: 2, 
-          title: "5 Alat Tulis Kantor yang Wajib Ada di Meja Kerja Minimalis", 
-          date: "20 April 2024", 
-          img: "https://images.unsplash.com/photo-1519337265831-281ec6cc8514?auto=format&fit=crop&q=80&w=800",
-          cat: "Produktivitas"
-        },
-        { 
-          id: 3, 
-          title: "Ide Bekal Sekolah Praktis & Bergizi dengan Produk Hijrah Toko", 
-          date: "28 April 2024", 
-          img: "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?auto=format&fit=crop&q=80&w=800",
-          cat: "Inspirasi"
-        }
-      ].map((blog, i) => (
-        <div key={blog.id} className="blog-card fade-in visible" style={{ transitionDelay: `${i * 0.1}s` }}>
-          <div className="blog-img-wrap">
-            <img src={blog.img} alt={blog.title} />
-            <span className="blog-badge">{blog.cat}</span>
-          </div>
-          <div className="blog-body">
-            <small className="blog-date">📅 {blog.date}</small>
-            <h3>{blog.title}</h3>
-            <a href="#" className="blog-link">Baca Selengkapnya <span>→</span></a>
-          </div>
-        </div>
-      ))}
-    </div>
   </div>
 </section>
 

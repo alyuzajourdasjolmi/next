@@ -21,7 +21,7 @@ export default function AdminDashboard() {
     category: 'frozen',
     img: ''
   });
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'users' | 'analytics'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'users'>('orders');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
@@ -518,12 +518,6 @@ export default function AdminDashboard() {
           >
             <span>👥</span> <span>Pengguna</span>
           </div>
-          <div 
-            className={`sidebar-link ${activeTab === 'analytics' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('analytics')}
-          >
-            <span>📊</span> <span>Analytics</span>
-          </div>
         </nav>
 
         <div className="sidebar-footer">
@@ -933,105 +927,6 @@ export default function AdminDashboard() {
                     </tbody>
                   </table>
                 </div>
-              </div>
-            )}
-            {activeTab === 'analytics' && (
-              <div className="admin-content-card">
-                <div className="card-header">
-                  <h2>Peta Sebaran Pesanan</h2>
-                  <div className="badge-pill">Visualisasi Lokasi</div>
-                </div>
-                <div style={{ padding: '1.5rem' }}>
-                  <div id="admin-map" style={{ height: '500px', borderRadius: '16px', background: '#f0f0f0', overflow: 'hidden', position: 'relative' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--gray)' }}>
-                      Memuat peta dan data lokasi...
-                    </div>
-                  </div>
-                  <div style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                    <div className="stat-card" style={{ padding: '1rem' }}>
-                      <small>Pesanan Berkoordinat</small>
-                      <div className="value" style={{ fontSize: '1.5rem' }}>
-                        {orders.filter(o => o.latitude && o.longitude).length}
-                      </div>
-                    </div>
-                    <div className="stat-card" style={{ padding: '1rem' }}>
-                      <small>Metode Delivery</small>
-                      <div className="value" style={{ fontSize: '1.5rem' }}>
-                        {orders.filter(o => o.delivery_method === 'delivery').length}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Leaflet Script Injection */}
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onLoad={() => {
-                  const ordersWithLocation = orders.filter(o => o.latitude && o.longitude);
-                  const mapElement = document.getElementById('admin-map');
-                  if (!mapElement || !(window as any).L || mapElement.classList.contains('leaflet-container')) return;
-                  
-                  // Clear placeholder
-                  mapElement.innerHTML = '';
-                  
-                  const L = (window as any).L;
-                  const map = L.map('admin-map').setView([-0.5940091, 100.2129566], 13);
-                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
-                  }).addTo(map);
-
-                  // Store Marker
-                  L.marker([-0.5940091, 100.2129566], {
-                    icon: L.divIcon({
-                      html: '<div style="background: #DC2626; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>',
-                      className: 'store-marker',
-                      iconSize: [24, 24],
-                      iconAnchor: [12, 12]
-                    })
-                  }).addTo(map).bindPopup('<b>Hijrah Toko (Pusat)</b>');
-
-                  // Order Markers
-                  ordersWithLocation.forEach(order => {
-                    L.marker([order.latitude, order.longitude]).addTo(map)
-                      .bindPopup(`<b>${order.customer_name}</b><br>${order.customer_address}<br>Total: Rp ${order.grand_total.toLocaleString('id-ID')}`);
-                  });
-                }}></script>
-                <script dangerouslySetInnerHTML={{ __html: `
-                  (function() {
-                    const initMap = () => {
-                      const orders = ${JSON.stringify(orders.filter(o => o.latitude && o.longitude))};
-                      const mapElement = document.getElementById('admin-map');
-                      if (!mapElement || !window.L || mapElement.classList.contains('leaflet-container')) return;
-                      
-                      mapElement.innerHTML = '';
-                      const map = window.L.map('admin-map').setView([-0.5940091, 100.2129566], 13);
-                      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap contributors'
-                      }).addTo(map);
-
-                      window.L.marker([-0.5940091, 100.2129566], {
-                        icon: window.L.divIcon({
-                          html: '<div style="background: #DC2626; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>',
-                          className: 'store-marker',
-                          iconSize: [24, 24],
-                          iconAnchor: [12, 12]
-                        })
-                      }).addTo(map).bindPopup('<b>Hijrah Toko (Pusat)</b>');
-
-                      orders.forEach(order => {
-                        window.L.marker([order.latitude, order.longitude]).addTo(map)
-                          .bindPopup('<b>' + order.customer_name + '</b><br>' + (order.customer_address || '') + '<br>Total: Rp ' + order.grand_total.toLocaleString('id-ID'));
-                      });
-                    };
-                    if (window.L) initMap();
-                    else document.addEventListener('DOMContentLoaded', initMap);
-                    // Also check every 500ms for 3 seconds in case script loads late
-                    let checks = 0;
-                    const interval = setInterval(() => {
-                      if (window.L) { initMap(); clearInterval(interval); }
-                      if (++checks > 6) clearInterval(interval);
-                    }, 500);
-                  })();
-                `}} />
               </div>
             )}
           </>
