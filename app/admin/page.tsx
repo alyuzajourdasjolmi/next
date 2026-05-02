@@ -21,7 +21,7 @@ export default function AdminDashboard() {
     category: 'frozen',
     img: ''
   });
-  const [activeTab, setActiveTab] = useState('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'users'>('orders');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
