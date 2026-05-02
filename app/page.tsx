@@ -1296,57 +1296,62 @@ export default function Home() {
       <form onSubmit={handleAuth} className="order-form">
         {authModal.mode === 'register' && (
           <>
-            <div className="form-group">
-              <label>Nama Lengkap</label>
-              <input 
-                type="text" 
-                placeholder="Masukkan nama lengkap" 
-                required 
-                value={authForm.name} 
-                onChange={e => setAuthForm({ ...authForm, name: e.target.value })} 
-              />
+            <div className="form-grid">
+              <div className="form-group">
+                <label>Nama Lengkap</label>
+                <input 
+                  type="text" 
+                  placeholder="Nama" 
+                  required 
+                  value={authForm.name} 
+                  onChange={e => setAuthForm({ ...authForm, name: e.target.value })} 
+                />
+              </div>
+              <div className="form-group">
+                <label>No. WhatsApp</label>
+                <input 
+                  type="tel" 
+                  placeholder="08..." 
+                  required 
+                  value={authForm.phone} 
+                  onChange={e => setAuthForm({ ...authForm, phone: e.target.value })} 
+                />
+              </div>
             </div>
-            <div className="form-group">
-              <label>Nomor Telepon (WhatsApp)</label>
-              <input 
-                type="tel" 
-                placeholder="0812..." 
-                required 
-                value={authForm.phone} 
-                onChange={e => setAuthForm({ ...authForm, phone: e.target.value })} 
-              />
-            </div>
-            <div className="form-group">
+            <div className="form-group" style={{ marginBottom: '1rem' }}>
               <label>Alamat Lengkap</label>
               <textarea 
-                placeholder="Masukkan alamat pengiriman Anda" 
+                placeholder="Alamat pengiriman..." 
                 required 
                 rows={2}
+                style={{ minHeight: '80px' }}
                 value={authForm.address} 
                 onChange={e => setAuthForm({ ...authForm, address: e.target.value })} 
               />
             </div>
           </>
         )}
-        <div className="form-group">
-          <label>Email</label>
-          <input 
-            type="email" 
-            placeholder="nama@email.com" 
-            required 
-            value={authForm.email} 
-            onChange={e => setAuthForm({ ...authForm, email: e.target.value })} 
-          />
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <input 
-            type="password" 
-            placeholder="••••••••" 
-            required 
-            value={authForm.password} 
-            onChange={e => setAuthForm({ ...authForm, password: e.target.value })} 
-          />
+        <div className="form-grid">
+          <div className="form-group">
+            <label>Email</label>
+            <input 
+              type="email" 
+              placeholder="nama@email.com" 
+              required 
+              value={authForm.email} 
+              onChange={e => setAuthForm({ ...authForm, email: e.target.value })} 
+            />
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input 
+              type="password" 
+              placeholder="••••••••" 
+              required 
+              value={authForm.password} 
+              onChange={e => setAuthForm({ ...authForm, password: e.target.value })} 
+            />
+          </div>
         </div>
         <button className="btn-primary auth-submit" type="submit" disabled={authLoading}>
           {authLoading ? 'Memproses...' : (authModal.mode === 'login' ? 'Masuk' : 'Daftar')}
