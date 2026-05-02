@@ -6,6 +6,7 @@ import '../style.css'; // Reuse existing styles
 export default function AdminDashboard() {
   const [orders, setOrders] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [email, setEmail] = useState('');
@@ -79,6 +80,30 @@ export default function AdminDashboard() {
       
       if (productsError) throw productsError;
       setProducts(productsData || []);
+
+      const { data: usersData, error: usersError } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (!usersError) {
+        setUsers(usersData || []);
+      } else {
+        console.warn('Profiles table not found or inaccessible. Falling back to unique order customers.');
+        // Fallback: Get unique customers from orders if profiles table doesnt exist
+        const uniqueCustomers = Array.from(new Set(ordersData?.map(o => o.customer_phone))).map(phone => {
+          const lastOrder = ordersData?.find(o => o.customer_phone === phone);
+          return {
+            id: lastOrder?.user_id || phone,
+            full_name: lastOrder?.customer_name,
+            phone: phone,
+            address: lastOrder?.customer_address,
+            email: 'N/A (Order Data)',
+            created_at: lastOrder?.created_at
+          };
+        });
+        setUsers(uniqueCustomers);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -585,6 +610,12 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
+                <div className="tab-navigation" style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', padding: '0 1.5rem' }}>
+                   <button className={`filter-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>📑 Pesanan</button>
+                   <button className={`filter-btn ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}>📦 Produk</button>
+                   <button className={`filter-btn ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>👥 Pengguna</button>
+                </div>
+
                 <div style={{ overflowX: 'auto' }}>
                   <table className="modern-table">
                     <thead>
@@ -807,6 +838,63 @@ export default function AdminDashboard() {
                       </tbody>
                     </table>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'users' && (
+              <div className="admin-content-card">
+                <div className="card-header">
+                  <h2>Manajemen Pengguna (Pelanggan)</h2>
+                  <div className="badge-pill" style={{ background: 'var(--mint)', color: 'white' }}>{users.length} Terdaftar</div>
+                </div>
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="modern-table">
+                    <thead>
+                      <tr>
+                        <th>Nama & Email</th>
+                        <th>WhatsApp</th>
+                        <th>Alamat Utama</th>
+                        <th>Bergabung Pada</th>
+                        <th>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map(u => (
+                        <tr key={u.id}>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--surface-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>👤</div>
+                              <div>
+                                <strong style={{ display: 'block' }}>{u.full_name || 'Tanpa Nama'}</strong>
+                                <span style={{ fontSize: '0.8rem', color: 'var(--gray)' }}>{u.email}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <a href={`https://wa.me/${u.phone?.replace(/[^0-9]/g, '')}`} target="_blank" style={{ color: 'var(--mint-dark)', fontWeight: '600', textDecoration: 'none' }}>
+                              {u.phone || '-'}
+                            </a>
+                          </td>
+                          <td style={{ maxWidth: '250px', fontSize: '0.85rem', color: 'var(--gray)' }}>{u.address || '-'}</td>
+                          <td>{u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</td>
+                          <td>
+                            <button 
+                              className="icon-btn" 
+                              title="Lihat Pesanan User Ini" 
+                              onClick={() => { 
+                                setSearchTerm(u.phone || u.full_name); 
+                                setActiveTab('orders'); 
+                              }}
+                              style={{ background: 'var(--surface-soft)' }}
+                            >
+                              🔍
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
