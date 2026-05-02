@@ -278,8 +278,21 @@ body.dark-mode {
   padding: 0.2rem;
 }
 .hero-content h1 .highlight {
-  background: linear-gradient(135deg, var(--mint), var(--blue));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background: linear-gradient(135deg, var(--mint), #F87171);
+  -webkit-background-clip: text; 
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+body.dark-mode .hero-content h1 .highlight {
+  background: linear-gradient(135deg, #FF6B6B, #FCA5A5);
+  filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.3));
+}
+body.dark-mode .hero-content h1 {
+  text-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+body.dark-mode .hero-content p {
+  color: #CBD5E1;
 }
 .hero-content p {
   font-size: 1.1rem; color: var(--gray); line-height: 1.7;
