@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase';
 import '../style.css'; // Reuse existing styles
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('orders'); // 'orders' or 'products'
   const [orders, setOrders] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
