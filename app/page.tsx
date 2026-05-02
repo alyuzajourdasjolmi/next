@@ -626,29 +626,40 @@ export default function Home() {
       <li className="dropdown">
         <a href="#produk" className="dropbtn">Produk <svg className="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
         <div className="dropdown-content">
-          <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>Frozen Food</a>
-          <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>ATK</a>
-          <a href="#other" onClick={(e) => navToCategory(e, 'other')}>Other</a>
+          <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>🧊 Frozen Food</a>
+          <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>📝 ATK</a>
+          <a href="#other" onClick={(e) => navToCategory(e, 'other')}>📦 Other</a>
         </div>
       </li>
       <li><a href="#testimoni">Testimoni</a></li>
-      <li><a href="#checkout">Checkout</a></li>
       <li><a href="#inbox">Lacak</a></li>
-      <li><a href="#lokasi">Lokasi</a></li>
       <li><a href="#kontak">Kontak</a></li>
-      {user ? (
-        <li className="nav-user-item">
-          <div className="user-profile-badge" onClick={() => document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' })}>
-            <span>👤</span> {user.user_metadata?.full_name || 'User'}
-          </div>
-          <button className="btn-logout" onClick={handleLogout}>Logout</button>
-        </li>
-      ) : (
-        <li><button className="btn-login-nav" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>Login</button></li>
-      )}
-      <li><a href="/admin" className="admin-nav-link">Dashboard</a></li>
     </ul>
     <div className="nav-right">
+      <div className="nav-actions">
+        {user ? (
+          <div className="user-dropdown">
+            <div className="user-profile-trigger">
+              <span className="user-avatar">👤</span>
+              <span className="user-name-short">{user.user_metadata?.full_name?.split(' ')[0] || 'User'}</span>
+            </div>
+            <div className="user-menu-content">
+              <div className="user-menu-header">
+                <strong>{user.user_metadata?.full_name || 'Pelanggan'}</strong>
+                <p>{user.email}</p>
+              </div>
+              <div className="user-menu-divider"></div>
+              <a href="#inbox" onClick={() => document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' })}>📦 Pesanan Saya</a>
+              <a href="/admin">🛡️ Dashboard Admin</a>
+              <div className="user-menu-divider"></div>
+              <button className="user-logout-btn" onClick={handleLogout}>🚪 Keluar</button>
+            </div>
+          </div>
+        ) : (
+          <button className="btn-login-pill" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>Masuk</button>
+        )}
+      </div>
+
       <button className="theme-toggle" id="themeToggle" type="button" aria-label="Ubah tema" onClick={toggleTheme}>
         <span className="theme-icon" id="themeIcon">{theme === 'dark' ? '☀️' : '🌙'}</span>
       </button>
