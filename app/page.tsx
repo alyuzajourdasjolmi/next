@@ -63,7 +63,7 @@ export default function Home() {
 
   const [user, setUser] = useState<any>(null);
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; mode: 'login' | 'register' }>({ isOpen: false, mode: 'login' });
-  const [authForm, setAuthForm] = useState({ email: '', password: '', name: '' });
+  const [authForm, setAuthForm] = useState({ email: '', password: '', name: '', phone: '', address: '' });
   const [authLoading, setAuthLoading] = useState(false);
   
   // Refs for realtime listener to avoid stale closures
@@ -157,7 +157,8 @@ export default function Home() {
         setOrderInfo(prev => ({
           ...prev,
           customerName: session.user.user_metadata?.full_name || prev.customerName,
-          customerPhone: session.user.phone || prev.customerPhone
+          customerPhone: session.user.user_metadata?.phone || session.user.phone || prev.customerPhone,
+          customerAddress: session.user.user_metadata?.address || prev.customerAddress
         }));
         fetchUserOrders(session.user.id, false);
       }
@@ -173,7 +174,8 @@ export default function Home() {
         setOrderInfo(prev => ({
           ...prev,
           customerName: session.user.user_metadata?.full_name || prev.customerName,
-          customerPhone: session.user.phone || prev.customerPhone
+          customerPhone: session.user.user_metadata?.phone || session.user.phone || prev.customerPhone,
+          customerAddress: session.user.user_metadata?.address || prev.customerAddress
         }));
         fetchUserOrders(session.user.id, false);
       } else {
@@ -293,6 +295,8 @@ export default function Home() {
           options: {
             data: {
               full_name: authForm.name,
+              phone: authForm.phone,
+              address: authForm.address
             }
           }
         });
@@ -1264,16 +1268,38 @@ export default function Home() {
       
       <form onSubmit={handleAuth} className="order-form">
         {authModal.mode === 'register' && (
-          <div className="form-group">
-            <label>Nama Lengkap</label>
-            <input 
-              type="text" 
-              placeholder="Masukkan nama lengkap" 
-              required 
-              value={authForm.name} 
-              onChange={e => setAuthForm({ ...authForm, name: e.target.value })} 
-            />
-          </div>
+          <>
+            <div className="form-group">
+              <label>Nama Lengkap</label>
+              <input 
+                type="text" 
+                placeholder="Masukkan nama lengkap" 
+                required 
+                value={authForm.name} 
+                onChange={e => setAuthForm({ ...authForm, name: e.target.value })} 
+              />
+            </div>
+            <div className="form-group">
+              <label>Nomor Telepon (WhatsApp)</label>
+              <input 
+                type="tel" 
+                placeholder="0812..." 
+                required 
+                value={authForm.phone} 
+                onChange={e => setAuthForm({ ...authForm, phone: e.target.value })} 
+              />
+            </div>
+            <div className="form-group">
+              <label>Alamat Lengkap</label>
+              <textarea 
+                placeholder="Masukkan alamat pengiriman Anda" 
+                required 
+                rows={2}
+                value={authForm.address} 
+                onChange={e => setAuthForm({ ...authForm, address: e.target.value })} 
+              />
+            </div>
+          </>
         )}
         <div className="form-group">
           <label>Email</label>
