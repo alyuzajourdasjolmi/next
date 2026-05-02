@@ -290,6 +290,23 @@ export default function AdminDashboard() {
     }
   };
 
+  const deleteUser = async (userId: string, name: string) => {
+    if (!confirm(`Apakah Anda yakin ingin menghapus data profil "${name}"? Ini juga akan menghapus riwayat pesanan mereka secara permanen.`)) return;
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+      
+      if (error) throw error;
+      setUsers(users.filter(u => u.id !== userId));
+      alert('Profil pengguna berhasil dihapus.');
+    } catch (error: any) {
+      console.error('Error deleting user:', error);
+      alert('Gagal menghapus user: ' + error.message);
+    }
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -883,17 +900,27 @@ export default function AdminDashboard() {
                           <td style={{ maxWidth: '250px', fontSize: '0.85rem', color: 'var(--gray)' }}>{u.address || '-'}</td>
                           <td>{u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</td>
                           <td>
-                            <button 
-                              className="icon-btn" 
-                              title="Lihat Pesanan User Ini" 
-                              onClick={() => { 
-                                setSearchTerm(u.phone || u.full_name); 
-                                setActiveTab('orders'); 
-                              }}
-                              style={{ background: 'var(--surface-soft)' }}
-                            >
-                              🔍
-                            </button>
+                            <div className="action-btn-group">
+                              <button 
+                                className="icon-btn" 
+                                title="Lihat Pesanan User Ini" 
+                                onClick={() => { 
+                                  setSearchTerm(u.phone || u.full_name); 
+                                  setActiveTab('orders'); 
+                                }}
+                                style={{ background: 'var(--surface-soft)' }}
+                              >
+                                🔍
+                              </button>
+                              <button 
+                                className="icon-btn delete" 
+                                title="Hapus User Ini" 
+                                onClick={() => deleteUser(u.id, u.full_name)}
+                                style={{ background: '#FEE2E2', borderColor: '#EF4444' }}
+                              >
+                                🗑️
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
