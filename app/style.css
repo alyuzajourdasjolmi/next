@@ -1813,3 +1813,51 @@ body.dark-mode .login-glass-card {
   margin: 0 auto;
 }
 
+
+/* Login Required Checkout */
+.login-required-checkout {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--surface-soft);
+  border-radius: 24px;
+  border: 2px dashed var(--border);
+  margin-top: 1rem;
+}
+
+.login-required-checkout .lock-icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-required-checkout h4 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: var(--dark);
+}
+
+.login-required-checkout p {
+  color: var(--gray);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.login-required-checkout .btn-primary {
+  width: 100%;
+  max-width: 250px;
+  justify-content: center;
+}
+
+.register-hint {
+  margin-top: 1.5rem !important;
+  font-size: 0.9rem !important;
+}
+
+.register-hint span {
+  color: var(--mint);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+

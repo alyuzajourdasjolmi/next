@@ -336,6 +336,10 @@ export default function Home() {
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
   const addToCart = (id: number) => {
+    if (!user) {
+      setAuthModal({ isOpen: true, mode: 'login' });
+      return;
+    }
     const product = productsData.find(p => p.id === id);
     if (!product) return;
     setCart((prev: any) => {
@@ -906,98 +910,111 @@ export default function Home() {
           <p>Lengkapi informasi agar admin bisa memproses pesanan Anda.</p>
         </div>
       </div>
-      <form id="orderForm" className="order-form" onSubmit={submitOrder}>
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="customerName">Nama Lengkap</label>
-            <input type="text" id="customerName" name="customerName" placeholder="Masukkan nama" required value={orderInfo.customerName} onChange={e => setOrderInfo({...orderInfo, customerName: e.target.value})} />
+      
+      {!user ? (
+        <div className="login-required-checkout">
+          <div className="lock-icon">🔒</div>
+          <h4>Login Diperlukan</h4>
+          <p>Anda harus masuk ke akun Anda untuk dapat mengisi data pemesan dan menyelesaikan pembelian.</p>
+          <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
+            Masuk Sekarang
+          </button>
+          <p className="register-hint">Belum punya akun? <span onClick={() => setAuthModal({ isOpen: true, mode: 'register' })}>Daftar di sini</span></p>
+        </div>
+      ) : (
+        <form id="orderForm" className="order-form" onSubmit={submitOrder}>
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="customerName">Nama Lengkap</label>
+              <input type="text" id="customerName" name="customerName" placeholder="Masukkan nama" required value={orderInfo.customerName} onChange={e => setOrderInfo({...orderInfo, customerName: e.target.value})} />
+            </div>
+            <div className="form-group">
+              <label htmlFor="customerPhone">Nomor Telepon</label>
+              <input type="tel" id="customerPhone" name="customerPhone" placeholder="08xxxxxxxxxx" required value={orderInfo.customerPhone} onChange={e => setOrderInfo({...orderInfo, customerPhone: e.target.value})} />
+            </div>
           </div>
           <div className="form-group">
-            <label htmlFor="customerPhone">Nomor Telepon</label>
-            <input type="tel" id="customerPhone" name="customerPhone" placeholder="08xxxxxxxxxx" required value={orderInfo.customerPhone} onChange={e => setOrderInfo({...orderInfo, customerPhone: e.target.value})} />
+            <label htmlFor="pickupDate">Tanggal Pengambilan / Pengiriman</label>
+            <input type="date" id="pickupDate" name="pickupDate" required value={orderInfo.pickupDate} onChange={e => setOrderInfo({...orderInfo, pickupDate: e.target.value})} />
           </div>
-        </div>
-        <div className="form-group">
-          <label htmlFor="pickupDate">Tanggal Pengambilan / Pengiriman</label>
-          <input type="date" id="pickupDate" name="pickupDate" required value={orderInfo.pickupDate} onChange={e => setOrderInfo({...orderInfo, pickupDate: e.target.value})} />
-        </div>
 
-        <div className="form-group">
-          <label>Metode Pengambilan</label>
-          <div className="option-grid">
-            <label className="option-card">
-              <input type="radio" name="deliveryMethod" value="pickup" checked={orderInfo.deliveryMethod === "pickup"} onChange={() => setOrderInfo({...orderInfo, deliveryMethod: "pickup"})} />
-              <span>Ambil di Kedai</span>
-              <small>Tanpa ongkir, ambil langsung ke toko.</small>
-            </label>
-            <label className="option-card">
-              <input type="radio" name="deliveryMethod" value="delivery" checked={orderInfo.deliveryMethod === "delivery"} onChange={() => setOrderInfo({...orderInfo, deliveryMethod: "delivery"})} />
-              <span>Diantarkan ke Alamat</span>
-              <small>Ongkir dihitung otomatis dari lokasi Anda.</small>
-            </label>
-          </div>
-        </div>
-
-        <div id="deliveryFields" className={`delivery-fields ${orderInfo.deliveryMethod === 'delivery' ? '' : 'hidden'}`}>
           <div className="form-group">
-            <label htmlFor="customerAddress">Alamat Lengkap / Lokasi</label>
-            <textarea id="customerAddress" name="customerAddress" rows={4} placeholder="Masukkan alamat lengkap atau gunakan lokasi saat ini" value={orderInfo.customerAddress} onChange={e => setOrderInfo({...orderInfo, customerAddress: e.target.value})}></textarea>
+            <label>Metode Pengambilan</label>
+            <div className="option-grid">
+              <label className="option-card">
+                <input type="radio" name="deliveryMethod" value="pickup" checked={orderInfo.deliveryMethod === "pickup"} onChange={() => setOrderInfo({...orderInfo, deliveryMethod: "pickup"})} />
+                <span>Ambil di Kedai</span>
+                <small>Tanpa ongkir, ambil langsung ke toko.</small>
+              </label>
+              <label className="option-card">
+                <input type="radio" name="deliveryMethod" value="delivery" checked={orderInfo.deliveryMethod === "delivery"} onChange={() => setOrderInfo({...orderInfo, deliveryMethod: "delivery"})} />
+                <span>Diantarkan ke Alamat</span>
+                <small>Ongkir dihitung otomatis dari lokasi Anda.</small>
+              </label>
+            </div>
           </div>
-          <div className="location-tools">
-            <button className="btn-secondary" type="button" id="useLocationBtn" onClick={useCurrentLocation} disabled={isLocating}>
-              {isLocating ? '⌛ Sedang Mengambil Lokasi...' : '📍 Gunakan Lokasi Saya'}
-            </button>
-            <p className="location-status" id="locationStatus">
-              {orderInfo.customerLatitude ? `✅ Lokasi Berhasil Diambil (${Number(orderInfo.customerLatitude).toFixed(4)}, ${Number(orderInfo.customerLongitude).toFixed(4)})` : '❌ Lokasi belum diambil.'}
-            </p>
-          </div>
-        </div>
 
-        <div className="form-group">
-          <label>Metode Pembayaran</label>
-          <div className="option-grid">
-            <label className="option-card">
-              <input type="radio" name="paymentMethod" value="COD" checked={orderInfo.paymentMethod === "COD"} onChange={() => setOrderInfo({...orderInfo, paymentMethod: "COD"})} />
-              <span>COD (Bayar di Tempat)</span>
-              <small>Bayar saat barang diterima atau diambil.</small>
-            </label>
-            <label className="option-card">
-              <input type="radio" name="paymentMethod" value="Mandiri" checked={orderInfo.paymentMethod === "Mandiri"} onChange={() => setOrderInfo({...orderInfo, paymentMethod: "Mandiri"})} />
-              <span>Transfer Bank Mandiri</span>
-              <small>Transfer ke rekening Mandiri.</small>
-            </label>
-            <label className="option-card">
-              <input type="radio" name="paymentMethod" value="BSI" checked={orderInfo.paymentMethod === "BSI"} onChange={() => setOrderInfo({...orderInfo, paymentMethod: "BSI"})} />
-              <span>Transfer Bank BSI</span>
-              <small>Transfer ke rekening BSI.</small>
-            </label>
+          <div id="deliveryFields" className={`delivery-fields ${orderInfo.deliveryMethod === 'delivery' ? '' : 'hidden'}`}>
+            <div className="form-group">
+              <label htmlFor="customerAddress">Alamat Lengkap / Lokasi</label>
+              <textarea id="customerAddress" name="customerAddress" rows={4} placeholder="Masukkan alamat lengkap atau gunakan lokasi saat ini" value={orderInfo.customerAddress} onChange={e => setOrderInfo({...orderInfo, customerAddress: e.target.value})}></textarea>
+            </div>
+            <div className="location-tools">
+              <button className="btn-secondary" type="button" id="useLocationBtn" onClick={useCurrentLocation} disabled={isLocating}>
+                {isLocating ? '⌛ Sedang Mengambil Lokasi...' : '📍 Gunakan Lokasi Saya'}
+              </button>
+              <p className="location-status" id="locationStatus">
+                {orderInfo.customerLatitude ? `✅ Lokasi Berhasil Diambil (${Number(orderInfo.customerLatitude).toFixed(4)}, ${Number(orderInfo.customerLongitude).toFixed(4)})` : '❌ Lokasi belum diambil.'}
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="payment-instructions" id="paymentInstructions">
-          <h4>Instruksi Pembayaran</h4>
-          <p id="paymentInstructionText">{PAYMENT_INFO[orderInfo.paymentMethod as keyof typeof PAYMENT_INFO]}</p>
-        </div>
 
-        <div className="cost-breakdown">
-          <div><span>Subtotal Barang</span><strong id="subtotalPrice">Rp {getCartSubtotal().toLocaleString('id-ID')}</strong></div>
-          <div><span>Ongkos Kirim</span><strong id="shippingCost">{shipInfo.shippingCost === null ? 'Pilih Alamat' : `Rp ${shipInfo.shippingCost.toLocaleString('id-ID')}`}</strong></div>
-          {shipInfo.discount > 0 && (
-            <div style={{ color: '#059669' }}><span>Diskon Ongkir</span><strong id="shippingDiscount">- Rp {shipInfo.discount.toLocaleString('id-ID')}</strong></div>
-          )}
-          <div className="total-row">
-            <span>Total Bayar</span>
-            <strong id="grandTotal">Rp {grandTotal.toLocaleString('id-ID')}</strong>
+          <div className="form-group">
+            <label>Metode Pembayaran</label>
+            <div className="option-grid">
+              <label className="option-card">
+                <input type="radio" name="paymentMethod" value="COD" checked={orderInfo.paymentMethod === "COD"} onChange={() => setOrderInfo({...orderInfo, paymentMethod: "COD"})} />
+                <span>COD (Bayar di Tempat)</span>
+                <small>Bayar saat barang diterima atau diambil.</small>
+              </label>
+              <label className="option-card">
+                <input type="radio" name="paymentMethod" value="Mandiri" checked={orderInfo.paymentMethod === "Mandiri"} onChange={() => setOrderInfo({...orderInfo, paymentMethod: "Mandiri"})} />
+                <span>Transfer Bank Mandiri</span>
+                <small>Transfer ke rekening Mandiri.</small>
+              </label>
+              <label className="option-card">
+                <input type="radio" name="paymentMethod" value="BSI" checked={orderInfo.paymentMethod === "BSI"} onChange={() => setOrderInfo({...orderInfo, paymentMethod: "BSI"})} />
+                <span>Transfer Bank BSI</span>
+                <small>Transfer ke rekening BSI.</small>
+              </label>
+            </div>
           </div>
-        </div>
-        <div className="shipping-meta">
-          <p id="distanceInfo">Jarak tempuh: {shipInfo.distanceKm === null ? '-' : `${shipInfo.distanceKm.toLocaleString('id-ID')} km`}</p>
-          <p id="shippingDetail">{shipInfo.detail}</p>
-        </div>
-        <input type="hidden" id="customerLatitude" name="customerLatitude" />
-        <input type="hidden" id="customerLongitude" name="customerLongitude" />
-        <input type="hidden" id="customerMapsLink" name="customerMapsLink" />
-        <button className="btn-primary submit-order-btn" type="submit">Kirim Pesanan</button>
-      </form>
+          <div className="payment-instructions" id="paymentInstructions">
+            <h4>Instruksi Pembayaran</h4>
+            <p id="paymentInstructionText">{PAYMENT_INFO[orderInfo.paymentMethod as keyof typeof PAYMENT_INFO]}</p>
+          </div>
+
+          <div className="cost-breakdown">
+            <div><span>Subtotal Barang</span><strong id="subtotalPrice">Rp {getCartSubtotal().toLocaleString('id-ID')}</strong></div>
+            <div><span>Ongkos Kirim</span><strong id="shippingCost">{shipInfo.shippingCost === null ? 'Pilih Alamat' : `Rp ${shipInfo.shippingCost.toLocaleString('id-ID')}`}</strong></div>
+            {shipInfo.discount > 0 && (
+              <div style={{ color: '#059669' }}><span>Diskon Ongkir</span><strong id="shippingDiscount">- Rp {shipInfo.discount.toLocaleString('id-ID')}</strong></div>
+            )}
+            <div className="total-row">
+              <span>Total Bayar</span>
+              <strong id="grandTotal">Rp {grandTotal.toLocaleString('id-ID')}</strong>
+            </div>
+          </div>
+          <div className="shipping-meta">
+            <p id="distanceInfo">Jarak tempuh: {shipInfo.distanceKm === null ? '-' : `${shipInfo.distanceKm.toLocaleString('id-ID')} km`}</p>
+            <p id="shippingDetail">{shipInfo.detail}</p>
+          </div>
+          <input type="hidden" id="customerLatitude" name="customerLatitude" />
+          <input type="hidden" id="customerLongitude" name="customerLongitude" />
+          <input type="hidden" id="customerMapsLink" name="customerMapsLink" />
+          <button className="btn-primary submit-order-btn" type="submit">Kirim Pesanan</button>
+        </form>
+      )}
     </div>
   </div>
 </section>
