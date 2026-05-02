@@ -48,6 +48,7 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [soldCounts, setSoldCounts] = useState<any>({});
   const [isLocating, setIsLocating] = useState(false);
+  const [showPreloader, setShowPreloader] = useState(true);
 
   const [orderInfo, setOrderInfo] = useState({
     customerName: '',
@@ -136,32 +137,15 @@ export default function Home() {
         const { data: revs, error: revsError } = await supabase.from('reviews').select('*').order('id', { ascending: true });
         if (revsError) {
           console.error('Error fetching reviews:', revsError);
-        } else if (revs) {
-          console.log('Reviews loaded successfully:', revs);
+        } else {
           setReviews(revs);
         }
-      } catch (error) {
-        console.error('Unexpected error fetching data:', error);
-        // Set fallback data on any error
-        const fallbackProducts = [
-          { id: 1, name: "Nugget Ayam", desc: "Nugget ayam crispy premium, 500gr. Cocok untuk camilan keluarga.", price: 32000, category: "frozen", img: "/assets/images/nugget.png" },
-          { id: 2, name: "Sosis Sapi", desc: "Sosis sapi berkualitas, 300gr. Praktis untuk bekal dan masakan.", price: 28000, category: "frozen", img: "/assets/images/sosis.png" },
-          { id: 3, name: "Bakso Sapi", desc: "Bakso sapi kenyal isi 25 butir. Bahan pilihan, tanpa pengawet.", price: 35000, category: "frozen", img: "/assets/images/bakso.png" },
-          { id: 4, name: "Dimsum Ayam", desc: "Dimsum ayam isi udang, 10 pcs. Tinggal kukus, siap saji!", price: 25000, category: "frozen", img: "/assets/images/nugget.png" },
-          { id: 5, name: "Kentang Goreng", desc: "Kentang goreng crinkle cut 1kg. Renyah dan lezat.", price: 42000, category: "frozen", img: "/assets/images/sosis.png" },
-          { id: 6, name: "Otak-otak", desc: "Otak-otak ikan tenggiri, 10 pcs. Bumbu rempah khas.", price: 22000, category: "frozen", img: "/assets/images/bakso.png" },
-          { id: 7, name: "Buku Tulis", desc: "Buku tulis 58 lembar, sampul tebal. Tersedia bergaris dan kotak.", price: 5000, category: "atk", img: "/assets/images/buku-tulis.png" },
-          { id: 8, name: "Pulpen Pilot", desc: "Pulpen Pilot 0.5mm, tinta smooth. Nyaman digunakan menulis lama.", price: 8000, category: "atk", img: "/assets/images/pulpen.png" },
-          { id: 9, name: "Kertas HVS A4", desc: "Kertas HVS A4 70gsm, 500 lembar/rim. Untuk print dan fotokopi.", price: 48000, category: "atk", img: "/assets/images/buku-tulis.png" },
-          { id: 10, name: "Pensil 2B", desc: "Pensil 2B Faber Castell, 12 pcs/box. Cocok untuk ujian.", price: 24000, category: "atk", img: "/assets/images/pulpen.png" },
-          { id: 11, name: "Map Plastik", desc: "Map plastik kancing F4, tebal dan tahan lama. Aneka warna.", price: 3500, category: "atk", img: "/assets/images/buku-tulis.png" },
-          { id: 12, name: "Spidol Snowman", desc: "Spidol whiteboard Snowman, 12 warna. Mudah dihapus.", price: 36000, category: "atk", img: "/assets/images/pulpen.png" },
-          { id: 13, name: "Tisu Wajah", desc: "Tisu wajah lembut, 250 sheets.", price: 12000, category: "other", img: "/assets/images/buku-tulis.png" },
-          { id: 14, name: "Botol Minum", desc: "Botol minum plastik BPA Free 1L.", price: 25000, category: "other", img: "/assets/images/pulpen.png" }
-        ];
-        setProductsData(fallbackProducts);
-      } finally {
-        setLoadingProducts(false);
+        
+        // Hide preloader after small delay to ensure rendering
+        setTimeout(() => setShowPreloader(false), 1200);
+      } catch (err) {
+        console.error('Unexpected error in fetchData:', err);
+        setShowPreloader(false);
       }
     };
     fetchData();
@@ -194,7 +178,6 @@ export default function Home() {
     const ordersSubscription = supabase
       .channel('public:orders')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
-        // Update user orders list if the phone matches OR if it's already in our list
         const currentTrackingPhone = trackingPhoneRef.current?.trim();
         const currentCustomerPhone = customerPhoneRef.current?.trim();
         const orderPhone = payload.new.customer_phone?.trim();
@@ -207,7 +190,6 @@ export default function Home() {
             current.map(o => o.id === payload.new.id ? { ...o, ...payload.new } : o)
           );
           
-          // Handle notification for status changes
           let title = '';
           let message = '';
           let icon = '📨';
@@ -247,7 +229,6 @@ export default function Home() {
           setInbox(newInbox);
           localStorage.setItem('hijrahTokoInbox', JSON.stringify(newInbox));
           
-          // Scroll to notification if it's an update to status
           if (payload.new.status !== payload.old?.status) {
              const inboxEl = document.getElementById('inbox');
              if (inboxEl) inboxEl.scrollIntoView({ behavior: 'smooth' });
@@ -525,7 +506,21 @@ export default function Home() {
 
   return (
     <>
-
+      {/* Premium Preloader */}
+      {showPreloader && (
+        <div className="preloader">
+          <div className="preloader-content">
+            <div className="preloader-logo-wrap">
+              <img src="/logo.png" alt="Logo" className="preloader-logo" />
+              <div className="preloader-ring"></div>
+            </div>
+            <h2 className="preloader-text">Hijrah Toko</h2>
+            <div className="preloader-bar">
+              <div className="preloader-progress"></div>
+            </div>
+          </div>
+        </div>
+      )}
 
 {/*  Navbar  */}
 <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="navbar">
