@@ -61,6 +61,11 @@ export default function Home() {
     customerLongitude: '',
     customerMapsLink: ''
   });
+
+  const [user, setUser] = useState<any>(null);
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; mode: 'login' | 'register' }>({ isOpen: false, mode: 'login' });
+  const [authForm, setAuthForm] = useState({ email: '', password: '', name: '' });
+  const [authLoading, setAuthLoading] = useState(false);
   
   // Refs for realtime listener to avoid stale closures
   const trackingPhoneRef = useRef(trackingPhone);
@@ -148,7 +153,38 @@ export default function Home() {
         setShowPreloader(false);
       }
     };
+
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUser(session.user);
+        // Pre-fill order info if user is logged in
+        setOrderInfo(prev => ({
+          ...prev,
+          customerName: session.user.user_metadata?.full_name || prev.customerName,
+          customerPhone: session.user.phone || prev.customerPhone
+        }));
+        fetchUserOrders(session.user.id);
+      }
+    };
+
     fetchData();
+    checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+      if (session?.user) {
+        setOrderInfo(prev => ({
+          ...prev,
+          customerName: session.user.user_metadata?.full_name || prev.customerName,
+          customerPhone: session.user.phone || prev.customerPhone
+        }));
+        fetchUserOrders(session.user.id);
+      } else {
+        setUserOrders([]);
+      }
+    });
     setTheme(localStorage.getItem('hijrahTokoTheme') || 'light');
     setCart(JSON.parse(localStorage.getItem('hijrahTokoCart') || '[]'));
     setOrderInfo(JSON.parse(localStorage.getItem('hijrahTokoOrderInfo') || '{}'));
@@ -240,8 +276,47 @@ export default function Home() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
       supabase.removeChannel(ordersSubscription);
+      authSubscription.unsubscribe();
     };
   }, []);
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthLoading(true);
+    try {
+      if (authModal.mode === 'login') {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: authForm.email,
+          password: authForm.password,
+        });
+        if (error) throw error;
+        setAuthModal({ ...authModal, isOpen: false });
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email: authForm.email,
+          password: authForm.password,
+          options: {
+            data: {
+              full_name: authForm.name,
+            }
+          }
+        });
+        if (error) throw error;
+        alert('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi (jika diaktifkan) atau langsung login.');
+        setAuthModal({ ...authModal, mode: 'login', isOpen: true });
+      }
+    } catch (error: any) {
+      alert('Authentication failed: ' + error.message);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setUserOrders([]);
+  };
 
   useEffect(() => {
     if (isClient) {
@@ -387,6 +462,11 @@ export default function Home() {
 
   const submitOrder = async (e: any) => {
     e.preventDefault();
+    if (!user) {
+      setAuthModal({ isOpen: true, mode: 'login' });
+      alert('Silakan login terlebih dahulu untuk melakukan pemesanan.');
+      return;
+    }
     if (!cart.length) return alert('Keranjang masih kosong.');
     if (orderInfo.deliveryMethod === 'delivery' && shipInfo.status === 'missing-location') return alert('Gunakan lokasi terlebih dahulu.');
     if (orderInfo.deliveryMethod === 'delivery' && shipInfo.status === 'too-far') return alert('Lokasi terlalu jauh.');
@@ -423,7 +503,8 @@ export default function Home() {
           shipping_cost: shipInfo.shippingCost || 0,
           shipping_discount: shipInfo.discount,
           grand_total: grandTotal,
-          status: 'pending'
+          status: 'pending',
+          user_id: user.id
         })
         .select()
         .single();
@@ -470,15 +551,22 @@ export default function Home() {
     document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const fetchUserOrders = async (phone: string) => {
-    if (!phone) return;
+  const fetchUserOrders = async (identifier: string) => {
+    if (!identifier) return;
     setIsTracking(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('orders')
-        .select('*, order_items(*)')
-        .eq('customer_phone', phone)
-        .order('created_at', { ascending: false });
+        .select('*, order_items(*)');
+      
+      // If identifier is a UUID (user.id), use user_id, else use customer_phone
+      if (identifier.length > 20 && identifier.includes('-')) {
+        query = query.eq('user_id', identifier);
+      } else {
+        query = query.eq('customer_phone', identifier);
+      }
+
+      const { data, error } = await query.order('created_at', { ascending: false });
       
       if (error) throw error;
       setUserOrders(data || []);
@@ -544,6 +632,16 @@ export default function Home() {
       <li><a href="#inbox">Lacak</a></li>
       <li><a href="#lokasi">Lokasi</a></li>
       <li><a href="#kontak">Kontak</a></li>
+      {user ? (
+        <li className="nav-user-item">
+          <div className="user-profile-badge" onClick={() => document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' })}>
+            <span>👤</span> {user.user_metadata?.full_name || 'User'}
+          </div>
+          <button className="btn-logout" onClick={handleLogout}>Logout</button>
+        </li>
+      ) : (
+        <li><button className="btn-login-nav" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>Login</button></li>
+      )}
       <li><a href="/admin" className="admin-nav-link">Dashboard</a></li>
     </ul>
     <div className="nav-right">
@@ -580,6 +678,26 @@ export default function Home() {
       <li><a href="#inbox" onClick={() => setMobileNavOpen(false)}><span>🔍 Lacak Pesanan</span></a></li>
       <li><a href="#lokasi" onClick={() => setMobileNavOpen(false)}><span>📍 Lokasi Kami</span></a></li>
       <li><a href="#kontak" onClick={() => setMobileNavOpen(false)}><span>📞 Kontak</span></a></li>
+      {user ? (
+        <>
+          <li>
+            <a href="#inbox" onClick={() => setMobileNavOpen(false)}>
+              <span>👤 {user.user_metadata?.full_name || 'Profil Saya'}</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); setMobileNavOpen(false); }} style={{ color: '#EF4444' }}>
+              <span>🚪 Logout</span>
+            </a>
+          </li>
+        </>
+      ) : (
+        <li>
+          <a href="#" onClick={(e) => { e.preventDefault(); setAuthModal({ isOpen: true, mode: 'login' }); setMobileNavOpen(false); }}>
+            <span>🔑 Login / Daftar</span>
+          </a>
+        </li>
+      )}
       <li><a href="/admin" onClick={() => setMobileNavOpen(false)} style={{ color: 'var(--mint)' }}><span>🛡️ Admin Panel</span></a></li>
     </ul>
   </div>
@@ -1120,6 +1238,66 @@ export default function Home() {
             </a>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* Auth Modal */}
+{authModal.isOpen && (
+  <div className="modal-overlay" onClick={() => setAuthModal({ ...authModal, isOpen: false })}>
+    <div className="auth-modal-content" onClick={e => e.stopPropagation()}>
+      <button className="modal-close" onClick={() => setAuthModal({ ...authModal, isOpen: false })}>&times;</button>
+      <div className="auth-header">
+        <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" className="auth-logo" />
+        <h2>{authModal.mode === 'login' ? 'Selamat Datang Kembali' : 'Buat Akun Baru'}</h2>
+        <p>{authModal.mode === 'login' ? 'Silakan login untuk kemudahan bertransaksi.' : 'Daftar sekarang untuk mulai belanja di Hijrah Toko.'}</p>
+      </div>
+      
+      <form onSubmit={handleAuth} className="order-form">
+        {authModal.mode === 'register' && (
+          <div className="form-group">
+            <label>Nama Lengkap</label>
+            <input 
+              type="text" 
+              placeholder="Masukkan nama lengkap" 
+              required 
+              value={authForm.name} 
+              onChange={e => setAuthForm({ ...authForm, name: e.target.value })} 
+            />
+          </div>
+        )}
+        <div className="form-group">
+          <label>Email</label>
+          <input 
+            type="email" 
+            placeholder="nama@email.com" 
+            required 
+            value={authForm.email} 
+            onChange={e => setAuthForm({ ...authForm, email: e.target.value })} 
+          />
+        </div>
+        <div className="form-group">
+          <label>Password</label>
+          <input 
+            type="password" 
+            placeholder="••••••••" 
+            required 
+            value={authForm.password} 
+            onChange={e => setAuthForm({ ...authForm, password: e.target.value })} 
+          />
+        </div>
+        <button className="btn-primary auth-submit" type="submit" disabled={authLoading}>
+          {authLoading ? 'Memproses...' : (authModal.mode === 'login' ? 'Masuk' : 'Daftar')}
+        </button>
+      </form>
+      
+      <div className="auth-footer">
+        {authModal.mode === 'login' ? (
+          <p>Belum punya akun? <span onClick={() => setAuthModal({ ...authModal, mode: 'register' })}>Daftar Sekarang</span></p>
+        ) : (
+          <p>Sudah punya akun? <span onClick={() => setAuthModal({ ...authModal, mode: 'login' })}>Login di Sini</span></p>
+        )}
       </div>
     </div>
   </div>
