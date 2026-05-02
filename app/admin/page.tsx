@@ -968,19 +968,20 @@ export default function AdminDashboard() {
                 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onLoad={() => {
                   const ordersWithLocation = orders.filter(o => o.latitude && o.longitude);
                   const mapElement = document.getElementById('admin-map');
-                  if (!mapElement || !window.L || mapElement.classList.contains('leaflet-container')) return;
+                  if (!mapElement || !(window as any).L || mapElement.classList.contains('leaflet-container')) return;
                   
                   // Clear placeholder
                   mapElement.innerHTML = '';
                   
-                  const map = window.L.map('admin-map').setView([-0.5940091, 100.2129566], 13);
-                  window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  const L = (window as any).L;
+                  const map = L.map('admin-map').setView([-0.5940091, 100.2129566], 13);
+                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; OpenStreetMap contributors'
                   }).addTo(map);
 
                   // Store Marker
-                  window.L.marker([-0.5940091, 100.2129566], {
-                    icon: window.L.divIcon({
+                  L.marker([-0.5940091, 100.2129566], {
+                    icon: L.divIcon({
                       html: '<div style="background: #DC2626; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>',
                       className: 'store-marker',
                       iconSize: [24, 24],
@@ -990,7 +991,7 @@ export default function AdminDashboard() {
 
                   // Order Markers
                   ordersWithLocation.forEach(order => {
-                    window.L.marker([order.latitude, order.longitude]).addTo(map)
+                    L.marker([order.latitude, order.longitude]).addTo(map)
                       .bindPopup(`<b>${order.customer_name}</b><br>${order.customer_address}<br>Total: Rp ${order.grand_total.toLocaleString('id-ID')}`);
                   });
                 }}></script>
