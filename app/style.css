@@ -281,12 +281,11 @@ body.dark-mode {
   background: linear-gradient(135deg, var(--mint), #F87171);
   -webkit-background-clip: text; 
   -webkit-text-fill-color: transparent;
-  display: inline-block;
+  background-clip: text;
 }
 
 body.dark-mode .hero-content h1 .highlight {
   background: linear-gradient(135deg, #FF6B6B, #FCA5A5);
-  filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.3));
 }
 body.dark-mode .hero-content h1 {
   text-shadow: 0 10px 30px rgba(0,0,0,0.4);

@@ -146,6 +146,8 @@ export default function Home() {
         }
       } catch (err) {
         console.error('Unexpected error in fetchData:', err);
+      } finally {
+        setLoadingProducts(false);
       }
     };
 
