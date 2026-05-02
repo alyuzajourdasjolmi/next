@@ -495,6 +495,12 @@ export default function AdminDashboard() {
           >
             <span>📦</span> <span>Produk</span>
           </div>
+          <div 
+            className={`sidebar-link ${activeTab === 'users' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('users')}
+          >
+            <span>👥</span> <span>Pengguna</span>
+          </div>
         </nav>
 
         <div className="sidebar-footer">
@@ -577,11 +583,7 @@ export default function AdminDashboard() {
           </div>
         ) : (
           <>
-            <div className="tab-navigation" style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', background: 'var(--surface)', padding: '1rem 1.5rem', borderRadius: '20px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-soft)' }}>
-               <button className={`filter-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>📑 Pesanan</button>
-               <button className={`filter-btn ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}>📦 Produk</button>
-               <button className={`filter-btn ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>👥 Pengguna</button>
-            </div>
+
 
             {activeTab === 'orders' && (
               <div className="admin-content-card">
