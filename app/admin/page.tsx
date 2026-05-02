@@ -507,7 +507,7 @@ export default function AdminDashboard() {
                               <div className="action-btn-group">
                                 {order.status === 'pending' && (
                                   <button className="icon-btn" title="Konfirmasi Cepat" onClick={() => updateOrderStatus(order.id, 'confirmed')} style={{ background: '#DCFCE7', borderColor: '#166534' }}>✔️</button>
-                                Shank)}
+                                )}
                                 <button className="icon-btn" title="Cetak Struk (Coming Soon)" onClick={() => alert('Fitur cetak sedang dikembangkan!')}>🖨️</button>
                                 {order.status !== 'cancelled' && order.status !== 'completed' && (
                                   <button className="icon-btn delete" title="Batalkan Pesanan" onClick={() => updateOrderStatus(order.id, 'cancelled')}>🗑️</button>
