@@ -742,7 +742,7 @@ export default function Home() {
       </div>
     </div>
     <div className="hero-image fade-in">
-      <img src="/assets/images/hero-banner.png" alt="Hijrah Toko Products" />
+      <img src="/assets/images/hero-banner-new.jpg" alt="Hijrah Toko Products" />
     </div>
   </div>
 </section>
