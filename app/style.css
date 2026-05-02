@@ -574,13 +574,16 @@ body.dark-mode {
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
+.form-group {
+  margin-bottom: 1.5rem;
+}
 .form-group label {
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 800;
   color: var(--gray);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   display: block;
 }
 .form-group input,
@@ -588,9 +591,10 @@ body.dark-mode {
   width: 100%;
   border: 2px solid var(--border);
   border-radius: 16px;
-  padding: 1rem 1.25rem;
+  padding: 1.1rem 1.5rem;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  line-height: 1.6;
   transition: all 0.3s;
   background: var(--surface-soft);
   color: var(--dark);
@@ -610,35 +614,41 @@ body.dark-mode {
 .option-card {
   display: flex;
   flex-direction: column;
-  padding: 1.25rem;
+  padding: 1.75rem;
   border: 2px solid var(--border);
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--surface);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  overflow: hidden;
 }
 .option-card:hover {
   border-color: var(--mint);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 .option-card input {
   position: absolute;
-  top: 1.25rem; right: 1.25rem;
-  width: 18px; height: 18px;
+  top: 1.5rem; right: 1.5rem;
+  width: 20px; height: 20px;
+  margin: 0;
   accent-color: var(--mint);
+  z-index: 2;
 }
 .option-card span {
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
   color: var(--dark);
   display: block;
+  padding-right: 2.5rem; /* Space for radio button */
+  line-height: 1.3;
 }
 .option-card small {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--gray);
-  line-height: 1.4;
+  line-height: 1.6;
+  font-weight: 500;
 }
 .option-card:has(input:checked) {
   border-color: var(--mint);
@@ -647,19 +657,21 @@ body.dark-mode {
 }
 .payment-instructions {
   background: var(--surface-soft);
-  border-radius: 18px;
-  padding: 1.5rem;
-  border-left: 4px solid var(--mint);
-  margin: 1.5rem 0;
+  border-radius: 20px;
+  padding: 1.75rem;
+  border-left: 6px solid var(--mint);
+  margin: 2rem 0;
 }
 .payment-instructions h4 {
-  font-size: 0.95rem;
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
   color: var(--mint-dark);
+  font-weight: 800;
 }
 .payment-instructions p {
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--gray);
 }
 .cost-breakdown {
   display: grid;
