@@ -31,13 +31,25 @@ export default function AdminDashboard() {
     // Check current session
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
+      if (session?.user && session.user.email !== 'admin.hijrahtoko@gmail.com') {
+        alert('Akses Ditolak: Halaman ini hanya untuk Administrator Utama.');
+        await supabase.auth.signOut();
+        setUser(null);
+      } else {
+        setUser(session?.user || null);
+      }
     };
     checkUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user && session.user.email !== 'admin.hijrahtoko@gmail.com') {
+        alert('Akses Ditolak: Akun Anda tidak memiliki izin Admin.');
+        await supabase.auth.signOut();
+        setUser(null);
+      } else {
+        setUser(session?.user || null);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -76,6 +88,10 @@ export default function AdminDashboard() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (email !== 'admin.hijrahtoko@gmail.com') {
+      alert('Email ini tidak terdaftar sebagai Administrator.');
+      return;
+    }
     setIsLoginLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
