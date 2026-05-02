@@ -1621,3 +1621,54 @@ body.dark-mode .login-glass-card {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-20px); }
 }
+
+/* Location Section */
+.location-card {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: var(--shadow-strong);
+  border: 1px solid var(--border);
+}
+.location-info-pills {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+.info-pill {
+  flex: 1;
+  min-width: 280px;
+  background: var(--surface-soft);
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--border);
+}
+.info-pill span {
+  font-size: 1.5rem;
+  background: var(--surface);
+  width: 50px; height: 50px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+}
+.info-pill p {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--dark);
+  line-height: 1.4;
+}
+.map-frame-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+@media (max-width: 768px) {
+  .location-info-pills { gap: 1rem; }
+  .info-pill { padding: 1rem; }
+}

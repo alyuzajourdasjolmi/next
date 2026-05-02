@@ -991,6 +991,45 @@ export default function Home() {
   </div>
 </section>
 
+{/*  Location  */}
+<section className="section" id="lokasi" style={{ background: 'var(--surface-soft)' }}>
+  <div className="section-header fade-in">
+    <h2>Lokasi Kami</h2>
+    <p>Kunjungi toko fisik kami untuk melihat produk secara langsung atau ambil pesanan Anda.</p>
+    <div className="underline"></div>
+  </div>
+  <div className="container fade-in">
+    <div className="location-card">
+      <div className="location-info-pills">
+        <div className="info-pill">
+          <span>📍</span>
+          <p>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik</p>
+        </div>
+        <div className="info-pill">
+          <span>🕒</span>
+          <p>Buka Setiap Hari: 08:00 - 21:00</p>
+        </div>
+      </div>
+      <div className="map-frame-wrap">
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.658742838734!2d100.210691214753!3d0.5939346995666792!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd527877c8e9b67%3A0xe8c1f3c3a3a3a3a3!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714545678901!5m2!1sid!2sid" 
+          width="100%" 
+          height="450" 
+          style={{ border: 0, borderRadius: '16px' }} 
+          allowFullScreen 
+          loading="lazy" 
+          referrerPolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+      <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+        <a href="https://maps.app.goo.gl/P2zZpP8p6P8p6P8p6" target="_blank" className="btn-primary" style={{ display: 'inline-flex' }}>
+          🌐 Buka di Google Maps
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
 {/*  Footer  */}
 <footer className="footer" id="kontak">
   <div className="footer-grid">
@@ -1029,7 +1068,7 @@ export default function Home() {
     <div>
       <h4>Kontak</h4>
       <ul>
-        <li>📍 C647+95W, Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik, Kabupaten Padang Pariaman, Sumatera Barat 25574</li>
+        <li>📍 Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik, Kab. Padang Pariaman, Sumatera Barat</li>
         <li>📱 0852-6396-5031</li>
         <li>📧 hijrahtoko@gmail.com</li>
       </ul>
