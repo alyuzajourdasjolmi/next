@@ -1052,31 +1052,6 @@ export default function Home() {
   </div>
 </section>
 
-{/*  Location  */}
-<section className="section location-section" id="lokasi">
-  <div className="section-header fade-in">
-    <h2>Lokasi Kami</h2>
-    <p>Lihat posisi toko dan rute menuju Hijrah Toko melalui peta di bawah ini.</p>
-    <div className="underline"></div>
-  </div>
-  <div className="location-card fade-in">
-    <div className="location-info">
-      <h3>Hijrah Toko</h3>
-      <p>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik, Kabupaten Padang Pariaman, Sumatera Barat 25574</p>
-      <p style={{ fontSize: '0.8rem', opacity: 0.8 }}>Plus Code: C647+95W</p>
-      <a className="btn-secondary" href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5843105,100.2442436,19z" target="_blank" rel="noopener noreferrer">Buka di Google Maps</a>
-    </div>
-    <div className="map-embed">
-      <iframe
-        title="Lokasi Hijrah Toko"
-        src="https://www.google.com/maps?q=-0.5843105,100.2442436&z=17&output=embed"
-        loading="lazy"
-        allowFullScreen
-        referrerPolicy="no-referrer-when-downgrade"></iframe>
-    </div>
-  </div>
-</section>
-
 {/*  Inbox Notification & Order Tracking  */}
 <section className="section inbox-section" id="inbox">
   <div className="section-header fade-in">
@@ -1168,31 +1143,42 @@ export default function Home() {
     <div className="underline"></div>
   </div>
   <div className="container fade-in">
-    <div className="location-card">
+    <div className="location-card" style={{ padding: '2.5rem' }}>
       <div className="location-info-pills">
         <div className="info-pill">
           <span>📍</span>
-          <p>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik</p>
+          <div>
+            <p>Jl. Raya Pariaman - Sicincin</p>
+            <small style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>Sungai Sariak, VII Koto Sungai Sarik, Kab. Padang Pariaman</small>
+          </div>
         </div>
         <div className="info-pill">
           <span>🕒</span>
-          <p>Buka Setiap Hari: 08:00 - 21:00</p>
+          <div>
+            <p>Buka Setiap Hari</p>
+            <small style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>08:00 - 21:00 WIB</small>
+          </div>
         </div>
       </div>
-      <div className="map-frame-wrap">
+      
+      <div className="map-frame-wrap" style={{ position: 'relative', marginBottom: '2rem' }}>
         <iframe 
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.658742838734!2d100.210691214753!3d0.5939346995666792!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd527877c8e9b67%3A0xe8c1f3c3a3a3a3a3!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714545678901!5m2!1sid!2sid" 
           width="100%" 
           height="450" 
-          style={{ border: 0, borderRadius: '16px' }} 
+          style={{ border: 0, borderRadius: '24px' }} 
           allowFullScreen 
           loading="lazy" 
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
-      <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-        <a href="https://maps.app.goo.gl/P2zZpP8p6P8p6P8p6" target="_blank" className="btn-primary" style={{ display: 'inline-flex' }}>
-          🌐 Buka di Google Maps
+      
+      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <a href="https://maps.app.goo.gl/uP4VvFkXyXyXyXyXy" target="_blank" className="btn-primary" style={{ minWidth: '220px', justifyContent: 'center' }}>
+          📍 Buka di Google Maps
+        </a>
+        <a href="https://www.google.com/local/place/fid/0x2fd4e1d5048135eb:0xdc1dba685f9fa4f4/photosphere?iu=https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid%3DCI_z5Ct0J_GinjA__ASq-A%26cb_client%3Dsearch.gws-prod.gps%26yaw%3D134.1935%26pitch%3D0%26thumbfov%3D100%26w%3D0%26h%3D0&ik=CAISFkNJX3o1Q3QwSl9HaW5qQV9fQVNxLUE%3D&sa=X" target="_blank" className="btn-secondary" style={{ minWidth: '220px', justifyContent: 'center' }}>
+          📸 Lihat Tur 360° (Street View)
         </a>
       </div>
     </div>
