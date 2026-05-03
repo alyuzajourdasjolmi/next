@@ -489,7 +489,7 @@ export default function Home() {
       `Metode: ${orderInfo.deliveryMethod === 'pickup' ? 'Ambil di Kedai' : 'Diantarkan'}`, '',
       'List Barang:', itemsText, '',
       `Pembayaran: ${orderInfo.paymentMethod}`,
-      `Jadwal: ${orderInfo.pickupDate}`, '',
+      orderInfo.deliveryMethod === 'pickup' ? `Jadwal Ambil: ${orderInfo.pickupDate}` : 'Jadwal: Segera (Diantar)', '',
       'Rincian Biaya:',
       `Subtotal: Rp ${subtotal.toLocaleString('id-ID')}`,
       `Jarak Tempuh: ${shipInfo.distanceKm || '-'}`,
@@ -959,17 +959,19 @@ export default function Home() {
           <div className="form-grid">
             <div className="form-group">
               <label htmlFor="customerName">Nama Lengkap</label>
-              <input type="text" id="customerName" name="customerName" placeholder="Masukkan nama" required value={orderInfo.customerName} onChange={e => setOrderInfo({...orderInfo, customerName: e.target.value})} />
+              <input type="text" id="customerName" name="customerName" placeholder="Masukkan nama" required readOnly value={orderInfo.customerName} onChange={e => setOrderInfo({...orderInfo, customerName: e.target.value})} style={{ backgroundColor: 'var(--surface-soft)', cursor: 'not-allowed' }} />
             </div>
             <div className="form-group">
               <label htmlFor="customerPhone">Nomor Telepon</label>
-              <input type="tel" id="customerPhone" name="customerPhone" placeholder="08xxxxxxxxxx" required value={orderInfo.customerPhone} onChange={e => setOrderInfo({...orderInfo, customerPhone: e.target.value})} />
+              <input type="tel" id="customerPhone" name="customerPhone" placeholder="08xxxxxxxxxx" required readOnly value={orderInfo.customerPhone} onChange={e => setOrderInfo({...orderInfo, customerPhone: e.target.value})} style={{ backgroundColor: 'var(--surface-soft)', cursor: 'not-allowed' }} />
             </div>
           </div>
-          <div className="form-group">
-            <label htmlFor="pickupDate">Tanggal Pengambilan / Pengiriman</label>
-            <input type="date" id="pickupDate" name="pickupDate" required value={orderInfo.pickupDate} onChange={e => setOrderInfo({...orderInfo, pickupDate: e.target.value})} />
-          </div>
+          {orderInfo.deliveryMethod === 'pickup' && (
+            <div className="form-group">
+              <label htmlFor="pickupDate">Tanggal Pengambilan</label>
+              <input type="date" id="pickupDate" name="pickupDate" required value={orderInfo.pickupDate} onChange={e => setOrderInfo({...orderInfo, pickupDate: e.target.value})} />
+            </div>
+          )}
 
           <div className="form-group">
             <label>Metode Pengambilan</label>
