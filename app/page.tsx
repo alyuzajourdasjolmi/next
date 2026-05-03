@@ -1296,6 +1296,23 @@ export default function Home() {
         <h2>{authModal.mode === 'login' ? 'Selamat Datang Kembali' : 'Buat Akun Baru'}</h2>
         <p>{authModal.mode === 'login' ? 'Silakan login untuk kemudahan bertransaksi.' : 'Daftar sekarang untuk mulai belanja di Hijrah Toko.'}</p>
       </div>
+
+      <div style={{ 
+        backgroundColor: 'var(--mint-light)', 
+        border: '1px solid rgba(220, 38, 38, 0.2)', 
+        padding: '0.85rem 1rem', 
+        borderRadius: '14px', 
+        marginBottom: '1.5rem',
+        display: 'flex',
+        gap: '0.75rem',
+        alignItems: 'center',
+        animation: 'fadeIn 0.5s ease-out'
+      }}>
+        <span style={{ fontSize: '1.25rem' }}>⚠️</span>
+        <p style={{ fontSize: '0.85rem', color: 'var(--mint-dark)', margin: 0, fontWeight: 600, lineHeight: '1.4' }}>
+          PENTING: Mohon pastikan data yang Anda masukkan sudah benar dan valid agar admin dapat memproses pesanan Anda tanpa kendala.
+        </p>
+      </div>
       
       <form onSubmit={handleAuth} className="order-form">
         {authModal.mode === 'register' && (
