@@ -966,12 +966,7 @@ export default function Home() {
               <input type="tel" id="customerPhone" name="customerPhone" placeholder="08xxxxxxxxxx" required readOnly value={orderInfo.customerPhone} onChange={e => setOrderInfo({...orderInfo, customerPhone: e.target.value})} style={{ backgroundColor: 'var(--surface-soft)', cursor: 'not-allowed' }} />
             </div>
           </div>
-          {orderInfo.deliveryMethod === 'pickup' && (
-            <div className="form-group">
-              <label htmlFor="pickupDate">Tanggal Pengambilan</label>
-              <input type="date" id="pickupDate" name="pickupDate" required value={orderInfo.pickupDate} onChange={e => setOrderInfo({...orderInfo, pickupDate: e.target.value})} />
-            </div>
-          )}
+
 
           <div className="form-group">
             <label>Metode Pengambilan</label>
@@ -988,6 +983,13 @@ export default function Home() {
               </label>
             </div>
           </div>
+
+          {orderInfo.deliveryMethod === 'pickup' && (
+            <div className="form-group" style={{ marginTop: '1rem' }}>
+              <label htmlFor="pickupDate">Tanggal Pengambilan</label>
+              <input type="date" id="pickupDate" name="pickupDate" required value={orderInfo.pickupDate} onChange={e => setOrderInfo({...orderInfo, pickupDate: e.target.value})} />
+            </div>
+          )}
 
           <div id="deliveryFields" className={`delivery-fields ${orderInfo.deliveryMethod === 'delivery' ? '' : 'hidden'}`}>
             <div className="form-group">
