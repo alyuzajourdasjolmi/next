@@ -895,13 +895,6 @@ body {
   line-height: 1.6;
   font-size: 0.95rem;
 }
-  width: 64px; height: 64px; border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 1rem; font-size: 1.8rem;
-  background: linear-gradient(135deg, var(--mint-light), var(--surface-soft));
-}
-.feature-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
-.feature-card p { color: var(--gray); font-size: 0.9rem; line-height: 1.6; }
 
 /* Testimonial */
 .testimoni-section { background: var(--section-tint-alt); }
