@@ -1,7 +1,52 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
-import '../style.css'; // Reuse existing styles
+
+import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import {
+  AlertCircle,
+  BarChart3,
+  Box,
+  CheckCircle2,
+  ClipboardList,
+  DollarSign,
+  Edit3,
+  Home,
+  Loader2,
+  LogOut,
+  Package,
+  Printer,
+  RefreshCw,
+  Search,
+  TrendingUp,
+  Trash2,
+  Upload,
+  UserCircle2,
+  Users,
+} from "lucide-react";
+import { supabase } from "../../lib/supabase";
+import "../style.css";
+
+const ADMIN_EMAIL = "admin.hijrahtoko@gmail.com";
+
+const ORDER_STATUSES = [
+  "all",
+  "pending",
+  "confirmed",
+  "processing",
+  "shipped",
+  "completed",
+  "cancelled",
+] as const;
+
+const ORDER_STATUS_LABEL: Record<string, string> = {
+  all: "Semua Status",
+  pending: "Pending",
+  confirmed: "Dikonfirmasi",
+  processing: "Diproses",
+  shipped: "Dikirim",
+  completed: "Selesai",
+  cancelled: "Dibatalkan",
+};
 
 export default function AdminDashboard() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -9,43 +54,51 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoginLoading, setIsLoginLoading] = useState(false);
-  
-  // Product Form State
+
   const [productForm, setProductForm] = useState({
-    name: '',
-    desc: '',
+    name: "",
+    desc: "",
     price: 0,
-    category: 'frozen',
-    img: ''
+    category: "frozen",
+    img: "",
   });
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'users'>('orders');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+
+  const [activeTab, setActiveTab] = useState<"orders" | "products" | "users">(
+    "orders"
+  );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<(typeof ORDER_STATUSES)[number]>(
+    "all"
+  );
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
-    // Check current session
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user && session.user.email !== 'admin.hijrahtoko@gmail.com') {
-        alert('Akses Ditolak: Halaman ini hanya untuk Administrator Utama.');
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session?.user && session.user.email !== ADMIN_EMAIL) {
+        alert("Akses ditolak: halaman ini khusus admin utama.");
         await supabase.auth.signOut();
         setUser(null);
       } else {
         setUser(session?.user || null);
       }
     };
+
     checkUser();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user && session.user.email !== 'admin.hijrahtoko@gmail.com') {
-        alert('Akses Ditolak: Akun Anda tidak memiliki izin Admin.');
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user && session.user.email !== ADMIN_EMAIL) {
+        alert("Akses ditolak: akun ini tidak memiliki izin admin.");
         await supabase.auth.signOut();
         setUser(null);
       } else {
@@ -66,46 +119,48 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       const { data: ordersData, error: ordersError } = await supabase
-        .from('orders')
-        .select('*, order_items(*)')
-        .order('created_at', { ascending: false });
-      
+        .from("orders")
+        .select("*, order_items(*)")
+        .order("created_at", { ascending: false });
+
       if (ordersError) throw ordersError;
       setOrders(ordersData || []);
 
       const { data: productsData, error: productsError } = await supabase
-        .from('products')
-        .select('*')
-        .order('id', { ascending: true });
-      
+        .from("products")
+        .select("*")
+        .order("id", { ascending: true });
+
       if (productsError) throw productsError;
       setProducts(productsData || []);
 
       const { data: usersData, error: usersError } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false });
+
       if (!usersError) {
         setUsers(usersData || []);
       } else {
-        console.warn('Profiles table not found or inaccessible. Falling back to unique order customers.');
-        // Fallback: Get unique customers from orders if profiles table doesnt exist
-        const uniqueCustomers = Array.from(new Set(ordersData?.map(o => o.customer_phone))).map(phone => {
-          const lastOrder = ordersData?.find(o => o.customer_phone === phone);
+        const uniqueCustomers = Array.from(
+          new Set((ordersData || []).map((order: any) => order.customer_phone))
+        ).map((phone) => {
+          const lastOrder = (ordersData || []).find(
+            (order: any) => order.customer_phone === phone
+          );
           return {
             id: lastOrder?.user_id || phone,
             full_name: lastOrder?.customer_name,
-            phone: phone,
+            phone,
             address: lastOrder?.customer_address,
-            email: 'N/A (Order Data)',
-            created_at: lastOrder?.created_at
+            email: "N/A (Data Pesanan)",
+            created_at: lastOrder?.created_at,
           };
         });
         setUsers(uniqueCustomers);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
@@ -113,10 +168,12 @@ export default function AdminDashboard() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email !== 'admin.hijrahtoko@gmail.com') {
-      alert('Email ini tidak terdaftar sebagai Administrator.');
+
+    if (email !== ADMIN_EMAIL) {
+      alert("Email ini tidak terdaftar sebagai administrator.");
       return;
     }
+
     setIsLoginLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -125,7 +182,7 @@ export default function AdminDashboard() {
       });
       if (error) throw error;
     } catch (error: any) {
-      alert('Login gagal: ' + error.message);
+      alert("Login gagal: " + error.message);
     } finally {
       setIsLoginLoading(false);
     }
@@ -136,15 +193,19 @@ export default function AdminDashboard() {
   };
 
   const printReceipt = (order: any) => {
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
-    const itemsHtml = order.order_items.map((item: any) => `
+    const itemsHtml = (order.order_items || [])
+      .map(
+        (item: any) => `
       <tr>
         <td style="padding: 5px 0;">${item.product_name} x${item.qty}</td>
-        <td style="text-align: right; padding: 5px 0;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}</td>
+        <td style="text-align: right; padding: 5px 0;">Rp ${(item.price * item.qty).toLocaleString("id-ID")}</td>
       </tr>
-    `).join('');
+    `
+      )
+      .join("");
 
     printWindow.document.write(`
       <html>
@@ -152,12 +213,12 @@ export default function AdminDashboard() {
           <title>Struk #${order.id}</title>
           <style>
             @page { size: 80mm auto; margin: 0; }
-            body { 
-              font-family: 'Courier New', Courier, monospace; 
-              width: 80mm; 
-              margin: 0; 
-              padding: 10px; 
-              color: #000; 
+            body {
+              font-family: 'Courier New', Courier, monospace;
+              width: 80mm;
+              margin: 0;
+              padding: 10px;
+              color: #000;
               font-size: 12px;
               line-height: 1.2;
             }
@@ -178,11 +239,11 @@ export default function AdminDashboard() {
           <div class="header">
             <h1>HIJRAH TOKO</h1>
             <p>Frozen Food & Alat Tulis Kantor</p>
-            <p>Admin: admin.hijrahtoko@gmail.com</p>
+            <p>Admin: ${ADMIN_EMAIL}</p>
           </div>
           <div class="info">
             <p><strong>No. Pesanan: #${order.id}</strong></p>
-            <p>Tanggal: ${new Date(order.created_at).toLocaleString('id-ID')}</p>
+            <p>Tanggal: ${new Date(order.created_at).toLocaleString("id-ID")}</p>
             <p>Pelanggan: ${order.customer_name}</p>
             <p>No. WA: ${order.customer_phone}</p>
           </div>
@@ -200,30 +261,29 @@ export default function AdminDashboard() {
           <div class="total-section">
             <div class="total-row">
               <span>Subtotal</span>
-              <span>Rp ${order.subtotal.toLocaleString('id-ID')}</span>
+              <span>Rp ${order.subtotal.toLocaleString("id-ID")}</span>
             </div>
             <div class="total-row">
               <span>Ongkos Kirim</span>
-              <span>Rp ${(order.shipping_cost || 0).toLocaleString('id-ID')}</span>
+              <span>Rp ${(order.shipping_cost || 0).toLocaleString("id-ID")}</span>
             </div>
-            ${order.shipping_discount > 0 ? `
-            <div class="total-row" style="color: #000;">
-              <span>Diskon Ongkir</span>
-              <span>-Rp ${order.shipping_discount.toLocaleString('id-ID')}</span>
-            </div>` : ''}
+            ${
+              order.shipping_discount > 0
+                ? `<div class="total-row"><span>Diskon Ongkir</span><span>-Rp ${order.shipping_discount.toLocaleString("id-ID")}</span></div>`
+                : ""
+            }
             <div class="total-row grand-total">
               <span>GRAND TOTAL</span>
-              <span>Rp ${order.grand_total.toLocaleString('id-ID')}</span>
+              <span>Rp ${order.grand_total.toLocaleString("id-ID")}</span>
             </div>
           </div>
           <div class="info" style="margin-top: 10px; border-top: 1px dashed #000; padding-top: 10px;">
             <p>Metode Bayar: ${order.payment_method}</p>
-            <p>Pengambilan: ${order.delivery_method === 'pickup' ? 'Ambil di Toko' : 'Diantarkan'}</p>
-            ${order.customer_address ? `<p>Alamat: ${order.customer_address}</p>` : ''}
+            <p>Pengambilan: ${order.delivery_method === "pickup" ? "Ambil di Toko" : "Diantarkan"}</p>
+            ${order.customer_address ? `<p>Alamat: ${order.customer_address}</p>` : ""}
           </div>
           <div class="footer">
-            <p>Terima Kasih Telah Berbelanja di Hijrah Toko!</p>
-            <p>Semoga Berkah</p>
+            <p>Terima kasih telah berbelanja di Hijrah Toko.</p>
           </div>
           <script>
             window.onload = function() {
@@ -239,71 +299,74 @@ export default function AdminDashboard() {
 
   const updateOrderStatus = async (orderId: number, status: string) => {
     try {
-      if (status === 'cancelled') {
-        if (!confirm('Pesanan ini akan dibatalkan dan DIHAPUS permanen dari database. Lanjutkan?')) return;
-        
-        const { error } = await supabase
-          .from('orders')
-          .delete()
-          .eq('id', orderId);
-        
+      if (status === "cancelled") {
+        if (
+          !confirm(
+            "Pesanan ini akan dibatalkan dan dihapus permanen dari database. Lanjutkan?"
+          )
+        ) {
+          return;
+        }
+
+        const { error } = await supabase.from("orders").delete().eq("id", orderId);
         if (error) throw error;
-        setOrders(orders.filter(o => o.id !== orderId));
+
+        setOrders((prev) => prev.filter((order) => order.id !== orderId));
         return;
       }
 
-      // Optimistic update for UI feel
       const originalOrders = [...orders];
-      setOrders(orders.map(o => o.id === orderId ? { ...o, status } : o));
+      setOrders((prev) =>
+        prev.map((order) => (order.id === orderId ? { ...order, status } : order))
+      );
 
       const { error } = await supabase
-        .from('orders')
+        .from("orders")
         .update({ status })
-        .eq('id', orderId);
-      
+        .eq("id", orderId);
+
       if (error) {
-        // Rollback on error
         setOrders(originalOrders);
         throw error;
       }
-      
-      console.log('Status updated successfully:', orderId, status);
     } catch (error: any) {
-      console.error('Error updating order:', error);
-      alert('Gagal memperbarui status pesanan: ' + (error.message || 'Error tidak diketahui'));
+      console.error("Error updating order:", error);
+      alert(
+        "Gagal memperbarui status pesanan: " +
+          (error.message || "Error tidak diketahui")
+      );
     }
   };
 
   const deleteProduct = async (id: number) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus produk ini?')) return;
+    if (!confirm("Apakah Anda yakin ingin menghapus produk ini?")) return;
     try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
-      
+      const { error } = await supabase.from("products").delete().eq("id", id);
       if (error) throw error;
-      setProducts(products.filter(p => p.id !== id));
+      setProducts((prev) => prev.filter((product) => product.id !== id));
     } catch (error) {
-      console.error('Error deleting product:', error);
-      alert('Gagal menghapus produk.');
+      console.error("Error deleting product:", error);
+      alert("Gagal menghapus produk.");
     }
   };
 
   const deleteUser = async (userId: string, name: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus data profil "${name}"? Ini juga akan menghapus riwayat pesanan mereka secara permanen.`)) return;
+    if (
+      !confirm(
+        `Apakah Anda yakin ingin menghapus data profil "${name}"? Ini juga akan menghapus riwayat pesanan mereka.`
+      )
+    ) {
+      return;
+    }
+
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', userId);
-      
+      const { error } = await supabase.from("profiles").delete().eq("id", userId);
       if (error) throw error;
-      setUsers(users.filter(u => u.id !== userId));
-      alert('Profil pengguna berhasil dihapus.');
+      setUsers((prev) => prev.filter((entry) => entry.id !== userId));
+      alert("Profil pengguna berhasil dihapus.");
     } catch (error: any) {
-      console.error('Error deleting user:', error);
-      alert('Gagal menghapus user: ' + error.message);
+      console.error("Error deleting user:", error);
+      alert("Gagal menghapus user: " + error.message);
     }
   };
 
@@ -315,31 +378,32 @@ export default function AdminDashboard() {
     setUploadProgress(10);
 
     try {
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `product-images/${fileName}`;
 
-      const { error: uploadError, data } = await supabase.storage
-        .from('products')
+      const { error: uploadError } = await supabase.storage
+        .from("products")
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       setUploadProgress(70);
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('products')
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("products").getPublicUrl(filePath);
 
-      setProductForm({ ...productForm, img: publicUrl });
+      setProductForm((prev) => ({ ...prev, img: publicUrl }));
       setUploadProgress(100);
+
       setTimeout(() => {
         setIsUploading(false);
         setUploadProgress(0);
       }, 1000);
     } catch (error: any) {
-      console.error('Error uploading image:', error);
-      alert('Gagal mengunggah gambar: ' + error.message);
+      console.error("Error uploading image:", error);
+      alert("Gagal mengunggah gambar: " + error.message);
       setIsUploading(false);
     }
   };
@@ -349,477 +413,567 @@ export default function AdminDashboard() {
     try {
       if (editingProductId) {
         const { error } = await supabase
-          .from('products')
+          .from("products")
           .update(productForm)
-          .eq('id', editingProductId);
+          .eq("id", editingProductId);
         if (error) throw error;
-        alert('Produk berhasil diperbarui!');
+        alert("Produk berhasil diperbarui.");
       } else {
-        const { error } = await supabase
-          .from('products')
-          .insert(productForm);
+        const { error } = await supabase.from("products").insert(productForm);
         if (error) throw error;
-        alert('Produk berhasil ditambahkan!');
+        alert("Produk berhasil ditambahkan.");
       }
-      setProductForm({ name: '', desc: '', price: 0, category: 'frozen', img: '' });
+
+      setProductForm({ name: "", desc: "", price: 0, category: "frozen", img: "" });
       setEditingProductId(null);
       fetchData();
     } catch (error) {
-      console.error('Error saving product:', error);
-      alert('Gagal menyimpan produk.');
+      console.error("Error saving product:", error);
+      alert("Gagal menyimpan produk.");
     }
   };
 
   const totalRevenue = orders
-    .filter(o => o.status === 'completed' || o.status === 'confirmed')
-    .reduce((sum, o) => sum + o.grand_total, 0);
-  
-  // Calculate Monthly Revenue & Progress
+    .filter((order) => order.status === "completed" || order.status === "confirmed")
+    .reduce((sum, order) => sum + order.grand_total, 0);
+
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
-  
-  const monthlyRevenue = orders
-    .filter(o => {
-      const d = new Date(o.created_at);
-      return (o.status === 'completed' || o.status === 'confirmed') && 
-             d.getMonth() === currentMonth && 
-             d.getFullYear() === currentYear;
-    })
-    .reduce((sum, o) => sum + o.grand_total, 0);
 
-  const getRevenueByMonth = () => {
+  const monthlyRevenue = orders
+    .filter((order) => {
+      const created = new Date(order.created_at);
+      return (
+        (order.status === "completed" || order.status === "confirmed") &&
+        created.getMonth() === currentMonth &&
+        created.getFullYear() === currentYear
+      );
+    })
+    .reduce((sum, order) => sum + order.grand_total, 0);
+
+  const revenueHistory = useMemo(() => {
     const last6Months: any[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date();
-      d.setMonth(d.getMonth() - i);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const name = d.toLocaleDateString('id-ID', { month: 'short' });
+    for (let i = 5; i >= 0; i -= 1) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+      const name = date.toLocaleDateString("id-ID", { month: "short" });
       last6Months.push({ key, name, total: 0 });
     }
 
-    orders.forEach(o => {
-      if (o.status !== 'completed' && o.status !== 'confirmed') return;
-      const d = new Date(o.created_at);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const monthObj = last6Months.find(m => m.key === key);
-      if (monthObj) monthObj.total += o.grand_total;
+    orders.forEach((order) => {
+      if (order.status !== "completed" && order.status !== "confirmed") return;
+      const created = new Date(order.created_at);
+      const key = `${created.getFullYear()}-${String(created.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+      const monthRow = last6Months.find((month) => month.key === key);
+      if (monthRow) monthRow.total += order.grand_total;
     });
 
     return last6Months;
-  };
+  }, [orders]);
 
-  const revenueHistory = getRevenueByMonth();
-  const maxRevenue = Math.max(...revenueHistory.map(m => m.total), 1);
-  
-  const pendingOrders = orders.filter(o => o.status === 'pending').length;
+  const maxRevenue = Math.max(...revenueHistory.map((month) => month.total), 1);
+
+  const pendingOrders = orders.filter((order) => order.status === "pending").length;
   const totalProducts = products.length;
+  const totalUsers = users.length;
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter((order) => {
+      const matchesSearch =
+        order.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer_phone?.includes(searchTerm);
+      const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [orders, searchTerm, statusFilter]);
+
+  const navItems = [
+    { id: "orders" as const, label: "Pesanan", icon: ClipboardList },
+    { id: "products" as const, label: "Produk", icon: Box },
+    { id: "users" as const, label: "Pengguna", icon: Users },
+  ];
 
   if (!user) {
     return (
-      <div className="admin-login-wrapper">
-        <div className="login-glass-card">
-          <div className="login-header">
-            <div className="login-logo-circle">
-              <img src="/assets/images/logo-hijrah-toko.png" alt="Hijrah Toko" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-            </div>
-            <h2>Admin Portal</h2>
-            <p>Silakan login untuk mengelola toko Anda</p>
+      <div className="admin-auth-page">
+        <div className="admin-auth-card">
+          <div className="admin-auth-logo">
+            <img src="/assets/images/logo-hijrah-toko.png" alt="Hijrah Toko" />
           </div>
+          <h1>Admin Portal</h1>
+          <p>Masuk untuk mengelola pesanan, produk, dan pelanggan.</p>
 
-          <form onSubmit={handleLogin}>
-            <div className="modern-form-group">
-              <label>Email Address</label>
-              <div className="input-wrapper">
-                <input 
-                  type="email" 
-                  className="modern-input"
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
-                  placeholder="admin@hijrahtoko.com"
-                  required 
-                />
-              </div>
-            </div>
+          <form onSubmit={handleLogin} className="admin-auth-form">
+            <label>
+              Email Admin
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="admin.hijrahtoko@gmail.com"
+                required
+              />
+            </label>
 
-            <div className="modern-form-group">
-              <label>Password</label>
-              <div className="input-wrapper">
-                <input 
-                  type="password" 
-                  className="modern-input"
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
-                  placeholder="••••••••"
-                  required 
-                />
-              </div>
-            </div>
+            <label>
+              Password
+              <input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Masukkan password"
+                required
+              />
+            </label>
 
-            <button className="login-btn" type="submit" disabled={isLoginLoading}>
+            <button className="admin-btn admin-btn-primary admin-auth-submit" type="submit">
               {isLoginLoading ? (
                 <>
-                  <svg className="animate-spin" viewBox="0 0 24 24" style={{ width: '20px', height: '20px' }}>
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
+                  <Loader2 size={18} className="spin" />
                   Memproses...
                 </>
               ) : (
-                'Sign In to Dashboard'
+                "Masuk Dashboard"
               )}
             </button>
           </form>
 
-          <div className="login-footer">
-            <p>© {new Date().getFullYear()} Hijrah Toko Admin • Secure Access</p>
-          </div>
+          <small>Hanya akun admin utama yang diizinkan masuk.</small>
         </div>
-        
+
         <style jsx>{`
-          .animate-spin {
+          .spin {
             animation: spin 1s linear infinite;
           }
           @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+              transform: rotate(0deg);
+            }
+            to {
+              transform: rotate(360deg);
+            }
           }
-          .opacity-25 { opacity: 0.25; }
-          .opacity-75 { opacity: 0.75; }
         `}</style>
       </div>
     );
   }
 
   return (
-    <div className="admin-layout">
-      {/* Sidebar Nav */}
-      <aside className="admin-sidebar">
-        <div className="sidebar-logo">
-          <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" />
-          <span>Hijrah Admin</span>
+    <div className="admin-v2">
+      <aside className="admin-v2-sidebar">
+        <div className="admin-sidebar-brand">
+          <img src="/assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" />
+          <div>
+            <strong>Hijrah Toko</strong>
+            <span>Admin Dashboard</span>
+          </div>
         </div>
-        
-        <nav className="sidebar-nav">
-          <div 
-            className={`sidebar-link ${activeTab === 'orders' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('orders')}
-          >
-            <span>📋</span> <span>Pesanan</span>
-          </div>
-          <div 
-            className={`sidebar-link ${activeTab === 'products' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('products')}
-          >
-            <span>📦</span> <span>Produk</span>
-          </div>
-          <div 
-            className={`sidebar-link ${activeTab === 'users' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('users')}
-          >
-            <span>👥</span> <span>Pengguna</span>
-          </div>
+
+        <nav className="admin-sidebar-nav">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`admin-sidebar-link ${activeTab === item.id ? "active" : ""}`}
+                onClick={() => setActiveTab(item.id)}
+              >
+                <Icon size={18} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
 
-        <div className="sidebar-footer">
-          <a href="/" className="sidebar-link">
-            <span>🏠</span> <span>Ke Toko</span>
-          </a>
-          <div className="sidebar-link" onClick={handleLogout} style={{ color: '#EF4444' }}>
-            <span>🚪</span> <span>Logout</span>
-          </div>
+        <div className="admin-sidebar-footer">
+          <Link href="/" className="admin-sidebar-link">
+            <Home size={18} />
+            <span>Kembali ke Toko</span>
+          </Link>
+          <button type="button" className="admin-sidebar-link danger" onClick={handleLogout}>
+            <LogOut size={18} />
+            <span>Keluar</span>
+          </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="admin-main">
-        <header className="admin-header">
+      <main className="admin-v2-main">
+        <header className="admin-topbar">
           <div>
-            <h1>Dashboard Overview</h1>
-            <p>Welcome back, <strong>{user.email}</strong></p>
+            <h1>Ringkasan Dashboard</h1>
+            <p>Anda login sebagai {user.email}</p>
           </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button className="btn-secondary" onClick={fetchData} disabled={loading}>
-              {loading ? 'Refreshing...' : '🔄 Refresh Data'}
-            </button>
-          </div>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary"
+            onClick={fetchData}
+            disabled={loading}
+          >
+            <RefreshCw size={16} className={loading ? "spin" : ""} />
+            {loading ? "Memuat..." : "Refresh Data"}
+          </button>
         </header>
 
-        {/* Stats Grid */}
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="icon-box" style={{ background: '#DCFCE7', color: '#166534' }}>💰</div>
-            <h3>Total Revenue</h3>
-            <div className="value">Rp {totalRevenue.toLocaleString('id-ID')}</div>
-          </div>
-          <div className="stat-card">
-            <div className="icon-box" style={{ background: '#FEF3C7', color: '#92400E' }}>⏳</div>
-            <h3>Pending Orders</h3>
-            <div className="value">{pendingOrders}</div>
-          </div>
-          <div className="stat-card">
-            <div className="icon-box" style={{ background: '#DBEAFE', color: '#1E40AF' }}>📦</div>
-            <h3>Total Products</h3>
-            <div className="value">{totalProducts}</div>
-          </div>
-          <div className="stat-card" style={{ borderLeft: '4px solid var(--mint)' }}>
-            <div className="icon-box" style={{ background: '#FEE2E2', color: '#B91C1C' }}>📊</div>
-            <h3>Revenue (Bulan Ini)</h3>
-            <div className="value">Rp {monthlyRevenue.toLocaleString('id-ID')}</div>
-          </div>
-        </div>
+        <section className="admin-kpi-grid">
+          <article className="admin-kpi-card">
+            <span className="kpi-icon green">
+              <DollarSign size={18} />
+            </span>
+            <h3>Omzet Total</h3>
+            <strong>Rp {totalRevenue.toLocaleString("id-ID")}</strong>
+          </article>
+          <article className="admin-kpi-card">
+            <span className="kpi-icon amber">
+              <AlertCircle size={18} />
+            </span>
+            <h3>Pesanan Pending</h3>
+            <strong>{pendingOrders}</strong>
+          </article>
+          <article className="admin-kpi-card">
+            <span className="kpi-icon blue">
+              <Package size={18} />
+            </span>
+            <h3>Total Produk</h3>
+            <strong>{totalProducts}</strong>
+          </article>
+          <article className="admin-kpi-card">
+            <span className="kpi-icon slate">
+              <Users size={18} />
+            </span>
+            <h3>Total Pengguna</h3>
+            <strong>{totalUsers}</strong>
+          </article>
+          <article className="admin-kpi-card featured">
+            <span className="kpi-icon rose">
+              <TrendingUp size={18} />
+            </span>
+            <h3>Omzet Bulan Ini</h3>
+            <strong>Rp {monthlyRevenue.toLocaleString("id-ID")}</strong>
+          </article>
+        </section>
 
-        {/* Revenue Progress Chart */}
-        <div className="admin-content-card" style={{ marginBottom: '2rem' }}>
-          <div className="card-header">
-            <h2>Progress Pendapatan (6 Bulan Terakhir)</h2>
-            <div className="badge-pill">Trend Bisnis</div>
+        <section className="admin-panel">
+          <div className="admin-panel-header">
+            <h2>
+              <BarChart3 size={18} />
+              Tren Pendapatan 6 Bulan
+            </h2>
           </div>
-          <div className="chart-container">
-            <div className="bar-chart">
-              {revenueHistory.map((data, idx) => (
-                <div key={idx} className="bar-wrapper">
-                  <div className="bar-value">Rp {(data.total / 1000).toFixed(0)}k</div>
-                  <div 
-                    className="bar" 
-                    style={{ height: `${(data.total / maxRevenue) * 150}px` }}
-                    title={`Rp ${data.total.toLocaleString('id-ID')}`}
-                  >
-                    <div className="bar-tooltip">Rp {data.total.toLocaleString('id-ID')}</div>
-                  </div>
-                  <div className="bar-label">{data.name}</div>
-                </div>
-              ))}
-            </div>
+          <div className="admin-chart">
+            {revenueHistory.map((month) => (
+              <div key={month.key} className="admin-bar-wrapper">
+                <span>Rp {(month.total / 1000).toFixed(0)}k</span>
+                <div
+                  className="admin-bar"
+                  style={{ height: `${Math.max((month.total / maxRevenue) * 150, 8)}px` }}
+                  title={`Rp ${month.total.toLocaleString("id-ID")}`}
+                />
+                <small>{month.name}</small>
+              </div>
+            ))}
           </div>
-        </div>
+        </section>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--gray)' }}>
-            <div className="animate-spin" style={{ fontSize: '2rem', marginBottom: '1rem' }}>⌛</div>
-            Memuat data...
-          </div>
+          <section className="admin-loading-state">
+            <Loader2 size={20} className="spin" />
+            <p>Memuat data dashboard...</p>
+          </section>
         ) : (
           <>
-
-
-            {activeTab === 'orders' && (
-              <div className="admin-content-card">
-                <div className="card-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '1.5rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                    <h2>Manajemen Pesanan</h2>
-                    <div className="badge-pill" style={{ background: 'var(--mint)', color: 'white' }}>{orders.length} Total</div>
-                  </div>
-                  
-                  {/* Search & Filter Bar */}
-                  <div className="filter-bar">
-                    <div className="search-box">
-                      <span>🔍</span>
-                      <input 
-                        type="text" 
-                        placeholder="Cari nama atau nomor HP..." 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                    </div>
-                    <div className="status-tabs">
-                      {['all', 'pending', 'confirmed', 'processing', 'shipped', 'completed', 'cancelled'].map(status => (
-                        <button 
-                          key={status}
-                          className={`status-tab ${statusFilter === status ? 'active' : ''}`}
-                          onClick={() => setStatusFilter(status)}
-                        >
-                          {status === 'all' ? 'Semua' : status.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+            {activeTab === "orders" && (
+              <section className="admin-panel">
+                <div className="admin-panel-header split">
+                  <h2>
+                    <ClipboardList size={18} />
+                    Manajemen Pesanan
+                  </h2>
+                  <span className="panel-chip">{filteredOrders.length} pesanan</span>
                 </div>
 
+                <div className="admin-toolbar">
+                  <label className="admin-searchbox">
+                    <Search size={16} />
+                    <input
+                      type="text"
+                      placeholder="Cari nama atau nomor WhatsApp..."
+                      value={searchTerm}
+                      onChange={(event) => setSearchTerm(event.target.value)}
+                    />
+                  </label>
 
+                  <select
+                    className="admin-status-filter"
+                    value={statusFilter}
+                    onChange={(event) =>
+                      setStatusFilter(event.target.value as (typeof ORDER_STATUSES)[number])
+                    }
+                  >
+                    {ORDER_STATUSES.map((status) => (
+                      <option key={status} value={status}>
+                        {ORDER_STATUS_LABEL[status]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="modern-table">
+                <div className="admin-table-wrap">
+                  <table className="admin-table">
                     <thead>
                       <tr>
-                        <th style={{ width: '25%' }}>Pelanggan & Waktu</th>
-                        <th style={{ width: '35%' }}>Pesanan & Alamat</th>
-                        <th style={{ width: '15%' }}>Status</th>
-                        <th style={{ width: '15%' }}>Total</th>
-                        <th style={{ width: '10%' }}>Aksi</th>
+                        <th>Pelanggan</th>
+                        <th>Pesanan</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {(() => {
-                        const filtered = orders.filter(o => {
-                          const matchesSearch = o.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                                              o.customer_phone.includes(searchTerm);
-                          const matchesStatus = statusFilter === 'all' || o.status === statusFilter;
-                          return matchesSearch && matchesStatus;
-                        });
-
-                        if (filtered.length === 0) {
-                          return <tr><td colSpan={5} style={{ textAlign: 'center', padding: '4rem', color: 'var(--gray)' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🍃</div>
-                            Tidak ada pesanan yang ditemukan.
-                          </td></tr>;
-                        }
-
-                        return filtered.map(order => (
-                          <tr key={order.id} className="order-row">
+                      {filteredOrders.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="admin-empty-row">
+                            Tidak ada pesanan sesuai filter.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredOrders.map((order) => (
+                          <tr key={order.id}>
                             <td>
-                              <div className="product-item-info">
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <span style={{ fontSize: '1.2rem' }}>👤</span>
-                                  <div>
-                                    <h4 style={{ margin: 0 }}>{order.customer_name}</h4>
-                                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--mint-dark)' }}>{order.customer_phone}</p>
-                                  </div>
-                                </div>
-                                <p style={{ fontSize: '0.75rem', marginTop: '8px', color: 'var(--gray)' }}>
-                                  📅 {new Date(order.created_at).toLocaleString('id-ID', { 
-                                    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' 
+                              <div className="admin-customer-cell">
+                                <strong>{order.customer_name}</strong>
+                                <span>{order.customer_phone}</span>
+                                <small>
+                                  {new Date(order.created_at).toLocaleString("id-ID", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
                                   })}
-                                </p>
+                                </small>
                               </div>
                             </td>
-                            <td style={{ maxWidth: '300px' }}>
-                              <div style={{ fontSize: '0.85rem' }}>
-                                <div style={{ marginBottom: '8px' }}>
-                                  <span className={`status-pill ${order.delivery_method === 'pickup' ? 'status-shipped' : 'status-processing'}`} style={{ fontSize: '0.7rem' }}>
-                                    {order.delivery_method === 'pickup' ? '🏬 Ambil di Toko' : '🚚 Antar ke Alamat'}
-                                  </span>
-                                </div>
-                                <div className="order-items-list" style={{ background: 'var(--surface-soft)', padding: '8px', borderRadius: '8px', marginBottom: '8px' }}>
-                                  {order.order_items?.map((item: any, i: number) => (
-                                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', borderBottom: i < order.order_items.length - 1 ? '1px dashed var(--border)' : 'none', paddingBottom: '2px' }}>
+                            <td>
+                              <div className="admin-order-items">
+                                <span className="delivery-pill">
+                                  {order.delivery_method === "pickup"
+                                    ? "Ambil di Toko"
+                                    : "Diantar"}
+                                </span>
+                                <ul>
+                                  {(order.order_items || []).slice(0, 3).map((item: any) => (
+                                    <li key={`${order.id}-${item.id || item.product_id}`}>
                                       <span>{item.product_name}</span>
                                       <strong>x{item.qty}</strong>
-                                    </div>
+                                    </li>
                                   ))}
-                                </div>
-                                {order.delivery_method === 'delivery' && (
-                                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--gray)', fontStyle: 'italic' }}>
-                                    📍 {order.customer_address}
-                                  </p>
-                                )}
+                                </ul>
+                                {order.delivery_method === "delivery" && order.customer_address ? (
+                                  <small>{order.customer_address}</small>
+                                ) : null}
                               </div>
                             </td>
                             <td>
-                              <div style={{ position: 'relative' }}>
-                                <select 
-                                  className={`status-pill status-${order.status}`}
-                                  value={order.status}
-                                  onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                                  style={{ border: 'none', cursor: 'pointer', fontWeight: '700', width: '100%', appearance: 'none', paddingRight: '20px' }}
+                              <select
+                                className={`status-select status-${order.status}`}
+                                value={order.status}
+                                onChange={(event) =>
+                                  updateOrderStatus(order.id, event.target.value)
+                                }
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Dikonfirmasi</option>
+                                <option value="processing">Diproses</option>
+                                <option value="shipped">Dikirim</option>
+                                <option value="completed">Selesai</option>
+                                <option value="cancelled">Batalkan (hapus)</option>
+                              </select>
+                            </td>
+                            <td>
+                              <strong className="order-total">
+                                Rp {order.grand_total.toLocaleString("id-ID")}
+                              </strong>
+                            </td>
+                            <td>
+                              <div className="admin-action-row">
+                                {order.status === "pending" && (
+                                  <button
+                                    type="button"
+                                    className="icon-action success"
+                                    title="Konfirmasi cepat"
+                                    onClick={() => updateOrderStatus(order.id, "confirmed")}
+                                  >
+                                    <CheckCircle2 size={16} />
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  className="icon-action info"
+                                  title="Cetak struk"
+                                  onClick={() => printReceipt(order)}
                                 >
-                                  <option value="pending">⏳ PENDING</option>
-                                  <option value="confirmed">✅ DIKONFIRMASI</option>
-                                  <option value="processing">🍳 DIPROSES</option>
-                                  <option value="shipped">🚚 DIKIRIM</option>
-                                  <option value="completed">✨ SELESAI</option>
-                                  <option value="cancelled">❌ BATAL</option>
-                                </select>
-                                <span style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', fontSize: '0.7rem' }}>▼</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--gray)' }}>Grand Total:</div>
-                                <strong style={{ fontSize: '1.1rem', color: 'var(--mint-dark)' }}>Rp {order.grand_total.toLocaleString('id-ID')}</strong>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="action-btn-group">
-                                {order.status === 'pending' && (
-                                  <button className="icon-btn" title="Konfirmasi Cepat" onClick={() => updateOrderStatus(order.id, 'confirmed')} style={{ background: '#DCFCE7', borderColor: '#166534' }}>✔️</button>
-                                )}
-                                <button className="icon-btn" title="Cetak Struk" onClick={() => printReceipt(order)} style={{ background: '#E0F2FE', borderColor: '#0369A1' }}>🖨️</button>
-                                {order.status !== 'cancelled' && order.status !== 'completed' && (
-                                  <button className="icon-btn delete" title="Batalkan Pesanan" onClick={() => updateOrderStatus(order.id, 'cancelled')}>🗑️</button>
+                                  <Printer size={16} />
+                                </button>
+                                {order.status !== "cancelled" && order.status !== "completed" && (
+                                  <button
+                                    type="button"
+                                    className="icon-action danger"
+                                    title="Batalkan pesanan"
+                                    onClick={() => updateOrderStatus(order.id, "cancelled")}
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
                                 )}
                               </div>
                             </td>
                           </tr>
                         ))
-                      })()}
+                      )}
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </section>
             )}
 
-            {activeTab === 'products' && (
-              <div className="products-view">
-                {/* Form Card */}
-                <div className="admin-content-card" style={{ marginBottom: '2.5rem' }}>
-                  <div className="card-header">
-                    <h2>{editingProductId ? 'Edit Produk' : 'Tambah Produk Baru'}</h2>
+            {activeTab === "products" && (
+              <section className="admin-product-layout">
+                <article className="admin-panel">
+                  <div className="admin-panel-header split">
+                    <h2>
+                      <Edit3 size={18} />
+                      {editingProductId ? "Edit Produk" : "Tambah Produk"}
+                    </h2>
+                    {editingProductId ? (
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn-secondary"
+                        onClick={() => {
+                          setEditingProductId(null);
+                          setProductForm({
+                            name: "",
+                            desc: "",
+                            price: 0,
+                            category: "frozen",
+                            img: "",
+                          });
+                        }}
+                      >
+                        Batalkan Edit
+                      </button>
+                    ) : null}
                   </div>
-                  <div style={{ padding: '2rem' }}>
-                    <form onSubmit={saveProduct} className="order-form">
-                      <div className="form-group">
-                        <label>Nama Produk</label>
-                        <input type="text" value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} placeholder="Contoh: Bakso Sapi Super" required />
-                      </div>
-                      <div className="form-group">
-                        <label>Deskripsi</label>
-                        <textarea value={productForm.desc} onChange={e => setProductForm({...productForm, desc: e.target.value})} rows={2} placeholder="Detail produk..." required />
-                      </div>
-                      <div className="grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                        <div className="form-group">
-                          <label>Harga (Rp)</label>
-                          <input type="number" value={productForm.price} onChange={e => setProductForm({...productForm, price: parseInt(e.target.value)})} required />
-                        </div>
-                        <div className="form-group">
-                          <label>Kategori</label>
-                          <select value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="modern-input">
-                            <option value="frozen">Frozen Food</option>
-                            <option value="atk">ATK</option>
-                            <option value="other">Other</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label>Gambar Produk</label>
-                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                          <input 
-                            type="text" 
-                            className="modern-input"
-                            value={productForm.img} 
-                            onChange={e => setProductForm({...productForm, img: e.target.value})} 
-                            placeholder="URL Gambar atau unggah..." 
-                            style={{ flex: 1 }}
-                          />
-                          <label className="btn-secondary" style={{ cursor: 'pointer', margin: 0 }}>
-                            📁 Upload
-                            <input type="file" onChange={handleFileUpload} accept="image/*" style={{ display: 'none' }} />
-                          </label>
-                        </div>
-                        {isUploading && (
-                          <div style={{ width: '100%', height: '6px', background: 'var(--border)', borderRadius: '3px', marginTop: '0.75rem', overflow: 'hidden' }}>
-                            <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'var(--mint)', transition: 'width 0.3s ease' }}></div>
-                          </div>
-                        )}
-                      </div>
-                      <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-                        <button className="btn-primary" type="submit" style={{ flex: 1, justifyContent: 'center' }}>
-                          {editingProductId ? 'Perbarui Produk' : 'Simpan Produk'}
-                        </button>
-                        {editingProductId && (
-                          <button className="btn-secondary" type="button" onClick={() => { setEditingProductId(null); setProductForm({ name: '', desc: '', price: 0, category: 'frozen', img: '' }); }}>Batal</button>
-                        )}
-                      </div>
-                    </form>
-                  </div>
-                </div>
 
-                {/* Table Card */}
-                <div className="admin-content-card">
-                  <div className="card-header">
-                    <h2>Katalog Produk</h2>
+                  <form onSubmit={saveProduct} className="admin-form">
+                    <label>
+                      Nama Produk
+                      <input
+                        type="text"
+                        value={productForm.name}
+                        onChange={(event) =>
+                          setProductForm((prev) => ({ ...prev, name: event.target.value }))
+                        }
+                        placeholder="Contoh: Bakso Sapi Premium"
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      Deskripsi
+                      <textarea
+                        rows={3}
+                        value={productForm.desc}
+                        onChange={(event) =>
+                          setProductForm((prev) => ({ ...prev, desc: event.target.value }))
+                        }
+                        placeholder="Tuliskan deskripsi singkat produk"
+                        required
+                      />
+                    </label>
+
+                    <div className="admin-form-grid">
+                      <label>
+                        Harga (Rp)
+                        <input
+                          type="number"
+                          min={0}
+                          value={productForm.price}
+                          onChange={(event) =>
+                            setProductForm((prev) => ({
+                              ...prev,
+                              price: Number(event.target.value) || 0,
+                            }))
+                          }
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Kategori
+                        <select
+                          value={productForm.category}
+                          onChange={(event) =>
+                            setProductForm((prev) => ({
+                              ...prev,
+                              category: event.target.value,
+                            }))
+                          }
+                        >
+                          <option value="frozen">Frozen Food</option>
+                          <option value="atk">ATK</option>
+                          <option value="other">Lainnya</option>
+                        </select>
+                      </label>
+                    </div>
+
+                    <label>
+                      URL Gambar
+                      <input
+                        type="text"
+                        value={productForm.img}
+                        onChange={(event) =>
+                          setProductForm((prev) => ({ ...prev, img: event.target.value }))
+                        }
+                        placeholder="https://..."
+                      />
+                    </label>
+
+                    <label className="upload-trigger">
+                      <Upload size={16} />
+                      Upload Gambar
+                      <input type="file" onChange={handleFileUpload} accept="image/*" hidden />
+                    </label>
+
+                    {isUploading ? (
+                      <div className="upload-progress">
+                        <span style={{ width: `${uploadProgress}%` }} />
+                      </div>
+                    ) : null}
+
+                    <button type="submit" className="admin-btn admin-btn-primary">
+                      {editingProductId ? "Perbarui Produk" : "Simpan Produk"}
+                    </button>
+                  </form>
+                </article>
+
+                <article className="admin-panel">
+                  <div className="admin-panel-header split">
+                    <h2>
+                      <Package size={18} />
+                      Katalog Produk
+                    </h2>
+                    <span className="panel-chip">{products.length} item</span>
                   </div>
-                  <div style={{ overflowX: 'auto' }}>
-                    <table className="modern-table">
+
+                  <div className="admin-table-wrap">
+                    <table className="admin-table">
                       <thead>
                         <tr>
                           <th>Produk</th>
@@ -829,29 +983,59 @@ export default function AdminDashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {products.map(p => (
-                          <tr key={p.id}>
+                        {products.map((product) => (
+                          <tr key={product.id}>
                             <td>
-                              <div className="product-item-meta">
-                                <img src={p.img} alt={p.name} onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/48')} />
-                                <div className="product-item-info">
-                                  <h4>{p.name}</h4>
-                                  <p>{p.desc.substring(0, 50)}...</p>
+                              <div className="admin-product-cell">
+                                <img
+                                  src={product.img}
+                                  alt={product.name}
+                                  onError={(event) => {
+                                    event.currentTarget.src = "https://via.placeholder.com/56";
+                                  }}
+                                />
+                                <div>
+                                  <strong>{product.name}</strong>
+                                  <small>{String(product.desc || "").slice(0, 70)}</small>
                                 </div>
                               </div>
                             </td>
                             <td>
-                              <span className={`card-badge badge-${p.category}`}>{p.category.toUpperCase()}</span>
+                              <span className={`category-pill ${product.category}`}>
+                                {String(product.category).toUpperCase()}
+                              </span>
                             </td>
-                            <td><strong>Rp {p.price.toLocaleString('id-ID')}</strong></td>
                             <td>
-                              <div className="action-btn-group">
-                                <button className="icon-btn" title="Edit" onClick={() => {
-                                  setEditingProductId(p.id);
-                                  setProductForm({ name: p.name, desc: p.desc, price: p.price, category: p.category, img: p.img });
-                                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                                }}>✏️</button>
-                                <button className="icon-btn delete" title="Hapus" onClick={() => deleteProduct(p.id)}>🗑️</button>
+                              <strong>Rp {product.price.toLocaleString("id-ID")}</strong>
+                            </td>
+                            <td>
+                              <div className="admin-action-row">
+                                <button
+                                  type="button"
+                                  className="icon-action info"
+                                  title="Edit produk"
+                                  onClick={() => {
+                                    setEditingProductId(product.id);
+                                    setProductForm({
+                                      name: product.name,
+                                      desc: product.desc,
+                                      price: product.price,
+                                      category: product.category,
+                                      img: product.img,
+                                    });
+                                    window.scrollTo({ top: 0, behavior: "smooth" });
+                                  }}
+                                >
+                                  <Edit3 size={16} />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="icon-action danger"
+                                  title="Hapus produk"
+                                  onClick={() => deleteProduct(product.id)}
+                                >
+                                  <Trash2 size={16} />
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -859,66 +1043,86 @@ export default function AdminDashboard() {
                       </tbody>
                     </table>
                   </div>
-                </div>
-              </div>
+                </article>
+              </section>
             )}
 
-            {activeTab === 'users' && (
-              <div className="admin-content-card">
-                <div className="card-header">
-                  <h2>Manajemen Pengguna (Pelanggan)</h2>
-                  <div className="badge-pill" style={{ background: 'var(--mint)', color: 'white' }}>{users.length} Terdaftar</div>
+            {activeTab === "users" && (
+              <section className="admin-panel">
+                <div className="admin-panel-header split">
+                  <h2>
+                    <Users size={18} />
+                    Manajemen Pengguna
+                  </h2>
+                  <span className="panel-chip">{users.length} terdaftar</span>
                 </div>
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="modern-table">
+
+                <div className="admin-table-wrap">
+                  <table className="admin-table">
                     <thead>
                       <tr>
-                        <th>Nama & Email</th>
+                        <th>Pengguna</th>
                         <th>WhatsApp</th>
-                        <th>Alamat Utama</th>
-                        <th>Bergabung Pada</th>
+                        <th>Alamat</th>
+                        <th>Bergabung</th>
                         <th>Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {users.map(u => (
-                        <tr key={u.id}>
+                      {users.map((entry) => (
+                        <tr key={entry.id}>
                           <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--surface-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>👤</div>
+                            <div className="admin-user-cell">
+                              <div className="avatar">
+                                <UserCircle2 size={18} />
+                              </div>
                               <div>
-                                <strong style={{ display: 'block' }}>{u.full_name || 'Tanpa Nama'}</strong>
-                                <span style={{ fontSize: '0.8rem', color: 'var(--gray)' }}>{u.email}</span>
+                                <strong>{entry.full_name || "Tanpa Nama"}</strong>
+                                <small>{entry.email || "-"}</small>
                               </div>
                             </div>
                           </td>
                           <td>
-                            <a href={`https://wa.me/${u.phone?.replace(/[^0-9]/g, '')}`} target="_blank" style={{ color: 'var(--mint-dark)', fontWeight: '600', textDecoration: 'none' }}>
-                              {u.phone || '-'}
+                            <a
+                              href={`https://wa.me/${entry.phone?.replace(/[^0-9]/g, "")}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="wa-link"
+                            >
+                              {entry.phone || "-"}
                             </a>
                           </td>
-                          <td style={{ maxWidth: '250px', fontSize: '0.85rem', color: 'var(--gray)' }}>{u.address || '-'}</td>
-                          <td>{u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</td>
+                          <td>{entry.address || "-"}</td>
                           <td>
-                            <div className="action-btn-group">
-                              <button 
-                                className="icon-btn" 
-                                title="Lihat Pesanan User Ini" 
-                                onClick={() => { 
-                                  setSearchTerm(u.phone || u.full_name); 
-                                  setActiveTab('orders'); 
+                            {entry.created_at
+                              ? new Date(entry.created_at).toLocaleDateString("id-ID", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                })
+                              : "-"}
+                          </td>
+                          <td>
+                            <div className="admin-action-row">
+                              <button
+                                type="button"
+                                className="icon-action info"
+                                title="Lihat pesanan pengguna"
+                                onClick={() => {
+                                  setSearchTerm(entry.phone || entry.full_name || "");
+                                  setStatusFilter("all");
+                                  setActiveTab("orders");
                                 }}
-                                style={{ background: 'var(--surface-soft)' }}
                               >
-                                🔍
+                                <Search size={16} />
                               </button>
-                              <button 
-                                className="icon-btn delete" 
-                                title="Hapus User Ini" 
-                                onClick={() => deleteUser(u.id, u.full_name)}
-                                style={{ background: '#FEE2E2', borderColor: '#EF4444' }}
+                              <button
+                                type="button"
+                                className="icon-action danger"
+                                title="Hapus pengguna"
+                                onClick={() => deleteUser(entry.id, entry.full_name || "Tanpa Nama")}
                               >
-                                🗑️
+                                <Trash2 size={16} />
                               </button>
                             </div>
                           </td>
@@ -927,157 +1131,877 @@ export default function AdminDashboard() {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </section>
             )}
           </>
         )}
       </main>
 
       <style jsx>{`
-        .animate-spin {
-          animation: spin 1s linear infinite;
-          display: inline-block;
+        .admin-v2 {
+          min-height: 100vh;
+          display: grid;
+          grid-template-columns: 280px 1fr;
+          background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
         }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .status-processing { background: #DBEAFE; color: #1E40AF; }
-        .status-shipped { background: #E0E7FF; color: #3730A3; }
-        .status-completed { background: #D1FAE5; color: #065F46; }
 
-        .chart-container {
-          padding: 2.5rem 2rem;
-          background: var(--surface);
+        .admin-auth-page {
+          min-height: 100vh;
+          background: radial-gradient(circle at top right, #ffe4e6 0%, #f8fafc 45%, #eef2ff 100%);
+          display: grid;
+          place-items: center;
+          padding: 1.5rem;
         }
-        .bar-chart {
-          display: flex;
-          align-items: flex-end;
-          justify-content: space-around;
-          height: 200px;
-          gap: 1rem;
-          border-bottom: 2px solid var(--border);
-          padding-bottom: 0.5rem;
-        }
-        .bar-wrapper {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.5rem;
-        }
-        .bar {
+
+        .admin-auth-card {
           width: 100%;
-          max-width: 40px;
-          background: linear-gradient(to top, var(--mint), #EF4444);
-          border-radius: 8px 8px 0 0;
-          transition: all 0.3s ease;
-          position: relative;
-          cursor: pointer;
+          max-width: 420px;
+          background: rgba(255, 255, 255, 0.92);
+          border: 1px solid #e2e8f0;
+          border-radius: 24px;
+          padding: 2rem;
+          box-shadow: 0 24px 60px -40px rgba(15, 23, 42, 0.45);
+          display: grid;
+          gap: 1rem;
         }
-        .bar:hover {
-          filter: brightness(1.1);
-          transform: scaleX(1.05);
+
+        .admin-auth-logo {
+          width: 72px;
+          height: 72px;
+          margin: 0 auto;
+          border-radius: 18px;
+          background: #fff;
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
-        .bar-tooltip {
-          position: absolute;
-          top: -35px;
-          left: 50%;
-          transform: translateX(-50%);
-          background: var(--dark);
-          color: white;
-          padding: 4px 8px;
-          border-radius: 6px;
-          font-size: 0.7rem;
-          white-space: nowrap;
-          opacity: 0;
-          transition: opacity 0.2s;
-          pointer-events: none;
+
+        .admin-auth-logo img {
+          width: 52px;
+          height: 52px;
+          object-fit: contain;
         }
-        .bar:hover .bar-tooltip {
-          opacity: 1;
+
+        .admin-auth-card h1 {
+          font-size: 1.5rem;
+          font-weight: 800;
+          text-align: center;
+          color: #0f172a;
+          margin: 0;
         }
-        .bar-value {
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: var(--gray);
+
+        .admin-auth-card p {
+          margin: 0;
+          color: #64748b;
+          text-align: center;
         }
-        .bar-label {
-          font-size: 0.85rem;
+
+        .admin-auth-card small {
+          color: #94a3b8;
+          text-align: center;
+        }
+
+        .admin-auth-form {
+          display: grid;
+          gap: 0.85rem;
+        }
+
+        .admin-auth-form label {
+          display: grid;
+          gap: 0.45rem;
+          color: #475569;
+          font-size: 0.86rem;
           font-weight: 600;
-          color: var(--dark);
-          text-transform: uppercase;
-        }
-        .badge-pill {
-          background: var(--mint-light);
-          color: var(--mint-dark);
-          padding: 0.25rem 0.75rem;
-          border-radius: 999px;
-          font-size: 0.75rem;
-          font-weight: 700;
         }
 
-        .filter-bar {
-          display: flex;
+        .admin-auth-form input {
           width: 100%;
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-        .search-box {
-          flex: 1;
-          min-width: 250px;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          background: var(--surface-soft);
-          border: 1px solid var(--border);
-          padding: 0.75rem 1rem;
+          padding: 0.8rem 0.95rem;
           border-radius: 12px;
-        }
-        .search-box input {
-          background: transparent;
-          border: none;
-          outline: none;
-          width: 100%;
-          color: var(--dark);
+          border: 1px solid #cbd5e1;
+          background: #fff;
+          color: #0f172a;
           font-family: inherit;
         }
-        .status-tabs {
-          display: flex;
-          gap: 0.5rem;
-          overflow-x: auto;
-          padding-bottom: 0.25rem;
+
+        .admin-auth-form input:focus {
+          outline: none;
+          border-color: #f43f5e;
+          box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.15);
         }
-        .status-tab {
-          padding: 0.6rem 1rem;
+
+        .admin-auth-submit {
+          margin-top: 0.5rem;
+          width: 100%;
+          justify-content: center;
+        }
+
+        .admin-v2-sidebar {
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          background: #0f172a;
+          color: #e2e8f0;
+          border-right: 1px solid #1e293b;
+          padding: 1.5rem 1.15rem;
+          display: grid;
+          grid-template-rows: auto 1fr auto;
+          gap: 1.5rem;
+        }
+
+        .admin-sidebar-brand {
+          display: flex;
+          align-items: center;
+          gap: 0.85rem;
+          padding: 0.5rem;
+        }
+
+        .admin-sidebar-brand img {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          background: #fff;
+          padding: 0.2rem;
+          object-fit: contain;
+        }
+
+        .admin-sidebar-brand strong {
+          display: block;
+          font-size: 1rem;
+          color: #f8fafc;
+          line-height: 1.2;
+        }
+
+        .admin-sidebar-brand span {
+          font-size: 0.77rem;
+          color: #94a3b8;
+        }
+
+        .admin-sidebar-nav,
+        .admin-sidebar-footer {
+          display: grid;
+          gap: 0.35rem;
+        }
+
+        .admin-sidebar-link {
+          width: 100%;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.65rem;
+          padding: 0.75rem 0.85rem;
+          border: 1px solid transparent;
+          border-radius: 12px;
+          background: transparent;
+          color: #cbd5e1;
+          font-family: inherit;
+          font-size: 0.9rem;
+          font-weight: 600;
+          text-decoration: none;
+          cursor: pointer;
+          transition: 0.2s ease;
+        }
+
+        .admin-sidebar-link:hover {
+          background: #1e293b;
+          color: #fff;
+        }
+
+        .admin-sidebar-link.active {
+          background: linear-gradient(135deg, #e11d48, #be123c);
+          color: #fff;
+          box-shadow: 0 12px 24px -16px rgba(225, 29, 72, 0.85);
+        }
+
+        .admin-sidebar-link.danger {
+          color: #fca5a5;
+        }
+
+        .admin-sidebar-link.danger:hover {
+          background: rgba(127, 29, 29, 0.3);
+          color: #fee2e2;
+        }
+
+        .admin-v2-main {
+          padding: 1.6rem;
+          display: grid;
+          gap: 1rem;
+          align-content: start;
+        }
+
+        .admin-topbar {
+          background: rgba(255, 255, 255, 0.75);
+          border: 1px solid #e2e8f0;
+          border-radius: 18px;
+          padding: 1rem 1.15rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          backdrop-filter: blur(8px);
+        }
+
+        .admin-topbar h1 {
+          margin: 0;
+          font-size: 1.25rem;
+          color: #0f172a;
+        }
+
+        .admin-topbar p {
+          margin: 0.2rem 0 0;
+          color: #64748b;
+          font-size: 0.9rem;
+        }
+
+        .admin-kpi-grid {
+          display: grid;
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          gap: 0.8rem;
+        }
+
+        .admin-kpi-card {
+          background: #fff;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
+          padding: 0.95rem;
+          display: grid;
+          gap: 0.45rem;
+        }
+
+        .admin-kpi-card.featured {
+          background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+          border-color: #fecdd3;
+        }
+
+        .admin-kpi-card h3 {
+          margin: 0;
+          color: #64748b;
+          font-size: 0.8rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+        }
+
+        .admin-kpi-card strong {
+          color: #0f172a;
+          font-size: 1.1rem;
+          line-height: 1.2;
+        }
+
+        .kpi-icon {
+          width: 32px;
+          height: 32px;
           border-radius: 10px;
-          border: 1px solid var(--border);
-          background: var(--surface);
-          color: var(--gray);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .kpi-icon.green {
+          background: #dcfce7;
+          color: #166534;
+        }
+        .kpi-icon.amber {
+          background: #fef3c7;
+          color: #92400e;
+        }
+        .kpi-icon.blue {
+          background: #dbeafe;
+          color: #1d4ed8;
+        }
+        .kpi-icon.slate {
+          background: #e2e8f0;
+          color: #334155;
+        }
+        .kpi-icon.rose {
+          background: #ffe4e6;
+          color: #be123c;
+        }
+
+        .admin-panel {
+          background: #fff;
+          border: 1px solid #e2e8f0;
+          border-radius: 18px;
+          padding: 1rem;
+          box-shadow: 0 14px 30px -28px rgba(15, 23, 42, 0.45);
+        }
+
+        .admin-panel-header {
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+          margin-bottom: 1rem;
+        }
+
+        .admin-panel-header h2 {
+          margin: 0;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.55rem;
+          font-size: 1.02rem;
+          color: #0f172a;
+        }
+
+        .admin-panel-header.split {
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 0.75rem;
+        }
+
+        .panel-chip {
+          background: #f1f5f9;
+          color: #334155;
+          border: 1px solid #cbd5e1;
+          border-radius: 999px;
+          padding: 0.3rem 0.65rem;
           font-size: 0.75rem;
           font-weight: 700;
-          cursor: pointer;
-          transition: all 0.2s;
-          white-space: nowrap;
         }
-        .status-tab:hover {
-          border-color: var(--mint);
-          color: var(--mint);
+
+        .admin-chart {
+          display: grid;
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+          align-items: end;
+          gap: 0.8rem;
+          min-height: 220px;
+          padding: 0.5rem 0.25rem 0;
         }
-        .status-tab.active {
-          background: var(--mint);
-          color: white;
-          border-color: var(--mint);
+
+        .admin-bar-wrapper {
+          display: grid;
+          justify-items: center;
+          gap: 0.4rem;
         }
-        .order-row:hover {
-          background: rgba(220, 38, 38, 0.02) !important;
+
+        .admin-bar-wrapper span {
+          font-size: 0.72rem;
+          color: #64748b;
+          font-weight: 700;
         }
-        .order-items-list::-webkit-scrollbar {
-          width: 4px;
+
+        .admin-bar-wrapper small {
+          color: #475569;
+          font-size: 0.78rem;
+          text-transform: uppercase;
+          font-weight: 700;
         }
-        .order-items-list::-webkit-scrollbar-thumb {
-          background: var(--border);
+
+        .admin-bar {
+          width: 100%;
+          max-width: 42px;
+          border-radius: 12px 12px 0 0;
+          background: linear-gradient(180deg, #fb7185, #e11d48);
+          transition: transform 0.2s ease;
+        }
+
+        .admin-bar:hover {
+          transform: scaleX(1.06);
+        }
+
+        .admin-toolbar {
+          display: grid;
+          grid-template-columns: 1fr 220px;
+          gap: 0.8rem;
+          margin-bottom: 1rem;
+        }
+
+        .admin-searchbox {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.55rem;
+          padding: 0 0.85rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 12px;
+          background: #f8fafc;
+          color: #64748b;
+          height: 42px;
+        }
+
+        .admin-searchbox input {
+          border: none;
+          outline: none;
+          background: transparent;
+          color: #0f172a;
+          width: 100%;
+          font-family: inherit;
+        }
+
+        .admin-status-filter {
+          height: 42px;
+          border-radius: 12px;
+          border: 1px solid #cbd5e1;
+          background: #fff;
+          color: #0f172a;
+          padding: 0 0.85rem;
+          font-family: inherit;
+          font-weight: 600;
+        }
+
+        .admin-table-wrap {
+          overflow-x: auto;
+        }
+
+        .admin-table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 960px;
+        }
+
+        .admin-table th {
+          text-align: left;
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #64748b;
+          border-bottom: 1px solid #e2e8f0;
+          padding: 0.75rem 0.65rem;
+        }
+
+        .admin-table td {
+          border-bottom: 1px solid #f1f5f9;
+          padding: 0.75rem 0.65rem;
+          vertical-align: top;
+          color: #0f172a;
+          font-size: 0.9rem;
+        }
+
+        .admin-empty-row {
+          text-align: center;
+          color: #64748b;
+          padding: 2rem 1rem !important;
+        }
+
+        .admin-customer-cell {
+          display: grid;
+          gap: 0.25rem;
+        }
+
+        .admin-customer-cell strong {
+          font-size: 0.92rem;
+        }
+
+        .admin-customer-cell span {
+          color: #e11d48;
+          font-weight: 700;
+          font-size: 0.82rem;
+        }
+
+        .admin-customer-cell small {
+          color: #94a3b8;
+          font-size: 0.75rem;
+        }
+
+        .admin-order-items {
+          display: grid;
+          gap: 0.45rem;
+        }
+
+        .delivery-pill {
+          width: fit-content;
+          padding: 0.2rem 0.55rem;
+          border-radius: 999px;
+          border: 1px solid #bfdbfe;
+          background: #eff6ff;
+          color: #1e3a8a;
+          font-size: 0.72rem;
+          font-weight: 700;
+        }
+
+        .admin-order-items ul {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          display: grid;
+          gap: 0.2rem;
+        }
+
+        .admin-order-items li {
+          display: flex;
+          justify-content: space-between;
+          gap: 0.75rem;
+          color: #334155;
+          font-size: 0.82rem;
+        }
+
+        .admin-order-items small {
+          color: #64748b;
+          font-size: 0.74rem;
+        }
+
+        .status-select {
           border-radius: 10px;
+          border: 1px solid #cbd5e1;
+          padding: 0.45rem 0.6rem;
+          font-family: inherit;
+          font-size: 0.82rem;
+          font-weight: 700;
+          background: #fff;
+          min-width: 145px;
+        }
+
+        .status-select.status-pending {
+          background: #fff7ed;
+          border-color: #fed7aa;
+          color: #9a3412;
+        }
+        .status-select.status-confirmed {
+          background: #f0fdf4;
+          border-color: #bbf7d0;
+          color: #166534;
+        }
+        .status-select.status-processing {
+          background: #eff6ff;
+          border-color: #bfdbfe;
+          color: #1d4ed8;
+        }
+        .status-select.status-shipped {
+          background: #eef2ff;
+          border-color: #c7d2fe;
+          color: #3730a3;
+        }
+        .status-select.status-completed {
+          background: #ecfdf5;
+          border-color: #a7f3d0;
+          color: #047857;
+        }
+        .status-select.status-cancelled {
+          background: #fef2f2;
+          border-color: #fecaca;
+          color: #b91c1c;
+        }
+
+        .order-total {
+          color: #be123c;
+          font-size: 0.95rem;
+        }
+
+        .admin-action-row {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+        }
+
+        .icon-action {
+          width: 34px;
+          height: 34px;
+          border-radius: 10px;
+          border: 1px solid transparent;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: 0.2s ease;
+        }
+
+        .icon-action.success {
+          background: #dcfce7;
+          border-color: #86efac;
+          color: #166534;
+        }
+
+        .icon-action.info {
+          background: #e0f2fe;
+          border-color: #bae6fd;
+          color: #075985;
+        }
+
+        .icon-action.danger {
+          background: #fee2e2;
+          border-color: #fecaca;
+          color: #b91c1c;
+        }
+
+        .icon-action:hover {
+          transform: translateY(-1px);
+        }
+
+        .admin-product-layout {
+          display: grid;
+          grid-template-columns: minmax(320px, 420px) 1fr;
+          gap: 1rem;
+        }
+
+        .admin-form {
+          display: grid;
+          gap: 0.8rem;
+        }
+
+        .admin-form label {
+          display: grid;
+          gap: 0.35rem;
+          font-size: 0.82rem;
+          color: #475569;
+          font-weight: 700;
+        }
+
+        .admin-form input,
+        .admin-form textarea,
+        .admin-form select {
+          width: 100%;
+          border-radius: 12px;
+          border: 1px solid #cbd5e1;
+          background: #f8fafc;
+          color: #0f172a;
+          padding: 0.7rem 0.85rem;
+          font-family: inherit;
+        }
+
+        .admin-form input:focus,
+        .admin-form textarea:focus,
+        .admin-form select:focus {
+          outline: none;
+          border-color: #f43f5e;
+          box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.15);
+          background: #fff;
+        }
+
+        .admin-form-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+        }
+
+        .upload-trigger {
+          width: fit-content;
+          display: inline-flex !important;
+          align-items: center;
+          gap: 0.5rem;
+          background: #f1f5f9;
+          border: 1px solid #cbd5e1;
+          border-radius: 10px;
+          padding: 0.55rem 0.8rem;
+          cursor: pointer;
+          color: #334155 !important;
+        }
+
+        .upload-trigger:hover {
+          background: #e2e8f0;
+        }
+
+        .upload-progress {
+          width: 100%;
+          height: 6px;
+          border-radius: 999px;
+          background: #e2e8f0;
+          overflow: hidden;
+        }
+
+        .upload-progress span {
+          display: block;
+          height: 100%;
+          background: linear-gradient(90deg, #fb7185, #e11d48);
+          transition: width 0.3s ease;
+        }
+
+        .admin-product-cell {
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+        }
+
+        .admin-product-cell img {
+          width: 56px;
+          height: 56px;
+          border-radius: 12px;
+          object-fit: cover;
+          border: 1px solid #e2e8f0;
+          background: #fff;
+        }
+
+        .admin-product-cell strong {
+          display: block;
+        }
+
+        .admin-product-cell small {
+          color: #64748b;
+          font-size: 0.75rem;
+        }
+
+        .category-pill {
+          display: inline-flex;
+          padding: 0.2rem 0.55rem;
+          border-radius: 999px;
+          font-size: 0.72rem;
+          font-weight: 700;
+          border: 1px solid transparent;
+        }
+
+        .category-pill.frozen {
+          background: #ffe4e6;
+          color: #be123c;
+          border-color: #fecdd3;
+        }
+
+        .category-pill.atk {
+          background: #e2e8f0;
+          color: #334155;
+          border-color: #cbd5e1;
+        }
+
+        .category-pill.other {
+          background: #fef3c7;
+          color: #92400e;
+          border-color: #fde68a;
+        }
+
+        .admin-user-cell {
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+        }
+
+        .admin-user-cell .avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 999px;
+          border: 1px solid #cbd5e1;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          color: #475569;
+          background: #f8fafc;
+        }
+
+        .admin-user-cell strong {
+          display: block;
+        }
+
+        .admin-user-cell small {
+          color: #64748b;
+          font-size: 0.75rem;
+        }
+
+        .wa-link {
+          color: #0f766e;
+          text-decoration: none;
+          font-weight: 700;
+        }
+
+        .wa-link:hover {
+          text-decoration: underline;
+        }
+
+        .admin-loading-state {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.55rem;
+          color: #64748b;
+          background: #fff;
+          border: 1px solid #e2e8f0;
+          border-radius: 14px;
+          padding: 0.8rem 1rem;
+          width: fit-content;
+        }
+
+        .admin-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.45rem;
+          border-radius: 10px;
+          border: 1px solid transparent;
+          padding: 0.6rem 0.9rem;
+          font-size: 0.84rem;
+          font-weight: 700;
+          font-family: inherit;
+          cursor: pointer;
+          transition: 0.2s ease;
+        }
+
+        .admin-btn:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+        }
+
+        .admin-btn-primary {
+          background: linear-gradient(135deg, #e11d48, #be123c);
+          color: #fff;
+          box-shadow: 0 12px 24px -16px rgba(225, 29, 72, 0.75);
+        }
+
+        .admin-btn-primary:hover:enabled {
+          transform: translateY(-1px);
+        }
+
+        .admin-btn-secondary {
+          background: #fff;
+          color: #0f172a;
+          border-color: #cbd5e1;
+        }
+
+        .admin-btn-secondary:hover:enabled {
+          background: #f8fafc;
+        }
+
+        .spin {
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        @media (max-width: 1280px) {
+          .admin-kpi-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+          .admin-product-layout {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 980px) {
+          .admin-v2 {
+            grid-template-columns: 1fr;
+          }
+          .admin-v2-sidebar {
+            position: static;
+            height: auto;
+            grid-template-rows: auto auto auto;
+          }
+          .admin-sidebar-nav {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+          .admin-sidebar-footer {
+            grid-template-columns: 1fr 1fr;
+          }
+          .admin-topbar {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .admin-kpi-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          .admin-toolbar {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .admin-v2-main {
+            padding: 0.9rem;
+          }
+          .admin-panel,
+          .admin-topbar {
+            padding: 0.85rem;
+            border-radius: 14px;
+          }
+          .admin-sidebar-nav {
+            grid-template-columns: 1fr;
+          }
+          .admin-sidebar-footer {
+            grid-template-columns: 1fr;
+          }
+          .admin-kpi-grid {
+            grid-template-columns: 1fr;
+          }
+          .admin-form-grid {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
     </div>
