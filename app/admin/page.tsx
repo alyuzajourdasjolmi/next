@@ -1480,7 +1480,7 @@ export default function AdminDashboard() {
         .admin-sidebar-nav,
         .admin-sidebar-footer {
           display: grid;
-          gap: 0.35rem !important;
+          gap: 0.35rem;
         }
 
         /* Clean Navigation Styles */
@@ -1494,6 +1494,8 @@ export default function AdminDashboard() {
           gap: 0.65rem;
           padding: 0.75rem 0.85rem;
           margin: 0;
+          margin-top: 0;
+          margin-bottom: 0;
           border: 1px solid transparent;
           border-radius: 12px;
           background: transparent;
@@ -1511,12 +1513,18 @@ export default function AdminDashboard() {
         .admin-sidebar-link:hover {
           background: #1e293b;
           color: #fff;
+          margin: 0;
+          margin-top: 0;
+          margin-bottom: 0;
         }
 
         .admin-sidebar-link.active {
           background: linear-gradient(135deg, #e11d48, #be123c);
           color: #fff;
           border-color: transparent;
+          margin: 0;
+          margin-top: 0;
+          margin-bottom: 0;
         }
 
         .admin-sidebar-link.danger {
