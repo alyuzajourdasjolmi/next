@@ -1499,27 +1499,35 @@ export default function AdminDashboard() {
           font-weight: 600;
           text-decoration: none;
           cursor: pointer;
-          transition: 0.2s ease;
+          transition: all 0.2s ease;
+          min-height: 44px;
+          box-sizing: border-box;
         }
 
         .admin-sidebar-link:hover {
           background: #1e293b;
           color: #fff;
+          transform: none;
         }
 
         .admin-sidebar-link.active {
           background: linear-gradient(135deg, #e11d48, #be123c);
           color: #fff;
-          box-shadow: 0 12px 24px -16px rgba(225, 29, 72, 0.85);
+          box-shadow: none;
+          transform: none;
+          border-color: transparent;
         }
 
         .admin-sidebar-link.danger {
           color: #fca5a5;
+          min-height: 44px;
+          box-sizing: border-box;
         }
 
         .admin-sidebar-link.danger:hover {
           background: rgba(127, 29, 29, 0.3);
           color: #fee2e2;
+          transform: none;
         }
 
         .admin-v2-main {
