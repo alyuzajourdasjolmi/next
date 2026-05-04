@@ -647,38 +647,78 @@ export default function AdminDashboard() {
           <img src="/assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" />
           <div>
             <strong>Hijrah Toko</strong>
-            <span>Admin Dashboard</span>
-          </div>
         </div>
+      </div>
 
-        <nav className="admin-sidebar-nav">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className={`admin-sidebar-link ${activeTab === item.id ? "active" : ""}`}
-                onClick={() => setActiveTab(item.id)}
-              >
-                <Icon size={18} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
+      <nav className="admin-sidebar-nav">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className={`admin-sidebar-link ${activeTab === item.id ? "active" : ""}`}
+              onClick={() => setActiveTab(item.id)}
+              style={{
+                height: '44px',
+                minHeight: '44px',
+                maxHeight: '44px',
+                padding: '0.75rem 0.85rem',
+                margin: '0',
+                transform: 'none',
+                boxShadow: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.65rem',
+                width: '100%',
+                boxSizing: 'border-box'
+              }}
+            >
+              <Icon size={18} style={{ flexShrink: 0 }} />
+              <span style={{ lineHeight: '1' }}>{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
 
-        <div className="admin-sidebar-footer">
-          <Link href="/" className="admin-sidebar-link">
-            <Home size={18} />
-            <span>Kembali ke Toko</span>
-          </Link>
-          <button type="button" className="admin-sidebar-link danger" onClick={handleLogout}>
-            <LogOut size={18} />
-            <span>Keluar</span>
-          </button>
-        </div>
-      </aside>
+      <div className="admin-sidebar-footer">
+        <Link href="/" className="admin-sidebar-link" style={{
+          height: '44px',
+          minHeight: '44px',
+          maxHeight: '44px',
+          padding: '0.75rem 0.85rem',
+          margin: '0',
+          transform: 'none',
+          boxShadow: 'none',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.65rem',
+          width: '100%',
+          boxSizing: 'border-box',
+          textDecoration: 'none'
+        }}>
+          <Home size={18} style={{ flexShrink: 0 }} />
+          <span style={{ lineHeight: '1' }}>Kembali ke Toko</span>
+        </Link>
+        <button type="button" className="admin-sidebar-link danger" onClick={handleLogout} style={{
+          height: '44px',
+          minHeight: '44px',
+          maxHeight: '44px',
+          padding: '0.75rem 0.85rem',
+          margin: '0',
+          transform: 'none',
+          boxShadow: 'none',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.65rem',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}>
+          <LogOut size={18} style={{ flexShrink: 0 }} />
+          <span style={{ lineHeight: '1' }}>Keluar</span>
+        </button>
+      </div>
+    </aside>
 
       <main className="admin-v2-main">
         <header className="admin-topbar">
@@ -1485,49 +1525,70 @@ export default function AdminDashboard() {
         }
 
         .admin-sidebar-link {
-          width: 100%;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.65rem;
-          padding: 0.75rem 0.85rem;
-          border: 1px solid transparent;
-          border-radius: 12px;
-          background: transparent;
-          color: #cbd5e1;
-          font-family: inherit;
-          font-size: 0.9rem;
-          font-weight: 600;
-          text-decoration: none;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          min-height: 44px;
-          box-sizing: border-box;
+          width: 100% !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 0.65rem !important;
+          padding: 0.75rem 0.85rem !important;
+          border: 1px solid transparent !important;
+          border-radius: 12px !important;
+          background: transparent !important;
+          color: #cbd5e1 !important;
+          font-family: inherit !important;
+          font-size: 0.9rem !important;
+          font-weight: 600 !important;
+          text-decoration: none !important;
+          cursor: pointer !important;
+          transition: all 0.2s ease !important;
+          min-height: 44px !important;
+          max-height: 44px !important;
+          height: 44px !important;
+          box-sizing: border-box !important;
+          margin: 0 !important;
+          transform: none !important;
+          box-shadow: none !important;
         }
 
         .admin-sidebar-link:hover {
-          background: #1e293b;
-          color: #fff;
-          transform: none;
+          background: #1e293b !important;
+          color: #fff !important;
+          transform: none !important;
+          height: 44px !important;
+          min-height: 44px !important;
+          max-height: 44px !important;
+          box-shadow: none !important;
         }
 
         .admin-sidebar-link.active {
-          background: linear-gradient(135deg, #e11d48, #be123c);
-          color: #fff;
-          box-shadow: none;
-          transform: none;
-          border-color: transparent;
+          background: linear-gradient(135deg, #e11d48, #be123c) !important;
+          color: #fff !important;
+          box-shadow: none !important;
+          transform: none !important;
+          border-color: transparent !important;
+          height: 44px !important;
+          min-height: 44px !important;
+          max-height: 44px !important;
+          padding: 0.75rem 0.85rem !important;
         }
 
         .admin-sidebar-link.danger {
-          color: #fca5a5;
-          min-height: 44px;
-          box-sizing: border-box;
+          color: #fca5a5 !important;
+          min-height: 44px !important;
+          max-height: 44px !important;
+          height: 44px !important;
+          box-sizing: border-box !important;
+          transform: none !important;
+          box-shadow: none !important;
         }
 
         .admin-sidebar-link.danger:hover {
-          background: rgba(127, 29, 29, 0.3);
-          color: #fee2e2;
-          transform: none;
+          background: rgba(127, 29, 29, 0.3) !important;
+          color: #fee2e2 !important;
+          transform: none !important;
+          height: 44px !important;
+          min-height: 44px !important;
+          max-height: 44px !important;
+          box-shadow: none !important;
         }
 
         .admin-v2-main {
