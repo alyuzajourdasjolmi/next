@@ -990,10 +990,10 @@ export default function Home() {
                 </div>
               </div>
               <div className="card-body">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.75rem' }}>
+                <div className="card-title-wrap">
                   <h3 onClick={() => setSelectedProduct(p)} style={{ cursor: 'pointer' }}>{p.name}</h3>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <div className="card-meta-row">
                    <span className="sold-label">Terjual {soldCounts[p.id] || 0}+</span>
                    <div style={{ display: 'flex', color: '#FACC15' }}>
                      {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="currentColor" />)}

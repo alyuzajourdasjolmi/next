@@ -480,6 +480,9 @@ body {
   border: 1px solid var(--border-main);
   transition: all var(--transition-smooth);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .product-card:hover {
   transform: translateY(-8px);
@@ -517,18 +520,45 @@ body {
 }
 .product-card:hover .card-img { transform: scale(1.05); }
 
-.card-body { padding: 1.5rem; }
+.card-body { 
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.75rem;
+}
+.card-title-wrap {
+  min-height: 3.1rem;
+  display: flex;
+  align-items: flex-start;
+}
 .card-body h3 { 
   font-size: 1.25rem; 
   font-weight: 700; 
-  margin-bottom: 0.5rem;
+  margin: 0;
   color: var(--text-main);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 22px;
 }
 .card-body .desc { 
   color: var(--text-muted); 
   font-size: 0.95rem; 
-  margin-bottom: 1rem; 
+  margin: 0; 
   line-height: 1.5; 
+  min-height: 4.3rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .sold-label {
@@ -544,16 +574,20 @@ body {
   display: flex; 
   align-items: center; 
   justify-content: space-between;
+  gap: 1rem;
   padding: 0 1.5rem 1.5rem;
+  margin-top: auto;
 }
 .price { 
   font-size: 1.4rem; 
   font-weight: 800; 
-  color: var(--primary); 
+  color: var(--primary);
+  line-height: 1.1;
 }
 .btn-wa {
   display: inline-flex; 
   align-items: center; 
+  justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem; 
   background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 75%, #000 25%));
@@ -565,6 +599,8 @@ body {
   cursor: pointer; 
   transition: all var(--transition-fast);
   box-shadow: 0 10px 20px -8px rgba(225, 29, 72, 0.45);
+  min-width: 155px;
+  white-space: nowrap;
 }
 .btn-wa:hover { 
   background: var(--primary-dark); 
@@ -1406,6 +1442,8 @@ body.dark-mode .mobile-toggle span {
   .products-grid { grid-template-columns: 1fr; }
   .hero-buttons { flex-direction: column; align-items: center; }
   .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+  .card-footer { align-items: flex-end; }
+  .btn-wa { min-width: 140px; }
 }
 /* Modern Admin Dashboard */
 .admin-layout {
