@@ -1172,11 +1172,10 @@ body.dark-mode .tracking-status-badge.status-cancelled {
 }
 .testimoni-list {
   display: flex; flex-direction: column; gap: 1rem;
-  max-height: 520px; overflow-y: auto; padding-right: 0.5rem;
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
 }
-.testimoni-list::-webkit-scrollbar { width: 6px; }
-.testimoni-list::-webkit-scrollbar-track { background: var(--surface-soft); border-radius: 10px; }
-.testimoni-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 .testimoni-card {
   background: var(--surface); border: 1px solid var(--border);
   padding: 1.5rem; border-radius: 18px; box-shadow: var(--shadow-soft);
