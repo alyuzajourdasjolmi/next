@@ -1482,7 +1482,3 @@ export default function Home() {
 </>
   );
 }
-
-    </>
-  );
-}
