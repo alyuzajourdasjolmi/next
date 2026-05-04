@@ -1436,17 +1436,17 @@ export default function AdminDashboard() {
         }
 
         .admin-v2-sidebar {
-          position: static;
-          top: auto;
-          height: auto;
-          min-height: 100vh;
-          background: #0f172a;
-          color: #e2e8f0;
-          border-right: 1px solid #1e293b;
-          padding: 1.5rem 1.15rem;
-          display: grid;
-          grid-template-rows: auto 1fr auto;
-          gap: 1.5rem;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        background: #0f172a;
+        color: #e2e8f0;
+        border-right: 1px solid #1e293b;
+        padding: 1.5rem 1.15rem;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 1.5rem;
         }
 
         .admin-sidebar-brand {
@@ -1537,12 +1537,14 @@ export default function AdminDashboard() {
         }
 
         .admin-v2-main {
-          padding: 1.6rem;
-          display: grid;
-          gap: 1rem;
-          align-content: start;
-          overflow-x: auto;
-          min-width: 0;
+        padding: 1.6rem;
+        display: grid;
+        gap: 1rem;
+        align-content: start;
+        overflow-x: auto;
+        overflow-y: auto;
+        height: 100vh;
+        min-width: 0;
         }
 
         .admin-topbar {
