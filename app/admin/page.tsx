@@ -66,8 +66,8 @@ export default function AdminDashboard() {
     img: "",
   });
 
-  const [activeTab, setActiveTab] = useState<"orders" | "products" | "users">(
-    "orders"
+  const [activeTab, setActiveTab] = useState<"dashboard" | "orders" | "products" | "users" | "analytics">(
+    "dashboard"
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<(typeof ORDER_STATUSES)[number]>(
@@ -495,9 +495,11 @@ export default function AdminDashboard() {
   }, [orders, searchTerm, statusFilter]);
 
   const navItems = [
+    { id: "dashboard" as const, label: "Dashboard", icon: Home },
     { id: "orders" as const, label: "Pesanan", icon: ClipboardList },
     { id: "products" as const, label: "Produk", icon: Box },
     { id: "users" as const, label: "Pengguna", icon: Users },
+    { id: "analytics" as const, label: "Analitik", icon: BarChart3 },
   ];
 
   if (!user) {
@@ -560,6 +562,79 @@ export default function AdminDashboard() {
               transform: rotate(360deg);
             }
           }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+          .admin-v2 {
+            grid-template-columns: 260px 1fr;
+          }
+          .admin-kpi-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+          .admin-chart {
+            grid-template-columns: repeat(6, minmax(50px, 1fr));
+          }
+        }
+
+        @media (max-width: 1024px) {
+          .admin-v2 {
+            grid-template-columns: 240px 1fr;
+          }
+          .admin-kpi-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+          .admin-v2-main {
+            padding: 1rem;
+          }
+          .admin-chart {
+            grid-template-columns: repeat(6, minmax(40px, 1fr));
+            gap: 0.4rem;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .admin-v2 {
+            grid-template-columns: 1fr;
+          }
+          .admin-v2-sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            z-index: 1000;
+            transition: left 0.3s ease;
+          }
+          .admin-v2-sidebar.open {
+            left: 0;
+          }
+          .admin-v2-main {
+            padding: 0.5rem;
+          }
+          .admin-kpi-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .admin-chart {
+            grid-template-columns: repeat(6, minmax(30px, 1fr));
+            gap: 0.2rem;
+            min-height: 150px;
+          }
+          .admin-toolbar {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .admin-kpi-grid {
+            grid-template-columns: 1fr;
+          }
+          .admin-chart {
+            grid-template-columns: repeat(3, 1fr);
+          }
+          .admin-table {
+            min-width: 600px;
+          }
+        }
         `}</style>
       </div>
     );
@@ -689,6 +764,62 @@ export default function AdminDashboard() {
           </section>
         ) : (
           <>
+            {activeTab === "dashboard" && (
+              <section className="admin-panel">
+                <div className="admin-panel-header split">
+                  <h2>
+                    <Home size={18} />
+                    Ringkasan Dashboard
+                  </h2>
+                  <span className="panel-chip">Hari Ini</span>
+                </div>
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.875rem' }}>Pesanan Hari Ini</h4>
+                      <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#0f172a' }}>
+                        {orders.filter(o => new Date(o.created_at).toDateString() === new Date().toDateString()).length}
+                      </p>
+                    </div>
+                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.875rem' }}>Produk Aktif</h4>
+                      <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#0f172a' }}>
+                        {products.length}
+                      </p>
+                    </div>
+                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.875rem' }}>Total Pelanggan</h4>
+                      <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#0f172a' }}>
+                        {users.length}
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ background: '#fff', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                    <h4 style={{ margin: '0 0 1rem 0', color: '#0f172a' }}>Pesanan Terbaru</h4>
+                    <div style={{ display: 'grid', gap: '0.5rem' }}>
+                      {orders.slice(0, 5).map(order => (
+                        <div key={order.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: '#f8fafc', borderRadius: '8px' }}>
+                          <div>
+                            <strong>{order.customer_name}</strong>
+                            <p style={{ margin: 0, fontSize: '0.875rem', color: '#64748b' }}>{order.grand_total.toLocaleString('id-ID')}</p>
+                          </div>
+                          <span style={{ 
+                            padding: '0.25rem 0.5rem', 
+                            borderRadius: '4px', 
+                            fontSize: '0.75rem', 
+                            fontWeight: 'bold',
+                            background: order.status === 'completed' ? '#dcfce7' : '#fef3c7',
+                            color: order.status === 'completed' ? '#166534' : '#92400e'
+                          }}>
+                            {order.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
             {activeTab === "orders" && (
               <section className="admin-panel">
                 <div className="admin-panel-header split">
@@ -839,6 +970,73 @@ export default function AdminDashboard() {
                       )}
                     </tbody>
                   </table>
+                </div>
+              </section>
+            )}
+
+            {activeTab === "analytics" && (
+              <section className="admin-panel">
+                <div className="admin-panel-header split">
+                  <h2>
+                    <BarChart3 size={18} />
+                    Analitik Penjualan
+                  </h2>
+                  <span className="panel-chip">6 Bulan Terakhir</span>
+                </div>
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+                    <div style={{ background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)', padding: '1rem', borderRadius: '12px', border: '1px solid #86efac' }}>
+                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#166534', fontSize: '0.875rem' }}>Total Pendapatan</h4>
+                      <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#166534' }}>
+                        Rp {totalRevenue.toLocaleString('id-ID')}
+                      </p>
+                    </div>
+                    <div style={{ background: 'linear-gradient(135deg, #fef3c7, #fde68a)', padding: '1rem', borderRadius: '12px', border: '1px solid #fbbf24' }}>
+                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#92400e', fontSize: '0.875rem' }}>Pesanan Selesai</h4>
+                      <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#92400e' }}>
+                        {orders.filter(o => o.status === 'completed').length}
+                      </p>
+                    </div>
+                    <div style={{ background: 'linear-gradient(135deg, #dbeafe, #bfdbfe)', padding: '1rem', borderRadius: '12px', border: '1px solid #93c5fd' }}>
+                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#1d4ed8', fontSize: '0.875rem' }}>Rata-rata Pesanan</h4>
+                      <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#1d4ed8' }}>
+                        Rp {orders.length > 0 ? Math.round(totalRevenue / orders.length).toLocaleString('id-ID') : '0'}
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ background: '#fff', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                    <h4 style={{ margin: '0 0 1rem 0', color: '#0f172a' }}>Produk Terlaris</h4>
+                    <div style={{ display: 'grid', gap: '0.5rem' }}>
+                      {orders.flatMap(o => o.order_items || [])
+                        .reduce((acc: any, item: any) => {
+                          const existing = acc.find((a: any) => a.product_name === item.product_name);
+                          if (existing) {
+                            existing.qty += item.qty;
+                            existing.total += item.price * item.qty;
+                          } else {
+                            acc.push({
+                              product_name: item.product_name,
+                              qty: item.qty,
+                              total: item.price * item.qty
+                            });
+                          }
+                          return acc;
+                        }, [])
+                        .sort((a: any, b: any) => b.qty - a.qty)
+                        .slice(0, 5)
+                        .map((product: any, index: number) => (
+                          <div key={index} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: '#f8fafc', borderRadius: '8px' }}>
+                            <div>
+                              <strong>{product.product_name}</strong>
+                              <p style={{ margin: 0, fontSize: '0.875rem', color: '#64748b' }}>{product.qty} terjual</p>
+                            </div>
+                            <span style={{ fontWeight: 'bold', color: '#0f172a' }}>
+                              Rp {product.total.toLocaleString('id-ID')}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               </section>
             )}
@@ -1143,6 +1341,7 @@ export default function AdminDashboard() {
           display: grid;
           grid-template-columns: 280px 1fr;
           background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+          overflow-x: hidden;
         }
 
         .admin-auth-page {
@@ -1328,6 +1527,8 @@ export default function AdminDashboard() {
           display: grid;
           gap: 1rem;
           align-content: start;
+          overflow-x: auto;
+          min-width: 0;
         }
 
         .admin-topbar {
@@ -1461,11 +1662,12 @@ export default function AdminDashboard() {
 
         .admin-chart {
           display: grid;
-          grid-template-columns: repeat(6, minmax(0, 1fr));
+          grid-template-columns: repeat(6, minmax(60px, 1fr));
           align-items: end;
           gap: 0.8rem;
           min-height: 220px;
           padding: 0.5rem 0.25rem 0;
+          overflow-x: auto;
         }
 
         .admin-bar-wrapper {
@@ -1545,7 +1747,7 @@ export default function AdminDashboard() {
         .admin-table {
           width: 100%;
           border-collapse: collapse;
-          min-width: 960px;
+          min-width: 800px;
         }
 
         .admin-table th {
