@@ -502,143 +502,268 @@ export default function AdminDashboard() {
     { id: "analytics" as const, label: "Analitik", icon: BarChart3 },
   ];
 
-  if (!user) {
-    return (
-      <div className="admin-auth-page">
-        <div className="admin-auth-card">
-          <div className="admin-auth-logo">
-            <img src="/assets/images/logo-hijrah-toko.png" alt="Hijrah Toko" />
-          </div>
-          <h1>Admin Portal</h1>
-          <p>Masuk untuk mengelola pesanan, produk, dan pelanggan.</p>
+if (!user) {
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
 
-          <form onSubmit={handleLogin} className="admin-auth-form">
-            <label>
-              Email Admin
-              <input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="admin.hijrahtoko@gmail.com"
-                required
-              />
-            </label>
-
-            <label>
-              Password
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Masukkan password"
-                required
-              />
-            </label>
-
-            <button className="admin-btn admin-btn-primary admin-auth-submit" type="submit">
-              {isLoginLoading ? (
-                <>
-                  <Loader2 size={18} className="spin" />
-                  Memproses...
-                </>
-              ) : (
-                "Masuk Dashboard"
-              )}
-            </button>
-          </form>
-
-          <small>Hanya akun admin utama yang diizinkan masuk.</small>
-        </div>
-
-        <style jsx>{`
-          .spin {
-            animation: spin 1s linear infinite;
-          }
-          @keyframes spin {
-            from {
-              transform: rotate(0deg);
-            }
-            to {
-              transform: rotate(360deg);
-            }
-          }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-          .admin-v2 {
-            grid-template-columns: 260px 1fr;
-          }
-          .admin-kpi-grid {
-            grid-template-columns: repeat(4, 1fr);
-          }
-          .admin-chart {
-            grid-template-columns: repeat(6, minmax(50px, 1fr));
-          }
-        }
-
-        @media (max-width: 1024px) {
-          .admin-v2 {
-            grid-template-columns: 240px 1fr;
-          }
-          .admin-kpi-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
-          .admin-v2-main {
-            padding: 1rem;
-          }
-          .admin-chart {
-            grid-template-columns: repeat(6, minmax(40px, 1fr));
-            gap: 0.4rem;
-          }
+        .login-page {
+          min-height: 100vh;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          font-family: 'DM Sans', sans-serif;
+          background: #0a0a0a;
         }
 
         @media (max-width: 768px) {
-          .admin-v2 {
-            grid-template-columns: 1fr;
-          }
-          .admin-v2-sidebar {
-            position: fixed;
-            left: -280px;
-            top: 0;
-            width: 280px;
-            height: 100vh;
-            z-index: 1000;
-            transition: left 0.3s ease;
-          }
-          .admin-v2-sidebar.open {
-            left: 0;
-          }
-          .admin-v2-main {
-            padding: 0.5rem;
-          }
-          .admin-kpi-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .admin-chart {
-            grid-template-columns: repeat(6, minmax(30px, 1fr));
-            gap: 0.2rem;
-            min-height: 150px;
-          }
-          .admin-toolbar {
-            grid-template-columns: 1fr;
-          }
+          .login-page { grid-template-columns: 1fr; }
+          .login-left { display: none; }
+          .login-right { padding: 2.5rem 1.5rem; }
         }
 
-        @media (max-width: 480px) {
-          .admin-kpi-grid {
-            grid-template-columns: 1fr;
-          }
-          .admin-chart {
-            grid-template-columns: repeat(3, 1fr);
-          }
-          .admin-table {
-            min-width: 600px;
-          }
+        /* LEFT PANEL */
+        .login-left {
+          background: #0a0a0a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 4rem 3rem;
+          position: relative;
+          overflow: hidden;
         }
-        `}</style>
+        .login-left::before {
+          content: '';
+          position: absolute;
+          width: 500px; height: 500px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(204,16,16,0.13) 0%, transparent 65%);
+          top: -120px; left: -120px;
+          pointer-events: none;
+        }
+        .login-left::after {
+          content: '';
+          position: absolute;
+          width: 300px; height: 300px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(204,16,16,0.07) 0%, transparent 65%);
+          bottom: -60px; right: -40px;
+          pointer-events: none;
+        }
+        .login-logo-ring {
+          width: 140px; height: 140px;
+          border-radius: 50%;
+          background: #fff;
+          display: flex; align-items: center; justify-content: center;
+          margin-bottom: 2.25rem;
+          box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 0 40px rgba(204,16,16,0.15), 0 16px 48px rgba(0,0,0,0.6);
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+        .login-logo-ring img {
+          width: 100%; height: 100%;
+          object-fit: cover; border-radius: 50%;
+        }
+        .login-brand-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 30px; color: #fff;
+          font-weight: 400; text-align: center;
+          line-height: 1.25; margin-bottom: 0.6rem;
+        }
+        .login-brand-title strong { font-weight: 600; }
+        .login-red-rule {
+          width: 36px; height: 2px;
+          background: #cc1010;
+          margin: 1.4rem auto;
+          border-radius: 2px;
+        }
+        .login-brand-desc {
+          font-size: 13px;
+          color: rgba(255,255,255,0.38);
+          text-align: center;
+          line-height: 1.7;
+          max-width: 230px;
+          font-weight: 300;
+        }
+        .login-feature-list {
+          list-style: none;
+          margin-top: 2rem; padding: 0;
+          display: flex; flex-direction: column; gap: 0.85rem;
+          width: 100%; max-width: 250px;
+        }
+        .login-feature-list li {
+          display: flex; align-items: center; gap: 12px;
+          font-size: 12.5px; color: rgba(255,255,255,0.38);
+          font-weight: 300;
+        }
+        .login-feature-dot {
+          width: 6px; height: 6px;
+          border-radius: 50%; background: #cc1010;
+          flex-shrink: 0;
+        }
+
+        /* RIGHT PANEL */
+        .login-right {
+          background: #111111;
+          border-left: 1px solid rgba(255,255,255,0.07);
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          padding: 4rem 3.5rem;
+        }
+        .login-form-wrap {
+          width: 100%; max-width: 380px;
+        }
+        .login-eyebrow {
+          font-size: 10.5px; color: #cc1010;
+          letter-spacing: 2.5px; text-transform: uppercase;
+          font-weight: 500; margin-bottom: 10px;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .login-heading {
+          font-family: 'Playfair Display', serif;
+          font-size: 30px; color: #fff;
+          font-weight: 400; line-height: 1.2;
+          margin-bottom: 6px;
+        }
+        .login-sub {
+          font-size: 13px; color: rgba(255,255,255,0.38);
+          margin-bottom: 2.25rem;
+          font-weight: 300;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .login-field { margin-bottom: 1.2rem; }
+        .login-field label {
+          display: block;
+          font-size: 10.5px;
+          color: rgba(255,255,255,0.5);
+          letter-spacing: 1.2px;
+          text-transform: uppercase;
+          font-weight: 500;
+          margin-bottom: 8px;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .login-field input {
+          width: 100%;
+          padding: 13px 16px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 8px;
+          color: #fff;
+          font-size: 14px;
+          font-family: 'DM Sans', sans-serif;
+          font-weight: 300;
+          outline: none;
+          transition: border-color 0.2s, background 0.2s;
+        }
+        .login-field input::placeholder { color: rgba(255,255,255,0.2); }
+        .login-field input:hover { border-color: rgba(255,255,255,0.14); }
+        .login-field input:focus {
+          border-color: rgba(204,16,16,0.45);
+          background: rgba(204,16,16,0.05);
+        }
+        .login-submit {
+          width: 100%; padding: 14px;
+          background: #cc1010;
+          border: none; border-radius: 8px;
+          color: #fff; font-size: 14px;
+          font-family: 'DM Sans', sans-serif;
+          font-weight: 500; cursor: pointer;
+          transition: background 0.2s, transform 0.1s, opacity 0.2s;
+          margin-top: 0.4rem;
+          display: flex; align-items: center;
+          justify-content: center; gap: 8px;
+        }
+        .login-submit:hover:not(:disabled) { background: #a00d0d; }
+        .login-submit:active:not(:disabled) { transform: scale(0.99); }
+        .login-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        .login-footer-note {
+          margin-top: 2rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid rgba(255,255,255,0.07);
+          font-size: 11.5px;
+          color: rgba(255,255,255,0.25);
+          text-align: center;
+          line-height: 1.7;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .login-footer-note span { color: rgba(204,16,16,0.6); }
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
+
+      <div className="login-page">
+        {/* Left Panel */}
+        <div className="login-left">
+          <div className="login-logo-ring">
+            <img src="/assets/images/logo-hijrah-toko.png" alt="Hijrah Toko" />
+          </div>
+          <div className="login-brand-title">
+            Portal<br /><strong>Admin</strong>
+          </div>
+          <div className="login-red-rule" />
+          <p className="login-brand-desc">
+            Kelola bisnis frozen food & ATK Anda dari satu dashboard terpusat.
+          </p>
+          <ul className="login-feature-list">
+            <li><div className="login-feature-dot" />Manajemen pesanan real-time</li>
+            <li><div className="login-feature-dot" />Kelola produk &amp; stok</li>
+            <li><div className="login-feature-dot" />Data pelanggan terpusat</li>
+            <li><div className="login-feature-dot" />Laporan &amp; analitik penjualan</li>
+          </ul>
+        </div>
+
+        {/* Right Panel */}
+        <div className="login-right">
+          <div className="login-form-wrap">
+            <p className="login-eyebrow">Admin Only</p>
+            <h1 className="login-heading">Selamat<br />Datang Kembali</h1>
+            <p className="login-sub">Masuk untuk melanjutkan ke dashboard</p>
+
+            <form onSubmit={handleLogin}>
+              <div className="login-field">
+                <label>Email Admin</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin.hijrahtoko@gmail.com"
+                  required
+                />
+              </div>
+              <div className="login-field">
+                <label>Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Masukkan password"
+                  required
+                />
+              </div>
+              <button
+                className="login-submit"
+                type="submit"
+                disabled={isLoginLoading}
+              >
+                {isLoginLoading ? (
+                  <><Loader2 size={16} className="spin" /> Memproses...</>
+                ) : (
+                  "Masuk Dashboard"
+                )}
+              </button>
+            </form>
+
+            <div className="login-footer-note">
+              Hanya akun admin utama yang diizinkan masuk.<br />
+              Butuh bantuan? Hubungi <span>admin.hijrahtoko@gmail.com</span>
+            </div>
+          </div>
+        </div>
       </div>
-    );
-  }
+    </>
+  );
+}
 
   return (
     <div className="admin-v2">
