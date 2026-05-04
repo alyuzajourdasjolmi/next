@@ -920,6 +920,26 @@ body.dark-mode .btn-wa {
   font-size: 1rem;
   line-height: 1.65;
 }
+.tracking-login-required,
+.tracking-empty-state {
+  margin-top: 1.75rem;
+  padding: 1.2rem;
+  border-radius: 14px;
+  border: 1px dashed var(--border-main);
+  background: var(--bg-main);
+}
+.tracking-login-required p,
+.tracking-empty-state p {
+  color: var(--text-muted);
+}
+.tracking-login-required p {
+  margin-bottom: 1rem;
+}
+.tracking-empty-state h4 {
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
+  font-weight: 800;
+}
 .order-history {
   margin-top: 2rem;
 }
@@ -1022,6 +1042,10 @@ body.dark-mode .btn-wa {
 }
 body.dark-mode .tracking-order-row {
   background: color-mix(in srgb, var(--bg-surface) 74%, #000 26%);
+}
+body.dark-mode .tracking-login-required,
+body.dark-mode .tracking-empty-state {
+  background: color-mix(in srgb, var(--bg-surface) 82%, #000 18%);
 }
 body.dark-mode .tracking-status-badge.status-pending {
   background: rgba(245, 158, 11, 0.2);

@@ -72,7 +72,6 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [inbox, setInbox] = useState({ title: '', message: '', icon: '📨' });
-  const [trackingPhone, setTrackingPhone] = useState('');
   const [userOrders, setUserOrders] = useState<any[]>([]);
   const [isTracking, setIsTracking] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
@@ -97,21 +96,16 @@ export default function Home() {
   const [authLoading, setAuthLoading] = useState(false);
   
   // Refs for realtime listener to avoid stale closures
-  const trackingPhoneRef = useRef(trackingPhone);
-  const customerPhoneRef = useRef(orderInfo.customerPhone);
+  const userIdRef = useRef<string | null>(null);
   const userOrdersRef = useRef(userOrders);
-
-  useEffect(() => {
-    trackingPhoneRef.current = trackingPhone;
-  }, [trackingPhone]);
-
-  useEffect(() => {
-    customerPhoneRef.current = orderInfo.customerPhone;
-  }, [orderInfo.customerPhone]);
 
   useEffect(() => {
     userOrdersRef.current = userOrders;
   }, [userOrders]);
+
+  useEffect(() => {
+    userIdRef.current = user?.id ?? null;
+  }, [user]);
 
   const [reviews, setReviews] = useState<Review[]>([
     { name: "Budi Santoso", rating: 5, text: "Pelayanan sangat cepat, frozen food sampai dalam keadaan masih beku sempurna!", date: "2023-10-01" },
@@ -193,6 +187,13 @@ export default function Home() {
           customerAddress: session.user.user_metadata?.address || prev.customerAddress
         }));
         fetchUserOrders(session.user.id, false);
+      } else {
+        setUserOrders([]);
+        setInbox({
+          title: 'Login untuk lacak pesanan',
+          message: 'Silakan login untuk melihat status pesanan sesuai akun Anda.',
+          icon: 'ðŸ“¨'
+        });
       }
     };
 
@@ -212,6 +213,11 @@ export default function Home() {
         fetchUserOrders(session.user.id, false);
       } else {
         setUserOrders([]);
+        setInbox({
+          title: 'Login untuk lacak pesanan',
+          message: 'Silakan login untuk melihat status pesanan sesuai akun Anda.',
+          icon: 'ðŸ“¨'
+        });
       }
     });
     setTheme(localStorage.getItem('hijrahTokoTheme') || 'light');
@@ -243,17 +249,19 @@ export default function Home() {
     const ordersSubscription = supabase
       .channel('public:orders')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
-        const currentTrackingPhone = trackingPhoneRef.current?.trim();
-        const currentCustomerPhone = customerPhoneRef.current?.trim();
-        const orderPhone = payload.new.customer_phone?.trim();
+        const currentUserId = userIdRef.current;
         const isAlreadyInList = userOrdersRef.current.some(o => o.id === payload.new.id);
 
-        if (orderPhone === currentTrackingPhone || orderPhone === currentCustomerPhone || isAlreadyInList) {
+        if (currentUserId && (payload.new.user_id === currentUserId || isAlreadyInList)) {
           console.log('Match found! Updating UI for order:', payload.new.id);
           
-          setUserOrders(current => 
-            current.map(o => o.id === payload.new.id ? { ...o, ...payload.new } : o)
-          );
+          setUserOrders(current => {
+            const existingOrder = current.find(o => o.id === payload.new.id);
+            if (existingOrder) {
+              return current.map(o => o.id === payload.new.id ? { ...o, ...payload.new } : o);
+            }
+            return [payload.new, ...current];
+          });
           
           let title = '';
           let message = '';
@@ -428,6 +436,7 @@ export default function Home() {
   const subtotal = getCartSubtotal();
   const grandTotal = subtotal + (shipInfo.finalCost || 0);
   const reviewDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pelanggan';
+  const visibleUserOrders = userOrders.filter((order: any) => order.status !== 'cancelled');
 
   const useCurrentLocation = () => {
     if (orderInfo.deliveryMethod !== 'delivery') {
@@ -572,9 +581,8 @@ export default function Home() {
 
         if (itemsError) throw itemsError;
 
-        // Add to tracking
-        setTrackingPhone(orderInfo.customerPhone);
-        fetchUserOrders(orderInfo.customerPhone, false);
+        // Refresh order list for akun yang sedang login
+        fetchUserOrders(user.id, false);
       }
     } catch (error: any) {
       console.error('Error saving order:', error);
@@ -597,29 +605,58 @@ export default function Home() {
     document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const fetchUserOrders = async (identifier: string, showAlert: boolean = true) => {
-    if (!identifier) return;
+  const fetchUserOrders = async (accountUserId?: string, showAlert: boolean = true) => {
+    const targetUserId = accountUserId || user?.id;
+    if (!targetUserId) {
+      setUserOrders([]);
+      setInbox({
+        title: 'Login untuk lacak pesanan',
+        message: 'Silakan login untuk melihat status pesanan sesuai akun Anda.',
+        icon: 'ðŸ“¨'
+      });
+      return;
+    }
     setIsTracking(true);
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from('orders')
-        .select('*, order_items(*)');
-      
-      // If identifier is a UUID (user.id), use user_id, else use customer_phone
-      if (identifier.length > 20 && identifier.includes('-')) {
-        query = query.eq('user_id', identifier);
-      } else {
-        query = query.eq('customer_phone', identifier);
-      }
-
-      const { data, error } = await query.order('created_at', { ascending: false });
+        .select('*, order_items(*)')
+        .eq('user_id', targetUserId)
+        .order('created_at', { ascending: false });
       
       if (error) throw error;
       setUserOrders(data || []);
-      if (data && data.length > 0) {
+
+      const availableOrders = (data || []).filter((order: any) => order.status !== 'cancelled');
+
+      if (availableOrders.length > 0) {
+        const latestOrder = availableOrders[0];
+        const statusTitleMap: Record<string, string> = {
+          pending: 'Pesanan menunggu konfirmasi',
+          confirmed: 'Pesanan dikonfirmasi',
+          processing: 'Pesanan sedang diproses',
+          shipped: 'Pesanan sedang dikirim',
+          completed: 'Pesanan selesai'
+        };
+
+        const inboxData = {
+          title: statusTitleMap[latestOrder.status] || 'Status pesanan diperbarui',
+          message: `Order #${latestOrder.id.toString().slice(-6).toUpperCase()} dengan status ${latestOrder.status.toUpperCase()}.`,
+          icon: latestOrder.status === 'completed' ? 'âœ…' : 'ðŸ“¨'
+        };
+        setInbox(inboxData);
+        localStorage.setItem('hijrahTokoInbox', JSON.stringify(inboxData));
+
         if (showAlert) document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
       } else {
-        if (showAlert) alert('Tidak ditemukan pesanan dengan nomor telepon/ID tersebut.');
+        const unavailableInbox = {
+          title: 'Pesanan tidak tersedia',
+          message: 'Akun ini belum memiliki pesanan aktif atau semua pesanan telah dibatalkan.',
+          icon: 'ðŸ“­'
+        };
+        setInbox(unavailableInbox);
+        localStorage.setItem('hijrahTokoInbox', JSON.stringify(unavailableInbox));
+        if (showAlert) alert('Pesanan tidak tersedia untuk akun ini.');
       }
     } catch (error) {
       console.error('Error tracking order:', error);
@@ -1331,11 +1368,20 @@ export default function Home() {
         </div>
       </div>
 
-      {userOrders.length > 0 && (
+      {!user && (
+        <div className="tracking-login-required">
+          <p>Silakan login untuk melihat status pesanan sesuai akun Anda.</p>
+          <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
+            Login Sekarang
+          </button>
+        </div>
+      )}
+
+      {user && visibleUserOrders.length > 0 && (
         <div className="order-history">
-          <h4 className="tracking-section-title">Riwayat Pesanan Terakhir</h4>
+          <h4 className="tracking-section-title">Riwayat Pesanan Anda</h4>
           <div className="tracking-order-list">
-            {userOrders.slice(0, 3).map((order) => (
+            {visibleUserOrders.slice(0, 3).map((order) => (
               <div key={order.id} className="tracking-order-row">
                 <div className="tracking-order-meta">
                   <div className="tracking-order-head">
@@ -1357,17 +1403,25 @@ export default function Home() {
         </div>
       )}
 
+      {user && visibleUserOrders.length === 0 && (
+        <div className="tracking-empty-state">
+          <h4>Pesanan tidak tersedia</h4>
+          <p>Akun ini belum memiliki pesanan aktif atau seluruh pesanan telah dibatalkan.</p>
+        </div>
+      )}
+
       <div className="tracking-search-box">
-        <p>Lacak pesanan lainnya dengan nomor WhatsApp:</p>
+        <p>Data ditampilkan khusus untuk akun yang sedang login:</p>
         <div className="tracking-search-row">
           <input 
             type="text" 
-            placeholder="Contoh: 08123456789" 
-            value={trackingPhone}
-            onChange={(e) => setTrackingPhone(e.target.value)}
+            value={user?.email || 'Silakan login'}
             className="tracking-input"
+            disabled
           />
-          <button className="btn-primary tracking-search-btn" onClick={() => fetchUserOrders(trackingPhone)}>Lacak</button>
+          <button className="btn-primary tracking-search-btn" onClick={() => fetchUserOrders(user?.id)} disabled={!user || isTracking}>
+            {isTracking ? 'Memuat...' : 'Muat Ulang'}
+          </button>
         </div>
       </div>
     </motion.div>
