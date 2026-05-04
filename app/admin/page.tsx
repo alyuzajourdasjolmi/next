@@ -665,6 +665,8 @@ export default function AdminDashboard() {
                 maxHeight: '44px',
                 padding: '0.75rem 0.85rem',
                 margin: '0',
+                marginTop: '0',
+                marginBottom: '0',
                 transform: 'none',
                 boxShadow: 'none',
                 display: 'inline-flex',
@@ -688,6 +690,8 @@ export default function AdminDashboard() {
           maxHeight: '44px',
           padding: '0.75rem 0.85rem',
           margin: '0',
+          marginTop: '0',
+          marginBottom: '0',
           transform: 'none',
           boxShadow: 'none',
           display: 'inline-flex',
@@ -706,6 +710,8 @@ export default function AdminDashboard() {
           maxHeight: '44px',
           padding: '0.75rem 0.85rem',
           margin: '0',
+          marginTop: '0',
+          marginBottom: '0',
           transform: 'none',
           boxShadow: 'none',
           display: 'inline-flex',
@@ -1521,7 +1527,7 @@ export default function AdminDashboard() {
         .admin-sidebar-nav,
         .admin-sidebar-footer {
           display: grid;
-          gap: 0.35rem;
+          gap: 0.35rem !important;
         }
 
         .admin-sidebar-link {
@@ -1569,6 +1575,7 @@ export default function AdminDashboard() {
           min-height: 44px !important;
           max-height: 44px !important;
           padding: 0.75rem 0.85rem !important;
+          margin: 0 !important;
         }
 
         .admin-sidebar-link.danger {
