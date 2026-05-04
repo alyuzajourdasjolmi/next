@@ -70,6 +70,23 @@ body {
   overflow-x: hidden;
   transition: background var(--transition-fast), color var(--transition-fast);
   line-height: 1.5;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Navbar */
@@ -1458,9 +1475,10 @@ body.dark-mode .mobile-toggle span {
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  position: static;
+  top: auto;
+  height: auto;
+  min-height: 100vh;
 }
 
 .sidebar-logo {

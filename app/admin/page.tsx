@@ -1238,9 +1238,10 @@ export default function AdminDashboard() {
         }
 
         .admin-v2-sidebar {
-          position: sticky;
-          top: 0;
-          height: 100vh;
+          position: static;
+          top: auto;
+          height: auto;
+          min-height: 100vh;
           background: #0f172a;
           color: #e2e8f0;
           border-right: 1px solid #1e293b;
