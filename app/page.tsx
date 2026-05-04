@@ -53,6 +53,14 @@ function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
   return earthRadiusKm * c;
 }
 
+type Review = {
+  id?: number | string;
+  name: string;
+  rating: number;
+  text: string;
+  date: string;
+};
+
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
   const [productsData, setProductsData] = useState<any[]>([]);
@@ -105,12 +113,12 @@ export default function Home() {
     userOrdersRef.current = userOrders;
   }, [userOrders]);
 
-  const [reviews, setReviews] = useState([
+  const [reviews, setReviews] = useState<Review[]>([
     { name: "Budi Santoso", rating: 5, text: "Pelayanan sangat cepat, frozen food sampai dalam keadaan masih beku sempurna!", date: "2023-10-01" },
     { name: "Siti Aminah", rating: 4, text: "ATK nya lumayan lengkap, harga juga bersahabat. Recommended banget buat anak sekolahan.", date: "2023-10-15" },
     { name: "Rina Wijaya", rating: 5, text: "Toko andalan kalau lagi butuh cemilan cepet. Bakso sapinya enak pol!", date: "2023-11-05" }
   ]);
-  const [reviewForm, setReviewForm] = useState({ name: '', text: '', rating: 5 });
+  const [reviewForm, setReviewForm] = useState({ text: '', rating: 5 });
 
   useEffect(() => {
     setIsClient(true);
@@ -419,6 +427,7 @@ export default function Home() {
   const shipInfo = calculateShipping();
   const subtotal = getCartSubtotal();
   const grandTotal = subtotal + (shipInfo.finalCost || 0);
+  const reviewDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pelanggan';
 
   const useCurrentLocation = () => {
     if (orderInfo.deliveryMethod !== 'delivery') {
@@ -466,12 +475,16 @@ export default function Home() {
       setAuthModal({ isOpen: true, mode: 'login' });
       return;
     }
+    const reviewText = reviewForm.text.trim();
+    if (!reviewText) {
+      alert('Ulasan tidak boleh kosong.');
+      return;
+    }
     const newReview = { 
-      name: user.user_metadata?.full_name || reviewForm.name, 
-      text: reviewForm.text, 
+      name: reviewDisplayName,
+      text: reviewText,
       rating: reviewForm.rating, 
-      date: new Date().toISOString().split('T')[0],
-      user_id: user.id
+      date: new Date().toISOString().split('T')[0]
     };
     
     try {
@@ -483,8 +496,8 @@ export default function Home() {
       if (error) throw error;
 
       if (data) {
-        setReviews([data[0], ...reviews]);
-        setReviewForm({ name: '', text: '', rating: 5 });
+        setReviews((prev) => [data[0], ...prev]);
+        setReviewForm({ text: '', rating: 5 });
         alert('Terima kasih atas ulasan Anda!');
       }
     } catch (error) {
@@ -1007,32 +1020,104 @@ export default function Home() {
     <p>Kepuasan pelanggan adalah prioritas utama Hijrah Toko.</p>
     <div className="underline"></div>
   </div>
-  <div className="products-grid">
-    {reviews.map((rev, i) => (
-      <motion.div 
-        key={i} 
-        className="checkout-card"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: i * 0.1 }}
-        style={{ padding: '2rem' }}
-      >
-        <div style={{ display: 'flex', color: '#FACC15', marginBottom: '1rem', gap: '0.25rem' }}>
-          {[...Array(rev.rating)].map((_, j) => <Star key={j} size={16} fill="currentColor" />)}
+  <div className="testimoni-grid">
+    <div className="testimoni-list">
+      {reviews.length === 0 && (
+        <div className="testimoni-card">
+          <p>Belum ada ulasan. Jadilah yang pertama memberikan testimoni.</p>
         </div>
-        <p style={{ fontStyle: 'italic', marginBottom: '1.5rem', color: 'var(--text-main)', fontSize: '1.05rem', lineHeight: '1.6' }}>
-          "{rev.text}"
-        </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div className="user-avatar" style={{ width: '40px', height: '40px' }}>{rev.name.charAt(0)}</div>
-          <div>
-            <strong style={{ display: 'block' }}>{rev.name}</strong>
-            <small style={{ color: 'var(--text-light)' }}>{rev.date}</small>
+      )}
+      {reviews.map((rev, i) => (
+        <motion.div
+          key={rev.id ?? `${rev.name}-${rev.date}-${i}`}
+          className="testimoni-card"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.06 }}
+        >
+          <div style={{ display: 'flex', color: '#FACC15', marginBottom: '0.75rem', gap: '0.25rem' }}>
+            {[...Array(rev.rating || 0)].map((_, j) => <Star key={j} size={16} fill="currentColor" />)}
           </div>
+          <p style={{ fontStyle: 'italic', marginBottom: '1.25rem' }}>
+            &ldquo;{rev.text}&rdquo;
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="user-avatar" style={{ width: '40px', height: '40px' }}>
+              {(rev.name || 'P').charAt(0)}
+            </div>
+            <div>
+              <strong style={{ display: 'block' }}>{rev.name || 'Pelanggan'}</strong>
+              <small style={{ color: 'var(--text-light)' }}>{rev.date}</small>
+            </div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+
+    <motion.div
+      className="testimoni-form-card"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+    >
+      <h3>Tulis Ulasan Anda</h3>
+      <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+        Ulasan hanya bisa dikirim oleh pengguna yang sudah login.
+      </p>
+
+      {!user ? (
+        <div style={{ textAlign: 'center', padding: '1.5rem 0 0.5rem' }}>
+          <AlertCircle size={40} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
+          <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+            Silakan login terlebih dahulu untuk mengirim ulasan.
+          </p>
+          <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
+            Login Untuk Ulasan
+          </button>
         </div>
-      </motion.div>
-    ))}
+      ) : (
+        <form onSubmit={submitReview} className="order-form">
+          <div className="form-group">
+            <label>Nama Pengguna</label>
+            <input type="text" value={reviewDisplayName} disabled />
+          </div>
+
+          <div className="form-group">
+            <label>Rating</label>
+            <div className="star-rating-input" role="radiogroup" aria-label="Rating ulasan">
+              {[1, 2, 3, 4, 5].map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={`star ${reviewForm.rating >= value ? 'active' : ''}`}
+                  onClick={() => setReviewForm((prev) => ({ ...prev, rating: value }))}
+                  aria-label={`Beri rating ${value}`}
+                  style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', display: 'flex' }}
+                >
+                  <Star size={30} fill={reviewForm.rating >= value ? 'currentColor' : 'none'} />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Ulasan</label>
+            <textarea
+              required
+              rows={4}
+              placeholder="Bagikan pengalaman belanja Anda di Hijrah Toko..."
+              value={reviewForm.text}
+              onChange={(e) => setReviewForm((prev) => ({ ...prev, text: e.target.value }))}
+            />
+          </div>
+
+          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+            Kirim Ulasan
+          </button>
+        </form>
+      )}
+    </motion.div>
   </div>
 </section>
 
