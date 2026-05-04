@@ -1165,9 +1165,13 @@ export default function Home() {
                   <p style={{ color: 'var(--primary)', fontWeight: '700' }}>Rp {(item.price * item.qty).toLocaleString('id-ID')}</p>
                 </div>
                 <div className="cart-item-actions">
-                  <button onClick={() => changeQuantity(item.id, -1)}>-</button>
-                  <span>{item.qty}</span>
-                  <button onClick={() => changeQuantity(item.id, 1)}>+</button>
+                  <button type="button" className="qty-btn" onClick={() => changeQuantity(item.id, -1)} aria-label={`Kurangi ${item.name}`}>
+                    -
+                  </button>
+                  <span className="qty-value">{item.qty}</span>
+                  <button type="button" className="qty-btn" onClick={() => changeQuantity(item.id, 1)} aria-label={`Tambah ${item.name}`}>
+                    +
+                  </button>
                 </div>
               </motion.div>
             ))}
@@ -1310,41 +1314,41 @@ export default function Home() {
     <div className="underline"></div>
   </div>
   
-  <div className="nav-container" style={{ maxWidth: '800px' }}>
+  <div className="nav-container tracking-shell">
     <motion.div 
-      className="inbox-card active"
+      className="inbox-card active tracking-card"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '2rem' }}>
-        <div className="inbox-icon" style={{ background: 'var(--primary)', color: 'white' }}>
+      <div className="tracking-header">
+        <div className="inbox-icon tracking-main-icon">
           {inbox.icon === '📨' ? <Clock size={24} /> : <CheckCircle2 size={24} />}
         </div>
-        <div>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: '800' }}>{inbox.title || 'Pesanan Anda'}</h3>
-          <p style={{ color: 'var(--text-muted)' }}>{inbox.message || 'Status terbaru pesanan Anda akan muncul di sini.'}</p>
+        <div className="tracking-header-copy">
+          <h3>{inbox.title || 'Pesanan Anda'}</h3>
+          <p>{inbox.message || 'Status terbaru pesanan Anda akan muncul di sini.'}</p>
         </div>
       </div>
 
       {userOrders.length > 0 && (
-        <div className="order-history" style={{ marginTop: '2rem' }}>
-          <h4 style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--text-light)', letterSpacing: '0.1em', marginBottom: '1.5rem' }}>Riwayat Pesanan Terakhir</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="order-history">
+          <h4 className="tracking-section-title">Riwayat Pesanan Terakhir</h4>
+          <div className="tracking-order-list">
             {userOrders.slice(0, 3).map((order) => (
-              <div key={order.id} style={{ padding: '1.25rem', background: 'var(--bg-main)', borderRadius: '16px', border: '1px solid var(--border-main)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-                    <strong style={{ fontSize: '1rem' }}>Order #{order.id.toString().slice(-6).toUpperCase()}</strong>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', padding: '0.25rem 0.6rem', borderRadius: '6px', background: 'var(--primary-light)', color: 'var(--primary)' }}>
+              <div key={order.id} className="tracking-order-row">
+                <div className="tracking-order-meta">
+                  <div className="tracking-order-head">
+                    <strong>Order #{order.id.toString().slice(-6).toUpperCase()}</strong>
+                    <span className={`tracking-status-badge status-${order.status}`}>
                       {order.status.toUpperCase()}
                     </span>
                   </div>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>
+                  <span className="tracking-order-subtitle">
                     {new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} • Rp {order.grand_total.toLocaleString('id-ID')}
                   </span>
                 </div>
-                <button className="btn-secondary btn-small" onClick={() => window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya ingin bertanya status pesanan saya #${order.id}`)}`, '_blank')}>
+                <button className="btn-secondary btn-small tracking-help-btn" onClick={() => window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya ingin bertanya status pesanan saya #${order.id}`)}`, '_blank')}>
                    Bantuan
                 </button>
               </div>
@@ -1353,17 +1357,17 @@ export default function Home() {
         </div>
       )}
 
-      <div style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid var(--border-main)' }}>
-        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Lacak pesanan lainnya dengan nomor WhatsApp:</p>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+      <div className="tracking-search-box">
+        <p>Lacak pesanan lainnya dengan nomor WhatsApp:</p>
+        <div className="tracking-search-row">
           <input 
             type="text" 
             placeholder="Contoh: 08123456789" 
             value={trackingPhone}
             onChange={(e) => setTrackingPhone(e.target.value)}
-            style={{ flex: 1 }}
+            className="tracking-input"
           />
-          <button className="btn-primary" onClick={() => fetchUserOrders(trackingPhone)}>Lacak</button>
+          <button className="btn-primary tracking-search-btn" onClick={() => fetchUserOrders(trackingPhone)}>Lacak</button>
         </div>
       </div>
     </motion.div>
