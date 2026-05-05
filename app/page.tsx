@@ -882,10 +882,7 @@ export default function Home() {
       transition={{ duration: 1, ease: "easeOut" }}
     >
       <img src="/assets/images/hero-banner-new.jpg" alt="Hijrah Toko Products" />
-      <div className="hero-floating-card top-right">
-        <Star className="text-yellow-400" fill="currentColor" size={16} />
-        <span>Top Rated Store</span>
-      </div>
+      <div className="hero-floating-card top-right" style={{ display: "none" }}></div>
     </motion.div>
   </div>
 </section>
@@ -1471,12 +1468,12 @@ export default function Home() {
 </section>
 
 {/*  Footer  */}
-<footer className="footer" id="kontak" style={{ background: 'var(--accent)', color: 'white', padding: '6rem 2rem 3rem' }}>
+<footer className="footer" id="kontak" style={{ background: 'var(--accent)', color: 'var(--bg-main)', padding: '6rem 2rem 3rem' }}>
   <div className="nav-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '4rem' }}>
     <div className="footer-col">
       <div className="nav-logo" style={{ marginBottom: '1.5rem' }}>
         <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" className="brand-logo" />
-        <span className="brand-text" style={{ color: 'white' }}>Hijrah<span>Toko</span></span>
+        <span className="brand-text" style={{ color: 'var(--bg-main)' }}>Hijrah<span>Toko</span></span>
       </div>
       <p style={{ color: 'var(--text-light)', lineHeight: '1.8' }}>
         Hijrah Toko adalah pusat penyedia frozen food premium dan alat tulis kantor terlengkap. Kami berkomitmen memberikan kualitas terbaik dan layanan cepat untuk Anda.
@@ -1581,7 +1578,7 @@ export default function Home() {
         initial={{ opacity: 0, scale: 0.9, y: 30 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 30 }}
-        style={{ maxWidth: '1000px', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', padding: 0, overflow: 'hidden' }}
+        style={{ maxWidth: '750px', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', padding: 0, overflow: 'hidden' }}
       >
         <div style={{ position: 'relative', background: '#F1F5F9' }}>
           <img src={selectedProduct.img} alt={selectedProduct.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -1589,7 +1586,7 @@ export default function Home() {
             <X size={20} />
           </button>
         </div>
-        <div style={{ padding: '4rem', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
             <span className={`card-badge badge-${selectedProduct.category}`} style={{ position: 'static' }}>{selectedProduct.category}</span>
             <span className="sold-label" style={{ background: 'var(--bg-surface-soft)', padding: '0.4rem 0.8rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.75rem' }}>⭐ 4.9 Rating</span>
@@ -1625,3 +1622,4 @@ export default function Home() {
 </>
   );
 }
+

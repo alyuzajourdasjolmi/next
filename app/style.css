@@ -175,7 +175,7 @@ html {
   cursor: pointer;
 }
 .chevron { transition: transform 0.4s; color: var(--gray); }
-.dropdown:hover .chevron { transform: rotate(180deg); color: var(--mint); }
+.dropdown:hover .chevron { transform: rotate(180deg); color: var(--primary); }
 .dropdown-content {
   display: none; position: absolute; top: calc(100% + 10px); left: 50%;
   transform: translateX(-50%);
@@ -205,8 +205,8 @@ html {
 .dropdown-content a:last-child { margin-bottom: 0; }
 .dropdown-content a::after { display: none; }
 .dropdown-content a:hover {
-  background-color: var(--mint-light); 
-  color: var(--mint-dark) !important;
+  background-color: var(--primary-light); 
+  color: var(--primary-dark) !important;
   transform: translateX(5px);
 }
 .dropdown:hover .dropdown-content { 
@@ -229,7 +229,7 @@ html {
 }
 .theme-toggle:hover,
 .cart-btn:hover { 
-  background: var(--mint); 
+  background: var(--primary); 
   color: white; 
   border-color: transparent;
   transform: translateY(-2px);
@@ -242,7 +242,7 @@ html {
 .cart-btn:hover svg { stroke: white; }
 .cart-count {
   position: absolute; top: -6px; right: -6px;
-  background: var(--mint); color: white; font-size: 0.7rem;
+  background: var(--primary); color: white; font-size: 0.7rem;
   width: 20px; height: 20px; border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   font-weight: 800;
@@ -485,8 +485,8 @@ html {
   max-width: 1280px; 
   margin: 0 auto;
   display: grid; 
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
 }
 
 /* Product Card */
@@ -802,7 +802,7 @@ body.dark-mode .btn-wa {
   overflow: hidden;
 }
 .option-card:hover {
-  border-color: var(--mint);
+  border-color: var(--primary);
   transform: translateY(-3px);
 }
 .option-card input {
@@ -810,7 +810,7 @@ body.dark-mode .btn-wa {
   top: 1.5rem; right: 1.5rem;
   width: 20px; height: 20px;
   margin: 0;
-  accent-color: var(--mint);
+  accent-color: var(--primary);
   z-index: 2;
 }
 .option-card span {
@@ -829,21 +829,21 @@ body.dark-mode .btn-wa {
   font-weight: 500;
 }
 .option-card:has(input:checked) {
-  border-color: var(--mint);
-  background: var(--mint-light);
+  border-color: var(--primary);
+  background: var(--primary-light);
   box-shadow: 0 8px 20px rgba(220, 38, 38, 0.1);
 }
 .payment-instructions {
   background: var(--surface-soft);
   border-radius: 20px;
   padding: 1.75rem;
-  border-left: 6px solid var(--mint);
+  border-left: 6px solid var(--primary);
   margin: 2rem 0;
 }
 .payment-instructions h4 {
   font-size: 1rem;
   margin-bottom: 0.75rem;
-  color: var(--mint-dark);
+  color: var(--primary-dark);
   font-weight: 800;
 }
 .payment-instructions p {
@@ -882,7 +882,7 @@ body.dark-mode .btn-wa {
   border-top: 2px dashed var(--border);
 }
 .cost-breakdown .total-row strong {
-  color: var(--mint);
+  color: var(--primary);
   font-size: 1.5rem;
   font-weight: 800;
 }
@@ -939,7 +939,7 @@ body.dark-mode .btn-wa {
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background: var(--mint-light);
+  background: var(--primary-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1229,7 +1229,7 @@ body.dark-mode .tracking-status-badge.status-cancelled {
 .footer p, .footer li { font-size: 0.9rem; line-height: 1.8; }
 .footer ul { list-style: none; }
 .footer a { color: #CBD5E1; text-decoration: none; transition: color 0.3s; }
-.footer a:hover { color: var(--mint); }
+.footer a:hover { color: var(--primary); }
 .footer-brand p { max-width: 280px; }
 .footer-brand-head {
   display: flex;
@@ -1256,7 +1256,7 @@ body.dark-mode .tracking-status-badge.status-cancelled {
   background: #334155; display: flex; align-items: center;
   justify-content: center; transition: all 0.3s;
 }
-.social-links a:hover { background: var(--mint); transform: translateY(-3px); }
+.social-links a:hover { background: var(--primary); transform: translateY(-3px); }
 .social-links svg { width: 18px; height: 18px; fill: #CBD5E1; }
 
 /* Mobile Nav */
@@ -1305,7 +1305,7 @@ body.dark-mode .tracking-status-badge.status-cancelled {
   font-size: 1.5rem; cursor: pointer; color: var(--dark);
   transition: all 0.2s;
 }
-.mobile-nav-close:hover { background: var(--mint); color: white; border-color: transparent; }
+.mobile-nav-close:hover { background: var(--primary); color: white; border-color: transparent; }
 
 .mobile-nav-scroll {
   flex: 1;
@@ -1324,12 +1324,12 @@ body.dark-mode .tracking-status-badge.status-cancelled {
 }
 .mobile-nav-links a:hover { 
   background: var(--surface-soft);
-  color: var(--mint); 
+  color: var(--primary); 
   transform: translateX(6px);
 }
 .mobile-nav-links a.active {
-  background: var(--mint-light);
-  color: var(--mint);
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
 .mobile-nav-footer {
@@ -1344,7 +1344,7 @@ body.dark-mode .tracking-status-badge.status-cancelled {
   justify-content: center;
   gap: 0.75rem;
   padding: 1rem;
-  background: var(--mint);
+  background: var(--primary);
   color: white;
   border-radius: 14px;
   font-weight: 700;
@@ -1362,7 +1362,7 @@ body.dark-mode .tracking-status-badge.status-cancelled {
 }
 .mobile-nav-links .dropdown-content a:hover {
   background: transparent;
-  color: var(--mint) !important;
+  color: var(--primary) !important;
   transform: translateX(4px);
 }
 
@@ -1523,12 +1523,12 @@ body.dark-mode .mobile-toggle span {
 
 .sidebar-link:hover {
   background: var(--surface-soft);
-  color: var(--mint);
+  color: var(--primary);
 }
 
 .sidebar-link.active {
-  background: var(--mint-light);
-  color: var(--mint-dark);
+  background: var(--primary-light);
+  color: var(--primary-dark);
 }
 
 .sidebar-footer {
@@ -1688,9 +1688,9 @@ body.dark-mode .mobile-toggle span {
 }
 
 .icon-btn:hover {
-  border-color: var(--mint);
-  color: var(--mint);
-  background: var(--mint-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
 }
 
 .icon-btn.delete:hover {
@@ -1828,7 +1828,7 @@ body.dark-mode .login-glass-card {
 
 .modern-input:focus {
   outline: none;
-  border-color: var(--mint);
+  border-color: var(--primary);
   box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
   transform: translateY(-1px);
 }
@@ -1839,7 +1839,7 @@ body.dark-mode .login-glass-card {
   padding: 1.1rem;
   font-size: 1.05rem;
   border-radius: 18px;
-  background: linear-gradient(135deg, var(--mint) 0%, var(--mint-dark) 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
   border: none;
   font-weight: 700;
@@ -1975,14 +1975,14 @@ body.dark-mode .login-glass-card {
   display: flex; align-items: center; justify-content: center;
   transition: all 0.2s;
 }
-.modal-close:hover { background: var(--mint); color: white; border-color: transparent; }
+.modal-close:hover { background: var(--primary); color: white; border-color: transparent; }
 .modal-grid { display: grid; grid-template-columns: 1fr 1.2fr; }
 .modal-image { background: var(--surface-soft); padding: 2rem; display: flex; align-items: center; justify-content: center; }
 .modal-image img { width: 100%; max-height: 400px; object-fit: contain; border-radius: 16px; }
 .modal-info { padding: 3rem; }
 .modal-info h1 { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.2; }
 .modal-meta { margin-bottom: 2rem; }
-.modal-price { font-size: 1.75rem; font-weight: 800; color: var(--mint); display: block; margin-bottom: 0.5rem; }
+.modal-price { font-size: 1.75rem; font-weight: 800; color: var(--primary); display: block; margin-bottom: 0.5rem; }
 .modal-stats { display: flex; gap: 1rem; }
 .stat-pill { background: var(--surface-soft); padding: 0.3rem 0.8rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; color: var(--gray); border: 1px solid var(--border); }
 .modal-desc { margin-bottom: 2.5rem; }
@@ -2032,7 +2032,7 @@ body.dark-mode .login-glass-card {
 .preloader-ring {
   width: 100%; height: 100%;
   border: 4px solid rgba(220, 38, 38, 0.1);
-  border-top-color: var(--mint);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 1.5s linear infinite;
 }
@@ -2040,7 +2040,7 @@ body.dark-mode .login-glass-card {
   color: white; font-size: 2rem; font-weight: 800;
   letter-spacing: 0.2em; text-transform: uppercase;
   margin-bottom: 1.5rem;
-  background: linear-gradient(90deg, #fff, var(--mint), #fff);
+  background: linear-gradient(90deg, #fff, var(--primary), #fff);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -2054,7 +2054,7 @@ body.dark-mode .login-glass-card {
 }
 .preloader-progress {
   width: 0%; height: 100%;
-  background: var(--mint);
+  background: var(--primary);
   animation: progress 1.2s ease-in-out forwards;
 }
 
@@ -2148,7 +2148,7 @@ body.dark-mode .login-glass-card {
   width: 100%;
 }
 .info-pill:hover {
-  border-color: var(--mint);
+  border-color: var(--primary);
   background: var(--surface);
   transform: translateX(8px);
 }
@@ -2257,7 +2257,7 @@ body.dark-mode .login-glass-card {
 }
 
 .user-profile-badge:hover {
-  color: var(--mint);
+  color: var(--primary);
 }
 
 .btn-logout {
@@ -2279,7 +2279,7 @@ body.dark-mode .login-glass-card {
 
 .btn-login-nav {
   padding: 0.5rem 1.25rem;
-  background: var(--mint);
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 10px;
@@ -2291,7 +2291,7 @@ body.dark-mode .login-glass-card {
 }
 
 .btn-login-nav:hover {
-  background: var(--mint-dark);
+  background: var(--primary-dark);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
 }
@@ -2370,7 +2370,7 @@ body.dark-mode .login-glass-card {
 }
 
 .auth-footer span {
-  color: var(--mint);
+  color: var(--primary);
   font-weight: 700;
   cursor: pointer;
   margin-left: 0.25rem;
@@ -2379,7 +2379,7 @@ body.dark-mode .login-glass-card {
 
 .auth-footer span:hover {
   text-decoration: underline;
-  color: var(--mint-dark);
+  color: var(--primary-dark);
 }
 
 /* Tracking Fix for Mobile */
@@ -2430,7 +2430,7 @@ body.dark-mode .login-glass-card {
 }
 
 .register-hint span {
-  color: var(--mint);
+  color: var(--primary);
   font-weight: 700;
   cursor: pointer;
   text-decoration: underline;
@@ -2446,7 +2446,7 @@ body.dark-mode .login-glass-card {
 
 .btn-login-pill {
   padding: 0.6rem 1.5rem;
-  background: var(--mint);
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 50px;
@@ -2458,7 +2458,7 @@ body.dark-mode .login-glass-card {
 }
 
 .btn-login-pill:hover {
-  background: var(--mint-dark);
+  background: var(--primary-dark);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
 }
@@ -2480,14 +2480,14 @@ body.dark-mode .login-glass-card {
 }
 
 .user-profile-trigger:hover {
-  border-color: var(--mint);
+  border-color: var(--primary);
   background: var(--surface);
 }
 
 .user-avatar {
   width: 32px;
   height: 32px;
-  background: var(--mint);
+  background: var(--primary);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -2563,7 +2563,7 @@ body.dark-mode .login-glass-card {
 
 .user-menu-content a:hover {
   background: var(--surface-soft);
-  color: var(--mint) !important;
+  color: var(--primary) !important;
   transform: translateX(4px);
 }
 
@@ -2599,20 +2599,20 @@ body.dark-mode .login-glass-card {
   box-shadow: var(--shadow-soft); transition: all 0.4s ease;
   border: 1px solid var(--border);
 }
-.blog-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-strong); border-color: var(--mint); }
+.blog-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-strong); border-color: var(--primary); }
 .blog-img-wrap { height: 220px; position: relative; overflow: hidden; }
 .blog-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
 .blog-card:hover .blog-img-wrap img { transform: scale(1.1); }
 .blog-badge {
   position: absolute; top: 1.25rem; left: 1.25rem;
-  background: var(--mint); color: white; padding: 0.4rem 1rem;
+  background: var(--primary); color: white; padding: 0.4rem 1rem;
   border-radius: 50px; font-size: 0.75rem; font-weight: 700;
 }
 .blog-body { padding: 1.75rem; }
 .blog-date { color: var(--gray); font-size: 0.8rem; margin-bottom: 0.75rem; display: block; }
 .blog-body h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; line-height: 1.4; color: var(--dark); }
 .blog-link {
-  color: var(--mint); text-decoration: none; font-weight: 700;
+  color: var(--primary); text-decoration: none; font-weight: 700;
   font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;
   transition: gap 0.3s ease;
 }
