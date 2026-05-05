@@ -2662,33 +2662,49 @@ body.dark-mode .login-glass-card {
   
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    gap: 0.5rem;
+    padding: 0 0.25rem;
   }
-  .product-card { border-radius: 16px; }
-  .card-body { padding: 0.75rem; gap: 0.5rem; }
-  .card-title-wrap { min-height: 2.5rem; }
-  .card-body h3 { font-size: 0.95rem; }
-  .card-body .desc { font-size: 0.8rem; min-height: 3.6rem; }
-  .card-meta-row { flex-wrap: wrap; gap: 0.25rem; }
-  .sold-label { font-size: 0.7rem; padding: 0.15rem 0.4rem; }
+  .product-card { border-radius: 8px; }
+  .card-body { padding: 0.5rem; gap: 0.2rem; }
+  .card-title-wrap { min-height: 2.2rem; }
+  .card-body h3 { font-size: 0.8rem; font-weight: 500; line-height: 1.35; }
+  .card-body .desc { display: none; } /* Sembunyikan deskripsi di HP seperti Shopee */
+  .card-meta-row { flex-wrap: nowrap; gap: 0.25rem; margin-top: 0; margin-bottom: 0.35rem; align-items: center; }
+  .card-meta-row svg { width: 10px; height: 10px; }
+  .sold-label { font-size: 0.65rem; padding: 0; background: transparent; font-weight: 400; color: var(--text-muted); }
   
   .card-footer {
-    padding: 0 0.75rem 1rem;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
+    padding: 0 0.5rem 0.5rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
   }
-  .price { font-size: 1.1rem; }
+  .price { font-size: 0.95rem; font-weight: 700; }
+  
   .btn-wa {
-    padding: 0.5rem;
-    font-size: 0.85rem;
-    min-width: 0;
+    padding: 0;
+    min-width: 28px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 0; /* Sembunyikan teks "Tambah" */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-wa svg {
+    width: 14px;
+    height: 14px;
+    margin: 0;
   }
   .card-badge {
-    top: 0.5rem;
-    left: 0.5rem;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.6rem;
+    top: 0.35rem;
+    left: 0.35rem;
+    padding: 0.15rem 0.3rem;
+    font-size: 0.55rem;
+    border-radius: 4px;
   }
 }
 
