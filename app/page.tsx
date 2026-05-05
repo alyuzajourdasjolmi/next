@@ -1574,19 +1574,18 @@ export default function Home() {
   {selectedProduct && (
     <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
       <motion.div 
-        className="product-card"
+        className="product-card modal-grid"
         initial={{ opacity: 0, scale: 0.9, y: 30 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 30 }}
-        style={{ maxWidth: '750px', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', padding: 0, overflow: 'hidden' }}
       >
-        <div style={{ position: 'relative', background: '#F1F5F9' }}>
-          <img src={selectedProduct.img} alt={selectedProduct.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div className="modal-img-container">
+          <img src={selectedProduct.img} alt={selectedProduct.name} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
           <button onClick={() => setSelectedProduct(null)} style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', background: 'white', border: 'none', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)', cursor: 'pointer' }}>
             <X size={20} />
           </button>
         </div>
-        <div style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column' }}>
+        <div className="modal-body-padding">
           <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
             <span className={`card-badge badge-${selectedProduct.category}`} style={{ position: 'static' }}>{selectedProduct.category}</span>
             <span className="sold-label" style={{ background: 'var(--bg-surface-soft)', padding: '0.4rem 0.8rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.75rem' }}>⭐ 4.9 Rating</span>
