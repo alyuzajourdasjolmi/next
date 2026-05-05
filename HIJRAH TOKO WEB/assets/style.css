@@ -172,7 +172,7 @@ body.dark-mode .theme-icon {
 }
 .theme-toggle:hover .theme-icon { filter: brightness(10); }
 
-.cart-btn svg { width: 22px; height: 22px; stroke: var(--mint-dark); transition: stroke 0.3s; }
+.cart-btn svg { width: 22px; height: 22px; stroke: var(--dark); transition: stroke 0.3s; }
 .cart-btn:hover svg { stroke: white; }
 
 .cart-count {
