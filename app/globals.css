@@ -24,3 +24,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+button:disabled {
+  color: white !important;
+}
+
+.btn-primary:disabled {
+  background: var(--primary) !important;
+  color: white !important;
+  opacity: 0.6;
+}
