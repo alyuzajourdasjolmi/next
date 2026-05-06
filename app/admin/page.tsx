@@ -793,13 +793,17 @@ if (!user) {
       </nav>
 
       <div className="admin-sidebar-footer">
-        <Link href="/" className="admin-sidebar-link">
-          <Home size={18} />
-          <span>Kembali ke Toko</span>
+        <Link href="/" className="admin-sidebar-link" style={{
+            background: 'rgba(255,255,255,0.07)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            color: '#f8fafc'
+        }}>
+            <Home size={18} />
+            <span>Kembali ke Toko</span>
         </Link>
         <button type="button" className="admin-sidebar-link danger" onClick={handleLogout}>
-          <LogOut size={18} />
-          <span>Keluar</span>
+            <LogOut size={18} />
+            <span>Keluar</span>
         </button>
       </div>
     </aside>
