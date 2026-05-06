@@ -1416,16 +1416,7 @@ export default function Home() {
             className="tracking-input"
             disabled
           />
-          <button 
-            className="btn-primary tracking-search-btn" 
-            onClick={() => fetchUserOrders(user?.id)} 
-            disabled={!user || isTracking}
-            style={{
-              opacity: (!user || isTracking) ? 0.6 : 1,
-              color: 'white',
-              cursor: (!user || isTracking) ? 'not-allowed' : 'pointer'
-            }}
-          >
+          <button className="btn-primary tracking-search-btn" onClick={() => fetchUserOrders(user?.id)} disabled={!user || isTracking}>
             {isTracking ? 'Memuat...' : 'Muat Ulang'}
           </button>
         </div>
