@@ -1539,10 +1539,35 @@ export default function Home() {
 
         <form onSubmit={handleAuth} className="order-form">
           {authModal.mode === 'register' && (
+            <>
             <div className="form-group">
               <label>Nama Lengkap</label>
               <input type="text" required value={authForm.name} onChange={e => setAuthForm({...authForm, name: e.target.value})} placeholder="Nama Anda" />
             </div>
+            <div className="form-group">
+              <label>Nomor WhatsApp</label>
+              <input 
+                type="tel" 
+                required 
+                value={authForm.phone} 
+                onChange={e => setAuthForm({...authForm, phone: e.target.value})} 
+                placeholder="Contoh: 08123456789"
+                pattern="[0-9]{10,13}"
+                title="Masukkan nomor WA yang valid (10-13 digit)"
+              />
+            </div>
+            <div className="form-group">
+              <label>Alamat Lengkap</label>
+              <textarea 
+                required 
+                rows={3}
+                value={authForm.address} 
+                onChange={e => setAuthForm({...authForm, address: e.target.value})} 
+                placeholder="Jl. Contoh No. 1, RT/RW, Kelurahan, Kecamatan..."
+                style={{ resize: 'none' }}
+              />
+            </div>
+            </>
           )}
           <div className="form-group">
             <label>Email</label>
