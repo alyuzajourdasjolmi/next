@@ -1405,6 +1405,11 @@ body.dark-mode .mobile-toggle span {
   background: var(--dark);
 }
 
+body.dark-mode .nav-links a:hover,
+body.dark-mode .nav-links a.active {
+  color: var(--primary);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .hero-container { grid-template-columns: 1fr; text-align: center; }
