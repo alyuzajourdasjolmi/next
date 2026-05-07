@@ -1452,15 +1452,36 @@ export default function Home() {
               <p style={{ fontWeight: '600' }}>Senin - Minggu: 08:00 - 21:00 WIB</p>
             </div>
          </div>
-         <a href="https://maps.app.goo.gl/..." target="_blank" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-            <MapPin size={18} /> Buka di Google Maps
-         </a>
+         <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <a 
+              href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5940091,100.2129566,17z/data=!3m1!4b1!4m6!3m5!1s0x2fd4e1d5048135eb:0xdc1dba685f9fa4f4!8m2!3d-0.5940091!4d100.2129566!16s%2Fg%2F11sddqc7n9" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn-primary" 
+              style={{ flex: 1, justifyContent: 'center' }}
+            >
+              <MapPin size={18} /> Buka di Google Maps
+            </a>
+            <button 
+              onClick={() => {
+                const iframe = document.querySelector('iframe[title="Map Hijrah Toko"]') as HTMLIFrameElement;
+                if (iframe) {
+                  iframe.src = iframe.src;
+                }
+              }}
+              className="btn-secondary"
+              style={{ padding: '1rem', minWidth: '50px' }}
+              title="Pusatkan Peta"
+            >
+              <MapPin size={18} />
+            </button>
+         </div>
        </div>
-       <div style={{ minHeight: '400px' }}>
+       <div style={{ minHeight: '400px', position: 'relative' }}>
          <iframe 
           title="Map Hijrah Toko"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.288219502685!2d100.21038167425103!3d-0.5940037352848971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4ba03e9900001%3A0x6e9f1680d2830f36!2sHijrah%20Toko!5e0!3m2!1sid!2sid!4v1714578000000!5m2!1sid!2sid" 
-          width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.2882195026853!2d100.21038167425103!3d-0.5940091352848971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4e1d5048135eb%3A0xdc1dba685f9fa4f4!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714578000000!5m2!1sid!2sid" 
+          width="100%" height="100%" style={{ border: 0, borderRadius: '18px' }} allowFullScreen loading="lazy"
          ></iframe>
        </div>
     </div>

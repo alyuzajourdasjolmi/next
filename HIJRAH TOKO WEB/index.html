@@ -314,12 +314,16 @@
     <div class="location-info">
       <h3>Hijrah Toko</h3>
       <p>C647+95W, Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik, Kabupaten Padang Pariaman, Sumatera Barat 25574</p>
-      <a class="btn-secondary" href="https://www.google.com/maps/place/Hijrah+TOKO/@0.5939347,100.2128799,19z" target="_blank" rel="noopener noreferrer">Buka di Google Maps</a>
+      <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+        <a class="btn-secondary" href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5940091,100.2129566,17z/data=!3m1!4b1!4m6!3m5!1s0x2fd4e1d5048135eb:0xdc1dba685f9fa4f4!8m2!3d-0.5940091!4d100.2129566!16s%2Fg%2F11sddqc7n9" target="_blank" rel="noopener noreferrer" style="flex: 1;">🗺️ Buka di Google Maps</a>
+        <button class="btn-reset-map" onclick="resetMapCenter()" title="Pusatkan Peta Kembali">📍</button>
+      </div>
     </div>
     <div class="map-embed">
       <iframe
+        id="locationMap"
         title="Lokasi Hijrah Toko"
-        src="https://www.google.com/maps?q=Hijrah%20TOKO%20Pariaman%200.5939347,100.2128799&z=18&output=embed"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.2882195026853!2d100.21038167425103!3d-0.5940091352848971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4e1d5048135eb%3A0xdc1dba685f9fa4f4!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714578000000!5m2!1sid!2sid"
         loading="lazy"
         allowfullscreen
         referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -398,6 +402,14 @@
 </button>
 
 <script>
+// Reset Map Center Function
+function resetMapCenter() {
+  const iframe = document.getElementById('locationMap');
+  if (iframe) {
+    iframe.src = iframe.src;
+  }
+}
+
 // Product Data
 const products = [
   { id:1, name:"Nugget Ayam", desc:"Nugget ayam crispy premium, 500gr. Cocok untuk camilan keluarga.", price:32000, category:"frozen", img:"assets/images/nugget.png" },

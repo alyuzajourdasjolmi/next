@@ -509,6 +509,30 @@ body.dark-mode .theme-icon {
   border-radius: 18px; filter: saturate(0.98) contrast(1.02);
 }
 
+.btn-reset-map {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  padding: 0.65rem 1rem;
+  background: var(--surface);
+  color: var(--dark);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-reset-map:hover {
+  border-color: var(--mint);
+  color: var(--mint-dark);
+  transform: translateY(-2px);
+  background: var(--surface-soft);
+}
+
 /* ══════════════════════════════
    INBOX
 ══════════════════════════════ */
