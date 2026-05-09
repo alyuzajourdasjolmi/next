@@ -1747,7 +1747,10 @@ export default function Home() {
       <button onClick={() => setShowProfileManager(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer' }}>
         <X size={24} />
       </button>
-      <AddressManager userPhone={user.user_metadata?.phone || user.phone || ''} />
+      <AddressManager 
+        userId={user.id} 
+        userPhone={user.user_metadata?.phone || user.phone || ''} 
+      />
     </motion.div>
   </div>
 )}

@@ -15,15 +15,17 @@ interface Address {
   longitude?: number;
   maps_link?: string;
   is_primary: boolean;
+  user_id?: string;
 }
 
 interface AddressManagerProps {
+  userId: string;
   userPhone: string;
   onSelectAddress?: (address: Address) => void;
   mode?: 'manage' | 'select'; // manage = full CRUD, select = pilih alamat saat checkout
 }
 
-export default function AddressManager({ userPhone, onSelectAddress, mode = 'manage' }: AddressManagerProps) {
+export default function AddressManager({ userId, userPhone, onSelectAddress, mode = 'manage' }: AddressManagerProps) {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -120,7 +122,8 @@ export default function AddressManager({ userPhone, onSelectAddress, mode = 'man
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
         longitude: formData.longitude ? parseFloat(formData.longitude) : null,
         maps_link: formData.maps_link || null,
-        is_primary: formData.is_primary
+        is_primary: formData.is_primary,
+        user_id: userId
       };
 
       if (editingId) {
@@ -157,7 +160,11 @@ export default function AddressManager({ userPhone, onSelectAddress, mode = 'man
       loadAddresses();
     } catch (error: any) {
       console.error('Error saving address:', error);
-      alert('Gagal menyimpan alamat: ' + (error.message || 'Terjadi kesalahan sistem'));
+      let errorMsg = error.message || 'Terjadi kesalahan sistem';
+      if (error.code === '42501') {
+        errorMsg = 'Akses ditolak (RLS Policy). Pastikan tabel user_addresses sudah memiliki kolom user_id dan kebijakan RLS yang sesuai di Supabase.';
+      }
+      alert('Gagal menyimpan alamat: ' + errorMsg);
     }
   };
 
