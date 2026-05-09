@@ -22,6 +22,9 @@ import {
   Upload,
   UserCircle2,
   Users,
+  ShoppingCart,
+  PlusCircle,
+  MinusCircle,
 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import "../style.css";
@@ -64,9 +67,10 @@ export default function AdminDashboard() {
     price: 0,
     category: "frozen",
     img: "",
+    stock: 0,
   });
 
-  const [activeTab, setActiveTab] = useState<"dashboard" | "orders" | "products" | "users" | "analytics">(
+  const [activeTab, setActiveTab] = useState<"dashboard" | "orders" | "products" | "users" | "analytics" | "cashier">(
     "dashboard"
   );
   const [searchTerm, setSearchTerm] = useState("");
@@ -76,6 +80,9 @@ export default function AdminDashboard() {
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [posCart, setPosCart] = useState<any[]>([]);
+  const [posSearchTerm, setPosSearchTerm] = useState("");
+  const [isPosProcessing, setIsPosProcessing] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -424,12 +431,95 @@ export default function AdminDashboard() {
         alert("Produk berhasil ditambahkan.");
       }
 
-      setProductForm({ name: "", desc: "", price: 0, category: "frozen", img: "" });
+      setProductForm({ name: "", desc: "", price: 0, category: "frozen", img: "", stock: 0 });
       setEditingProductId(null);
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving product:", error);
-      alert("Gagal menyimpan produk.");
+      alert("Gagal menyimpan produk: " + (error.message || "Pastikan kolom 'stock' sudah ada di database"));
+    }
+  };
+
+  const addToPosCart = (product: any) => {
+    setPosCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      if (existing) {
+        return prev.map(item => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
+      }
+      return [...prev, { ...product, qty: 1 }];
+    });
+  };
+
+  const updatePosQty = (id: number, delta: number) => {
+    setPosCart(prev => prev.map(item => {
+      if (item.id === id) {
+        const newQty = Math.max(1, item.qty + delta);
+        return { ...item, qty: newQty };
+      }
+      return item;
+    }));
+  };
+
+  const removeFromPosCart = (id: number) => {
+    setPosCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const processPosOrder = async () => {
+    if (posCart.length === 0) return;
+    setIsPosProcessing(true);
+
+    try {
+      const subtotal = posCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      
+      // 1. Create Offline Order
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .insert([{
+          customer_name: 'Pembelian Offline',
+          customer_phone: '0000',
+          delivery_method: 'pickup',
+          payment_method: 'Tunai',
+          status: 'completed',
+          subtotal: subtotal,
+          shipping_cost: 0,
+          grand_total: subtotal,
+          is_offline: true // New flag
+        }])
+        .select();
+
+      if (orderError) throw orderError;
+
+      const orderId = orderData[0].id;
+
+      // 2. Insert Order Items
+      const orderItems = posCart.map(item => ({
+        order_id: orderId,
+        product_id: item.id,
+        product_name: item.name,
+        qty: item.qty,
+        price: item.price
+      }));
+
+      const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
+      if (itemsError) throw itemsError;
+
+      // 3. Update Stocks
+      for (const item of posCart) {
+        const currentProduct = products.find(p => p.id === item.id);
+        if (currentProduct && typeof currentProduct.stock === 'number') {
+          const newStock = Math.max(0, currentProduct.stock - item.qty);
+          await supabase.from('products').update({ stock: newStock }).eq('id', item.id);
+        }
+      }
+
+      alert('Transaksi offline berhasil dicatat!');
+      setPosCart([]);
+      fetchData(); // Refresh data and stocks
+    } catch (error: any) {
+      console.error('POS Error:', error);
+      alert('Gagal memproses transaksi: ' + error.message);
+    } finally {
+      setIsPosProcessing(false);
     }
   };
 
@@ -496,6 +586,7 @@ export default function AdminDashboard() {
 
   const navItems = [
     { id: "dashboard" as const, label: "Dashboard", icon: Home },
+    { id: "cashier" as const, label: "Kasir (POS)", icon: ShoppingCart },
     { id: "orders" as const, label: "Pesanan", icon: ClipboardList },
     { id: "products" as const, label: "Produk", icon: Box },
     { id: "users" as const, label: "Pengguna", icon: Users },
@@ -944,6 +1035,93 @@ if (!user) {
                 </div>
               </section>
             )}
+            {activeTab === "cashier" && (
+              <section className="admin-pos-layout">
+                <article className="admin-panel pos-catalog">
+                  <div className="admin-panel-header split">
+                    <h2>
+                      <ShoppingCart size={18} />
+                      Katalog Kasir
+                    </h2>
+                    <div className="admin-search-minimal">
+                      <Search size={14} />
+                      <input 
+                        type="text" 
+                        placeholder="Cari produk..." 
+                        value={posSearchTerm}
+                        onChange={(e) => setPosSearchTerm(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pos-grid">
+                    {products
+                      .filter(p => p.name.toLowerCase().includes(posSearchTerm.toLowerCase()))
+                      .map(product => (
+                        <div key={product.id} className="pos-card">
+                          <img src={product.img} alt={product.name} />
+                          <div className="pos-card-info">
+                            <strong>{product.name}</strong>
+                            <span className="price">Rp {product.price.toLocaleString('id-ID')}</span>
+                            <span className={`stock ${product.stock <= 5 ? 'low' : ''}`}>
+                              Stok: {product.stock || 0}
+                            </span>
+                            <button 
+                              onClick={() => addToPosCart(product)}
+                              disabled={product.stock <= 0}
+                              className="btn-add-pos"
+                            >
+                              {product.stock <= 0 ? 'Habis' : 'Tambah'}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </article>
+
+                <article className="admin-panel pos-sidebar">
+                  <div className="admin-panel-header">
+                    <h2>Detail Transaksi</h2>
+                  </div>
+                  
+                  <div className="pos-cart-list">
+                    {posCart.length === 0 ? (
+                      <div className="pos-empty">Keranjang kosong</div>
+                    ) : (
+                      posCart.map(item => (
+                        <div key={item.id} className="pos-cart-item">
+                          <div className="item-info">
+                            <strong>{item.name}</strong>
+                            <span>Rp {item.price.toLocaleString('id-ID')}</span>
+                          </div>
+                          <div className="item-qty-ctrl">
+                            <button onClick={() => updatePosQty(item.id, -1)}><MinusCircle size={16}/></button>
+                            <span>{item.qty}</span>
+                            <button onClick={() => updatePosQty(item.id, 1)}><PlusCircle size={16}/></button>
+                            <button className="remove" onClick={() => removeFromPosCart(item.id)}><Trash2 size={14}/></button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="pos-summary">
+                    <div className="summary-row">
+                      <span>Total</span>
+                      <strong>Rp {posCart.reduce((s, i) => s + (i.price * i.qty), 0).toLocaleString('id-ID')}</strong>
+                    </div>
+                    <button 
+                      className="btn-process-pos" 
+                      disabled={posCart.length === 0 || isPosProcessing}
+                      onClick={processPosOrder}
+                    >
+                      {isPosProcessing ? 'Memproses...' : 'Proses Pembayaran'}
+                    </button>
+                  </div>
+                </article>
+              </section>
+            )}
+
             {activeTab === "orders" && (
               <section className="admin-panel">
                 <div className="admin-panel-header split">
@@ -1253,6 +1431,22 @@ if (!user) {
                           <option value="other">Lainnya</option>
                         </select>
                       </label>
+
+                      <label>
+                        Stok Produk
+                        <input
+                          type="number"
+                          min={0}
+                          value={productForm.stock}
+                          onChange={(event) =>
+                            setProductForm((prev) => ({
+                              ...prev,
+                              stock: Number(event.target.value) || 0,
+                            }))
+                          }
+                          required
+                        />
+                      </label>
                     </div>
 
                     <label>
@@ -1301,6 +1495,7 @@ if (!user) {
                           <th>Produk</th>
                           <th>Kategori</th>
                           <th>Harga</th>
+                          <th>Stok</th>
                           <th>Aksi</th>
                         </tr>
                       </thead>
@@ -1331,6 +1526,11 @@ if (!user) {
                               <strong>Rp {product.price.toLocaleString("id-ID")}</strong>
                             </td>
                             <td>
+                              <span className={`stock-badge ${product.stock <= 5 ? 'low' : ''}`}>
+                                {product.stock || 0}
+                              </span>
+                            </td>
+                            <td>
                               <div className="admin-action-row">
                                 <button
                                   type="button"
@@ -1344,6 +1544,7 @@ if (!user) {
                                       price: product.price,
                                       category: product.category,
                                       img: product.img,
+                                      stock: product.stock || 0,
                                     });
                                     window.scrollTo({ top: 0, behavior: "smooth" });
                                   }}
@@ -1789,6 +1990,232 @@ if (!user) {
           justify-content: space-between;
           flex-wrap: wrap;
           gap: 0.75rem;
+        }
+
+        /* POS LAYOUT */
+        .admin-pos-layout {
+          display: grid;
+          grid-template-columns: 1fr 340px;
+          gap: 1.5rem;
+          align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+          .admin-pos-layout {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .admin-search-minimal {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: #f1f5f9;
+          padding: 0.5rem 1rem;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+        }
+
+        .admin-search-minimal input {
+          border: none;
+          background: transparent;
+          font-size: 0.875rem;
+          outline: none;
+          width: 150px;
+        }
+
+        .pos-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          gap: 1rem;
+          margin-top: 1rem;
+        }
+
+        .pos-card {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          overflow: hidden;
+          transition: transform 0.2s;
+        }
+
+        .pos-card:hover {
+          transform: translateY(-4px);
+          border-color: #f43f5e;
+        }
+
+        .pos-card img {
+          width: 100%;
+          height: 120px;
+          object-fit: cover;
+        }
+
+        .pos-card-info {
+          padding: 0.75rem;
+          display: grid;
+          gap: 0.25rem;
+        }
+
+        .pos-card-info strong {
+          font-size: 0.9rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .pos-card-info .price {
+          font-weight: 700;
+          color: #f43f5e;
+          font-size: 0.85rem;
+        }
+
+        .pos-card-info .stock {
+          font-size: 0.75rem;
+          color: #64748b;
+        }
+
+        .pos-card-info .stock.low {
+          color: #ef4444;
+          font-weight: 700;
+        }
+
+        .btn-add-pos {
+          margin-top: 0.5rem;
+          width: 100%;
+          padding: 0.5rem;
+          background: #0f172a;
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .btn-add-pos:hover:not(:disabled) {
+          background: #f43f5e;
+        }
+
+        .btn-add-pos:disabled {
+          background: #cbd5e1;
+          cursor: not-allowed;
+        }
+
+        .pos-cart-list {
+          display: grid;
+          gap: 0.75rem;
+          max-height: 400px;
+          overflow-y: auto;
+          padding-right: 0.5rem;
+        }
+
+        .pos-empty {
+          text-align: center;
+          padding: 2rem;
+          color: #94a3b8;
+          font-style: italic;
+        }
+
+        .pos-cart-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem;
+          background: #f8fafc;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+        }
+
+        .pos-cart-item .item-info {
+          display: grid;
+          gap: 0.15rem;
+        }
+
+        .pos-cart-item .item-info strong {
+          font-size: 0.85rem;
+        }
+
+        .pos-cart-item .item-info span {
+          font-size: 0.8rem;
+          color: #64748b;
+        }
+
+        .item-qty-ctrl {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .item-qty-ctrl button {
+          background: none;
+          border: none;
+          color: #64748b;
+          cursor: pointer;
+          padding: 0;
+          display: flex;
+        }
+
+        .item-qty-ctrl button:hover {
+          color: #f43f5e;
+        }
+
+        .item-qty-ctrl button.remove {
+          margin-left: 0.25rem;
+          color: #94a3b8;
+        }
+
+        .item-qty-ctrl button.remove:hover {
+          color: #ef4444;
+        }
+
+        .pos-summary {
+          margin-top: 1.5rem;
+          padding-top: 1rem;
+          border-top: 2px dashed #e2e8f0;
+          display: grid;
+          gap: 1rem;
+        }
+
+        .summary-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 1.1rem;
+        }
+
+        .btn-process-pos {
+          width: 100%;
+          padding: 1rem;
+          background: linear-gradient(135deg, #10b981, #059669);
+          color: #fff;
+          border: none;
+          border-radius: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-process-pos:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-process-pos:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .stock-badge {
+          display: inline-block;
+          padding: 0.25rem 0.5rem;
+          background: #f1f5f9;
+          border-radius: 6px;
+          font-size: 0.75rem;
+          font-weight: 700;
+        }
+
+        .stock-badge.low {
+          background: #fee2e2;
+          color: #ef4444;
         }
 
         .panel-chip {
