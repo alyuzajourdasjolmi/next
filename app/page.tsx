@@ -1694,14 +1694,37 @@ export default function Home() {
                   <span style={{ fontSize: '0.9rem', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem' }}>Harga Spesial</span>
                   <strong style={{ fontSize: '2rem', color: 'var(--primary)', fontWeight: '800' }}>Rp {selectedProduct.price.toLocaleString('id-ID')}</strong>
                </div>
-               <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '0.9rem', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem' }}>Status Stok</span>
-                  <strong style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><CheckCircle2 size={16} /> Tersedia</strong>
-               </div>
+                <div style={{ textAlign: 'right' }}>
+                   <span style={{ fontSize: '0.9rem', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem' }}>Status Stok</span>
+                   <strong style={{ 
+                     color: selectedProduct.stock > 0 ? '#059669' : '#ef4444', 
+                     display: 'flex', 
+                     alignItems: 'center', 
+                     gap: '0.5rem',
+                     justifyContent: 'flex-end' 
+                   }}>
+                     {selectedProduct.stock > 0 ? (
+                       <><CheckCircle2 size={16} /> {selectedProduct.stock} Tersisa</>
+                     ) : (
+                       <>Stok Habis</>
+                     )}
+                   </strong>
+                </div>
             </div>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <button className="btn-primary" style={{ flex: 2, justifyContent: 'center', padding: '1.25rem' }} onClick={() => { addToCart(selectedProduct.id); setSelectedProduct(null); }}>
-                <ShoppingCart size={20} /> Tambah ke Keranjang
+              <button 
+                className="btn-primary" 
+                style={{ 
+                  flex: 2, 
+                  justifyContent: 'center', 
+                  padding: '1.25rem',
+                  opacity: selectedProduct.stock > 0 ? 1 : 0.6,
+                  cursor: selectedProduct.stock > 0 ? 'pointer' : 'not-allowed'
+                }} 
+                onClick={() => { if(selectedProduct.stock > 0) { addToCart(selectedProduct.id); setSelectedProduct(null); } }}
+                disabled={selectedProduct.stock <= 0}
+              >
+                <ShoppingCart size={20} /> {selectedProduct.stock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis'}
               </button>
               <button className="btn-secondary" style={{ flex: 1, justifyContent: 'center' }} onClick={() => window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya tertarik dengan ${selectedProduct.name}`)}`, '_blank')}>
                 <MessageSquare size={20} /> Chat

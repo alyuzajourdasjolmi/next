@@ -83,6 +83,7 @@ export default function AdminDashboard() {
   const [posCart, setPosCart] = useState<any[]>([]);
   const [posSearchTerm, setPosSearchTerm] = useState("");
   const [isPosProcessing, setIsPosProcessing] = useState(false);
+  const [cashAmount, setCashAmount] = useState<number | string>("");
 
   useEffect(() => {
     const checkUser = async () => {
@@ -514,6 +515,7 @@ export default function AdminDashboard() {
 
       alert('Transaksi offline berhasil dicatat!');
       setPosCart([]);
+      setCashAmount("");
       fetchData(); // Refresh data and stocks
     } catch (error: any) {
       console.error('POS Error:', error);
@@ -1110,9 +1112,30 @@ if (!user) {
                       <span>Total</span>
                       <strong>Rp {posCart.reduce((s, i) => s + (i.price * i.qty), 0).toLocaleString('id-ID')}</strong>
                     </div>
+
+                    <div className="pos-calc">
+                      <div className="calc-field">
+                        <label>Uang Pelanggan (Rp)</label>
+                        <input 
+                          type="number" 
+                          placeholder="Masukkan jumlah..." 
+                          value={cashAmount}
+                          onChange={(e) => setCashAmount(e.target.value)}
+                        />
+                      </div>
+                      <div className="calc-result">
+                        <span>Kembalian</span>
+                        <strong className={Number(cashAmount) - posCart.reduce((s, i) => s + (i.price * i.qty), 0) < 0 ? 'negative' : ''}>
+                          Rp {(Number(cashAmount) > 0 
+                            ? Math.max(0, Number(cashAmount) - posCart.reduce((s, i) => s + (i.price * i.qty), 0)) 
+                            : 0).toLocaleString('id-ID')}
+                        </strong>
+                      </div>
+                    </div>
+
                     <button 
                       className="btn-process-pos" 
-                      disabled={posCart.length === 0 || isPosProcessing}
+                      disabled={posCart.length === 0 || isPosProcessing || (Number(cashAmount) < posCart.reduce((s, i) => s + (i.price * i.qty), 0))}
                       onClick={processPosOrder}
                     >
                       {isPosProcessing ? 'Memproses...' : 'Proses Pembayaran'}
@@ -2181,6 +2204,65 @@ if (!user) {
           display: flex;
           justify-content: space-between;
           font-size: 1.1rem;
+        }
+
+        .pos-calc {
+          display: grid;
+          gap: 1rem;
+          background: #f1f5f9;
+          padding: 1rem;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+        }
+
+        .calc-field {
+          display: grid;
+          gap: 0.35rem;
+        }
+
+        .calc-field label {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+        }
+
+        .calc-field input {
+          width: 100%;
+          padding: 0.65rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 700;
+          color: #0f172a;
+          outline: none;
+        }
+
+        .calc-field input:focus {
+          border-color: #f43f5e;
+          box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.1);
+        }
+
+        .calc-result {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 0.5rem;
+          border-top: 1px solid #cbd5e1;
+        }
+
+        .calc-result span {
+          font-size: 0.85rem;
+          color: #64748b;
+        }
+
+        .calc-result strong {
+          font-size: 1.1rem;
+          color: #10b981;
+        }
+
+        .calc-result strong.negative {
+          color: #ef4444;
         }
 
         .btn-process-pos {
