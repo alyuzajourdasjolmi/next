@@ -1363,6 +1363,7 @@ if (!user) {
                             price: 0,
                             category: "frozen",
                             img: "",
+                            stock: 0,
                           });
                         }}
                       >
