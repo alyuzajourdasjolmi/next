@@ -1836,16 +1836,11 @@ if (!user) {
         /* Clean Navigation Styles */
         .admin-sidebar-link {
           width: 100%;
-          height: 44px;
           min-height: 44px;
-          max-height: 44px;
           display: flex;
           align-items: center;
-          gap: 0.65rem;
+          gap: 0.85rem;
           padding: 0.75rem 0.85rem;
-          margin: 0;
-          margin-top: 0;
-          margin-bottom: 0;
           border: 1px solid transparent;
           border-radius: 12px;
           background: transparent;
@@ -1855,9 +1850,14 @@ if (!user) {
           font-weight: 600;
           text-decoration: none;
           cursor: pointer;
-          transition: background-color 0.2s ease, color 0.2s ease;
+          transition: all 0.2s ease;
           box-sizing: border-box;
           outline: none;
+          white-space: nowrap;
+        }
+
+        .admin-sidebar-link svg {
+          flex-shrink: 0;
         }
 
         .admin-sidebar-link:hover {
