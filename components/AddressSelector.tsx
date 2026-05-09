@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { MapPin, X, Plus } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface Address {
   id: number;

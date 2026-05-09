@@ -23,6 +23,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import AddressSelector from '../components/AddressSelector';
+import AddressManager from '../components/AddressManager';
 
 
 
@@ -77,6 +79,8 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [soldCounts, setSoldCounts] = useState<any>({});
   const [isLocating, setIsLocating] = useState(false);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [showProfileManager, setShowProfileManager] = useState(false);
 
   const [orderInfo, setOrderInfo] = useState({
     customerName: '',
@@ -221,7 +225,11 @@ export default function Home() {
       }
     });
     setTheme(localStorage.getItem('hijrahTokoTheme') || 'light');
-    setCart(JSON.parse(localStorage.getItem('hijrahTokoCart') || '[]'));
+    
+    // Initial cart load (will be overridden by user-specific useEffect if logged in)
+    const initialCart = localStorage.getItem('hijrahTokoCart_guest') || '[]';
+    setCart(JSON.parse(initialCart));
+    
     setOrderInfo(JSON.parse(localStorage.getItem('hijrahTokoOrderInfo') || '{}'));
     setInbox(JSON.parse(localStorage.getItem('hijrahTokoInbox') || '{"title":"","message":"","icon":"📨"}'));
     
@@ -341,6 +349,22 @@ export default function Home() {
           }
         });
         if (error) throw error;
+
+        // Save initial address to user_addresses table
+        if (authForm.address) {
+          const { data: userData } = await supabase.auth.getUser();
+          if (userData?.user) {
+            await supabase.from('user_addresses').insert([{
+              user_phone: authForm.phone,
+              label: 'Utama',
+              recipient_name: authForm.name,
+              recipient_phone: authForm.phone,
+              full_address: authForm.address,
+              is_primary: true
+            }]);
+          }
+        }
+
         alert('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi (jika diaktifkan) atau langsung login.');
         setAuthModal({ ...authModal, mode: 'login', isOpen: true });
       }
@@ -365,8 +389,27 @@ export default function Home() {
   }, [theme, isClient]);
 
   useEffect(() => {
-    if (isClient) localStorage.setItem('hijrahTokoCart', JSON.stringify(cart));
-  }, [cart, isClient]);
+    if (isClient) {
+      const cartKey = user ? `hijrahTokoCart_${user.id}` : 'hijrahTokoCart_guest';
+      localStorage.setItem(cartKey, JSON.stringify(cart));
+    }
+  }, [cart, user, isClient]);
+
+  // Load user-specific cart when user logs in
+  useEffect(() => {
+    if (isClient && user) {
+      const cartKey = `hijrahTokoCart_${user.id}`;
+      const savedCart = localStorage.getItem(cartKey);
+      if (savedCart) {
+        setCart(JSON.parse(savedCart));
+      } else {
+        setCart([]);
+      }
+    } else if (isClient && !user) {
+      const savedCart = localStorage.getItem('hijrahTokoCart_guest');
+      setCart(JSON.parse(savedCart || '[]'));
+    }
+  }, [user, isClient]);
 
   useEffect(() => {
     if (isClient) localStorage.setItem('hijrahTokoOrderInfo', JSON.stringify(orderInfo));
@@ -728,6 +771,9 @@ export default function Home() {
               <a href="#inbox" onClick={() => document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' })}>
                 <Package size={16} /> Pesanan Saya
               </a>
+              <button className="user-menu-item-btn" onClick={() => setShowProfileManager(true)}>
+                <MapPin size={16} /> Kelola Alamat
+              </button>
               <a href="/admin">
                 <CheckCircle2 size={16} /> Dashboard Admin
               </a>
@@ -1286,7 +1332,10 @@ export default function Home() {
                 className="form-group"
               >
                 <label>Alamat Pengiriman</label>
-                <div style={{ marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                  <button type="button" className="btn-secondary btn-small" onClick={() => setIsAddressModalOpen(true)}>
+                    <MapPin size={16} /> Pilih Alamat Tersimpan
+                  </button>
                   <button type="button" className="btn-secondary btn-small" onClick={useCurrentLocation} disabled={isLocating}>
                     {isLocating ? '📍 Mencari...' : '📍 Gunakan Lokasi Saat Ini'}
                   </button>
@@ -1668,3 +1717,40 @@ export default function Home() {
   );
 }
 
+{/*  Address Selector Modal  */}
+{isAddressModalOpen && user && (
+  <AddressSelector
+    userPhone={user.user_metadata?.phone || ''}
+    onSelect={(address) => {
+      setOrderInfo(prev => ({
+        ...prev,
+        customerAddress: address.full_address,
+        customerLatitude: address.latitude?.toString() || '',
+        customerLongitude: address.longitude?.toString() || '',
+        customerMapsLink: address.maps_link || `https://www.google.com/maps?q=${address.latitude},${address.longitude}`
+      }));
+    }}
+    onClose={() => setIsAddressModalOpen(false)}
+    onAddNew={() => {
+      setIsAddressModalOpen(false);
+      setShowProfileManager(true);
+    }}
+  />
+)}
+
+{/*  Profile / Address Manager Modal  */}
+{showProfileManager && user && (
+  <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+    <motion.div 
+      className="checkout-card"
+      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      style={{ maxWidth: '800px', width: '100%', padding: '2rem', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}
+    >
+      <button onClick={() => setShowProfileManager(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer' }}>
+        <X size={24} />
+      </button>
+      <AddressManager userPhone={user.user_metadata?.phone || ''} />
+    </motion.div>
+  </div>
+)}
