@@ -4,21 +4,30 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import AddressManager from '@/components/AddressManager';
+import { supabase } from '@/lib/supabase';
 
 export default function AddressesPage() {
   const router = useRouter();
-  const [userPhone, setUserPhone] = useState('');
+   const [userPhone, setUserPhone] = useState('');
+  const [userId, setUserId] = useState('');
 
   useEffect(() => {
-    // Get user phone from localStorage or session
-    const phone = localStorage.getItem('userPhone') || '';
-    if (!phone) {
-      // Redirect to home if no phone
-      alert('Silakan login terlebih dahulu');
-      router.push('/');
-      return;
-    }
-    setUserPhone(phone);
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserId(session.user.id);
+        setUserPhone(session.user.user_metadata?.phone || session.user.phone || '');
+      } else {
+        const phone = localStorage.getItem('userPhone') || '';
+        if (!phone) {
+          alert('Silakan login terlebih dahulu');
+          router.push('/');
+        } else {
+          setUserPhone(phone);
+        }
+      }
+    };
+    checkUser();
   }, [router]);
 
   if (!userPhone) {
@@ -64,7 +73,7 @@ export default function AddressesPage() {
           Kembali
         </button>
 
-        <AddressManager userPhone={userPhone} mode="manage" />
+        <AddressManager userId={userId} userPhone={userPhone} mode="manage" />
       </div>
     </div>
   );
