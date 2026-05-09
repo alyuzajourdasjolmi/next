@@ -196,7 +196,7 @@ export default function Home() {
         setInbox({
           title: 'Login untuk lacak pesanan',
           message: 'Silakan login untuk melihat status pesanan sesuai akun Anda.',
-          icon: 'ðŸ“¨'
+          icon: '📨'
         });
       }
     };
@@ -220,7 +220,7 @@ export default function Home() {
         setInbox({
           title: 'Login untuk lacak pesanan',
           message: 'Silakan login untuk melihat status pesanan sesuai akun Anda.',
-          icon: 'ðŸ“¨'
+          icon: '📨'
         });
       }
     });
@@ -655,7 +655,7 @@ export default function Home() {
       setInbox({
         title: 'Login untuk lacak pesanan',
         message: 'Silakan login untuk melihat status pesanan sesuai akun Anda.',
-        icon: 'ðŸ“¨'
+        icon: '📨'
       });
       return;
     }
@@ -685,7 +685,7 @@ export default function Home() {
         const inboxData = {
           title: statusTitleMap[latestOrder.status] || 'Status pesanan diperbarui',
           message: `Order #${latestOrder.id.toString().slice(-6).toUpperCase()} dengan status ${latestOrder.status.toUpperCase()}.`,
-          icon: latestOrder.status === 'completed' ? 'âœ…' : 'ðŸ“¨'
+          icon: latestOrder.status === 'completed' ? '✅' : '📨'
         };
         setInbox(inboxData);
         localStorage.setItem('hijrahTokoInbox', JSON.stringify(inboxData));
@@ -695,7 +695,7 @@ export default function Home() {
         const unavailableInbox = {
           title: 'Pesanan tidak tersedia',
           message: 'Akun ini belum memiliki pesanan aktif atau semua pesanan telah dibatalkan.',
-          icon: 'ðŸ“­'
+          icon: '📦'
         };
         setInbox(unavailableInbox);
         localStorage.setItem('hijrahTokoInbox', JSON.stringify(unavailableInbox));
@@ -1713,9 +1713,6 @@ export default function Home() {
     </div>
   )}
 </AnimatePresence>
-</>
-  );
-}
 
 {/*  Address Selector Modal  */}
 {isAddressModalOpen && user && (
@@ -1754,3 +1751,7 @@ export default function Home() {
     </motion.div>
   </div>
 )}
+</>
+  );
+}
+
