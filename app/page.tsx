@@ -1677,7 +1677,7 @@ export default function Home() {
         <div className="modal-img-container">
           <img src={selectedProduct.img} alt={selectedProduct.name} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
           <button onClick={() => setSelectedProduct(null)} style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', background: 'white', border: 'none', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)', cursor: 'pointer' }}>
-            <X size={20} />
+            <X size={20} color="#0f172a" />
           </button>
         </div>
         <div className="modal-body-padding">
@@ -1747,7 +1747,7 @@ export default function Home() {
       <button onClick={() => setShowProfileManager(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer' }}>
         <X size={24} />
       </button>
-      <AddressManager userPhone={user.user_metadata?.phone || ''} />
+      <AddressManager userPhone={user.user_metadata?.phone || user.phone || ''} />
     </motion.div>
   </div>
 )}

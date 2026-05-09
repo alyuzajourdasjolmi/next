@@ -104,6 +104,11 @@ export default function AddressManager({ userPhone, onSelectAddress, mode = 'man
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!userPhone) {
+      alert('Gagal: Sesi login tidak memiliki data identitas (nomor HP). Silakan lengkapi profil atau login ulang.');
+      return;
+    }
+
     try {
       const addressData = {
         user_phone: userPhone,
@@ -150,9 +155,9 @@ export default function AddressManager({ userPhone, onSelectAddress, mode = 'man
       setShowForm(false);
       setEditingId(null);
       loadAddresses();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving address:', error);
-      alert('Gagal menyimpan alamat');
+      alert('Gagal menyimpan alamat: ' + (error.message || 'Terjadi kesalahan sistem'));
     }
   };
 

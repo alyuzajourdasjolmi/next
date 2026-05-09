@@ -2516,16 +2516,16 @@ body.dark-mode .login-glass-card {
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  width: 240px;
+  width: 260px;
   background: var(--bg-surface);
   border-radius: 20px;
-  box-shadow: var(--shadow-strong);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
   border: 1px solid var(--border-main);
-  padding: 1rem;
+  padding: 0.5rem;
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 1100;
   backdrop-filter: blur(20px);
 }
@@ -2537,7 +2537,7 @@ body.dark-mode .login-glass-card {
 }
 
 .user-menu-header {
-  padding: 0.5rem 0.5rem 1rem;
+  padding: 1rem 1rem 0.75rem;
 }
 
 .user-menu-header strong {
@@ -2547,53 +2547,59 @@ body.dark-mode .login-glass-card {
 }
 
 .user-menu-header p {
-  font-size: 0.8rem;
-  color: var(--gray);
+  font-size: 0.75rem;
+  color: var(--text-muted);
   word-break: break-all;
+  margin-top: 0.25rem;
 }
 
 .user-menu-divider {
   height: 1px;
-  background: var(--border);
-  margin: 0.5rem 0;
+  background: var(--border-light);
+  margin: 0.25rem 0.75rem;
 }
 
 .user-menu-content a {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 0.5rem;
-  color: var(--dark) !important;
+  padding: 0.85rem 1rem;
+  color: var(--text-main) !important;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 12px;
   transition: all 0.2s;
 }
 
 .user-menu-content a:hover {
-  background: var(--surface-soft);
+  background: var(--bg-surface-soft);
   color: var(--primary) !important;
   transform: translateX(4px);
 }
 
 .user-logout-btn {
-  width: 100%;
+  width: calc(100% - 1rem);
+  margin: 0.25rem 0.5rem;
   text-align: left;
-  padding: 0.75rem 0.5rem;
+  padding: 0.85rem 1rem;
   background: transparent;
   border: none;
   color: #EF4444;
   font-family: inherit;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 12px;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .user-logout-btn:hover {
-  background: #FEE2E2;
+  background: #FEF2F2;
+  color: #DC2626;
   transform: translateX(4px);
 }
 
@@ -2749,22 +2755,23 @@ body.dark-mode .login-glass-card {
 .user-menu-item-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.75rem;
   width: 100%;
-  padding: 12px 16px;
+  padding: 0.85rem 1rem;
   background: none;
   border: none;
   color: var(--text-main);
+  font-family: inherit;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.3s;
-  border-radius: 10px;
+  transition: all 0.2s;
+  border-radius: 12px;
   text-align: left;
 }
 
 .user-menu-item-btn:hover {
-  background-color: var(--primary-light);
-  color: var(--primary-dark);
-  transform: translateX(5px);
+  background-color: var(--bg-surface-soft);
+  color: var(--primary);
+  transform: translateX(4px);
 }
