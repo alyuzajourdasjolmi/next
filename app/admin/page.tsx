@@ -361,17 +361,20 @@ export default function AdminDashboard() {
   const deleteUser = async (userId: string, name: string) => {
     if (
       !confirm(
-        `Apakah Anda yakin ingin menghapus data profil "${name}"? Ini juga akan menghapus riwayat pesanan mereka.`
+        `Apakah Anda yakin ingin menghapus data profil "${name}"? Riwayat pesanan mereka akan tetap dipertahankan.`
       )
     ) {
       return;
     }
 
     try {
+      // Putuskan tautan user_id dari pesanan agar riwayat tidak ikut terhapus
+      await supabase.from("orders").update({ user_id: null }).eq("user_id", userId);
+
       const { error } = await supabase.from("profiles").delete().eq("id", userId);
       if (error) throw error;
       setUsers((prev) => prev.filter((entry) => entry.id !== userId));
-      alert("Profil pengguna berhasil dihapus.");
+      alert("Profil pengguna berhasil dihapus, namun riwayat pesanan tetap tersimpan.");
     } catch (error: any) {
       console.error("Error deleting user:", error);
       alert("Gagal menghapus user: " + error.message);
