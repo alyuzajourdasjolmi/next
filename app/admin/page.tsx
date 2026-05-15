@@ -25,6 +25,8 @@ import {
   ShoppingCart,
   PlusCircle,
   MinusCircle,
+  Menu,
+  X,
 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import "../style.css";
@@ -84,6 +86,8 @@ export default function AdminDashboard() {
   const [posSearchTerm, setPosSearchTerm] = useState("");
   const [isPosProcessing, setIsPosProcessing] = useState(false);
   const [cashAmount, setCashAmount] = useState<number | string>("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isUnauthorized, setIsUnauthorized] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -91,12 +95,17 @@ export default function AdminDashboard() {
         data: { session },
       } = await supabase.auth.getSession();
 
-      if (session?.user && session.user.email !== ADMIN_EMAIL) {
-        alert("Akses ditolak: halaman ini khusus admin utama.");
-        await supabase.auth.signOut();
-        setUser(null);
+      if (session?.user) {
+        if (session.user.email !== ADMIN_EMAIL) {
+          setIsUnauthorized(true);
+          setUser(null);
+        } else {
+          setUser(session.user);
+          setIsUnauthorized(false);
+        }
       } else {
-        setUser(session?.user || null);
+        setUser(null);
+        setIsUnauthorized(false);
       }
     };
 
@@ -105,12 +114,17 @@ export default function AdminDashboard() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user && session.user.email !== ADMIN_EMAIL) {
-        alert("Akses ditolak: akun ini tidak memiliki izin admin.");
-        await supabase.auth.signOut();
-        setUser(null);
+      if (session?.user) {
+        if (session.user.email !== ADMIN_EMAIL) {
+          setIsUnauthorized(true);
+          setUser(null);
+        } else {
+          setUser(session.user);
+          setIsUnauthorized(false);
+        }
       } else {
-        setUser(session?.user || null);
+        setUser(null);
+        setIsUnauthorized(false);
       }
     });
 
@@ -616,6 +630,31 @@ export default function AdminDashboard() {
     { id: "analytics" as const, label: "Analitik", icon: BarChart3 },
   ];
 
+if (isUnauthorized) {
+  return (
+    <div className="admin-auth-page">
+      <div className="admin-auth-card" style={{ textAlign: 'center' }}>
+        <div className="admin-auth-logo">
+           <AlertCircle size={40} color="#f43f5e" />
+        </div>
+        <h1>Akses Ditolak</h1>
+        <p>Akun Anda tidak memiliki izin untuk mengakses Dashboard Admin Hijrah Toko.</p>
+        <div style={{ marginTop: '1rem', display: 'grid', gap: '0.5rem' }}>
+          <button 
+            onClick={() => supabase.auth.signOut()} 
+            className="admin-btn admin-btn-primary"
+          >
+            Keluar Akun
+          </button>
+          <Link href="/" className="admin-btn" style={{ background: '#f1f5f9', color: '#0f172a' }}>
+            Kembali ke Toko
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 if (!user) {
   return (
     <>
@@ -880,49 +919,66 @@ if (!user) {
 }
 
   return (
-    <div className="admin-v2">
-      <aside className="admin-v2-sidebar">
+    <div className={`admin-v2 ${isSidebarOpen ? "sidebar-open" : ""}`}>
+      {/* Overlay for mobile sidebar */}
+      {isSidebarOpen && (
+        <div className="admin-sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
+      )}
+
+      <aside className={`admin-v2-sidebar ${isSidebarOpen ? "open" : ""}`}>
         <div className="admin-sidebar-brand">
           <img src="/assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" />
           <div>
             <strong>Hijrah Toko</strong>
+            <span>Admin Portal</span>
+          </div>
+          <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)}>
+            <X size={20} />
+          </button>
         </div>
-      </div>
 
-      <nav className="admin-sidebar-nav">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              className={`admin-sidebar-link ${activeTab === item.id ? "active" : ""}`}
-              onClick={() => setActiveTab(item.id)}
-            >
-              <Icon size={18} />
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-      </nav>
+        <nav className="admin-sidebar-nav">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`admin-sidebar-link ${activeTab === item.id ? "active" : ""}`}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setIsSidebarOpen(false);
+                }}
+              >
+                <Icon size={18} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
 
-      <div className="admin-sidebar-footer">
-        <Link href="/" className="admin-sidebar-link">
-          <Home size={18} />
-          <span>Kembali ke Toko</span>
-        </Link>
-        <button type="button" className="admin-sidebar-link danger" onClick={handleLogout}>
-          <LogOut size={18} />
-          <span>Keluar</span>
-        </button>
-      </div>
-    </aside>
+        <div className="admin-sidebar-footer">
+          <Link href="/" className="admin-sidebar-link">
+            <Home size={18} />
+            <span>Ke Toko</span>
+          </Link>
+          <button type="button" className="admin-sidebar-link danger" onClick={handleLogout}>
+            <LogOut size={18} />
+            <span>Keluar</span>
+          </button>
+        </div>
+      </aside>
 
       <main className="admin-v2-main">
         <header className="admin-topbar">
-          <div>
-            <h1>Ringkasan Dashboard</h1>
-            <p>Anda login sebagai {user.email}</p>
+          <div className="topbar-left">
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+              <Menu size={20} />
+            </button>
+            <div>
+              <h1>{navItems.find(i => i.id === activeTab)?.label || "Dashboard"}</h1>
+              <p className="admin-user-info">Login: {user.email}</p>
+            </div>
           </div>
           <button
             type="button"
@@ -1848,6 +1904,16 @@ if (!user) {
           color: #94a3b8;
         }
 
+        .mobile-close-btn {
+          display: none;
+          background: rgba(255, 255, 255, 0.1);
+          border: none;
+          padding: 8px;
+          border-radius: 8px;
+          color: #fff;
+          cursor: pointer;
+        }
+
         .admin-sidebar-nav,
         .admin-sidebar-footer {
           display: grid;
@@ -1885,17 +1951,12 @@ if (!user) {
           background: #1e293b;
           color: #fff;
           margin: 0;
-          margin-top: 0;
-          margin-bottom: 0;
         }
 
         .admin-sidebar-link.active {
           background: linear-gradient(135deg, #e11d48, #be123c);
           color: #fff;
           border-color: transparent;
-          margin: 0;
-          margin-top: 0;
-          margin-bottom: 0;
         }
 
         .admin-sidebar-link.danger {
@@ -1908,53 +1969,75 @@ if (!user) {
         }
 
         .admin-v2-main {
-        padding: 1.6rem;
-        display: grid;
-        gap: 1rem;
-        align-content: start;
-        overflow-x: auto;
-        overflow-y: auto;
-        height: 100vh;
-        min-width: 0;
+          padding: 1rem;
+          display: grid;
+          gap: 1rem;
+          align-content: start;
+          overflow-x: hidden;
+          overflow-y: auto;
+          height: 100vh;
+          min-width: 0;
         }
 
         .admin-topbar {
-          background: rgba(255, 255, 255, 0.75);
+          background: rgba(255, 255, 255, 0.85);
           border: 1px solid #e2e8f0;
           border-radius: 18px;
-          padding: 1rem 1.15rem;
+          padding: 0.85rem 1rem;
           display: flex;
           align-items: center;
           justify-content: space-between;
           gap: 1rem;
           backdrop-filter: blur(8px);
+          position: sticky;
+          top: 0;
+          z-index: 50;
+        }
+
+        .topbar-left {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .mobile-menu-btn {
+          display: none;
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
+          padding: 8px;
+          border-radius: 10px;
+          color: #0f172a;
+          cursor: pointer;
         }
 
         .admin-topbar h1 {
           margin: 0;
-          font-size: 1.25rem;
+          font-size: 1.15rem;
           color: #0f172a;
+          font-weight: 800;
         }
 
-        .admin-topbar p {
-          margin: 0.2rem 0 0;
+        .admin-user-info {
+          margin: 0;
           color: #64748b;
-          font-size: 0.9rem;
+          font-size: 0.75rem;
+          font-weight: 500;
         }
 
         .admin-kpi-grid {
           display: grid;
-          grid-template-columns: repeat(5, minmax(0, 1fr));
-          gap: 0.8rem;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 0.75rem;
         }
 
         .admin-kpi-card {
           background: #fff;
           border: 1px solid #e2e8f0;
           border-radius: 16px;
-          padding: 0.95rem;
+          padding: 0.85rem;
           display: grid;
-          gap: 0.45rem;
+          gap: 0.35rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .admin-kpi-card.featured {
@@ -1965,54 +2048,40 @@ if (!user) {
         .admin-kpi-card h3 {
           margin: 0;
           color: #64748b;
-          font-size: 0.8rem;
+          font-size: 0.75rem;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.06em;
+          letter-spacing: 0.05em;
         }
 
         .admin-kpi-card strong {
           color: #0f172a;
-          font-size: 1.1rem;
+          font-size: 1rem;
           line-height: 1.2;
+          font-weight: 800;
         }
 
         .kpi-icon {
-          width: 32px;
-          height: 32px;
-          border-radius: 10px;
+          width: 30px;
+          height: 30px;
+          border-radius: 9px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
         }
 
-        .kpi-icon.green {
-          background: #dcfce7;
-          color: #166534;
-        }
-        .kpi-icon.amber {
-          background: #fef3c7;
-          color: #92400e;
-        }
-        .kpi-icon.blue {
-          background: #dbeafe;
-          color: #1d4ed8;
-        }
-        .kpi-icon.slate {
-          background: #e2e8f0;
-          color: #334155;
-        }
-        .kpi-icon.rose {
-          background: #ffe4e6;
-          color: #be123c;
-        }
+        .kpi-icon.green { background: #dcfce7; color: #166534; }
+        .kpi-icon.amber { background: #fef3c7; color: #92400e; }
+        .kpi-icon.blue { background: #dbeafe; color: #1d4ed8; }
+        .kpi-icon.slate { background: #e2e8f0; color: #334155; }
+        .kpi-icon.rose { background: #ffe4e6; color: #be123c; }
 
         .admin-panel {
           background: #fff;
           border: 1px solid #e2e8f0;
           border-radius: 18px;
           padding: 1rem;
-          box-shadow: 0 14px 30px -28px rgba(15, 23, 42, 0.45);
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
 
         .admin-panel-header {
@@ -2027,14 +2096,92 @@ if (!user) {
           display: inline-flex;
           align-items: center;
           gap: 0.55rem;
-          font-size: 1.02rem;
+          font-size: 1rem;
           color: #0f172a;
+          font-weight: 700;
         }
 
         .admin-panel-header.split {
           justify-content: space-between;
           flex-wrap: wrap;
           gap: 0.75rem;
+        }
+
+        .admin-sidebar-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.4);
+          backdrop-filter: blur(4px);
+          z-index: 998;
+        }
+
+        /* RESPONSIVE QUERIES */
+        @media (max-width: 1100px) {
+          .admin-kpi-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+          .admin-kpi-card.featured {
+            grid-column: span 3;
+          }
+        }
+
+        @media (max-width: 1024px) {
+          .admin-v2 {
+            grid-template-columns: 1fr;
+          }
+
+          .admin-v2-sidebar {
+            position: fixed;
+            left: -280px;
+            z-index: 1000;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+
+          .admin-v2-sidebar.open {
+            left: 0;
+          }
+
+          .mobile-menu-btn, .mobile-close-btn {
+            display: flex;
+          }
+
+          .admin-pos-layout {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .admin-kpi-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .admin-kpi-card.featured {
+            grid-column: span 2;
+          }
+          .admin-toolbar {
+            grid-template-columns: 1fr;
+          }
+          .admin-product-layout {
+            grid-template-columns: 1fr;
+          }
+          .admin-topbar h1 {
+            font-size: 1rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .admin-kpi-grid {
+            grid-template-columns: 1fr;
+          }
+          .admin-kpi-card.featured {
+            grid-column: span 1;
+          }
+          .admin-topbar {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .admin-topbar button {
+            width: 100%;
+          }
         }
 
         /* POS LAYOUT */
