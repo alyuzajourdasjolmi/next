@@ -396,8 +396,9 @@ export default function Home() {
         return;
       }
 
-      // 2. Register Service Worker
-      const registration = await navigator.serviceWorker.register('/sw.js');
+      // 2. Register Service Worker and wait for it to be ready
+      await navigator.serviceWorker.register('/sw.js');
+      const registration = await navigator.serviceWorker.ready;
 
       // Helper function to convert VAPID key
       const urlBase64ToUint8Array = (base64String: string) => {
