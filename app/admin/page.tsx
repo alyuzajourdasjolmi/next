@@ -361,20 +361,38 @@ export default function AdminDashboard() {
   const deleteUser = async (userId: string, name: string) => {
     if (
       !confirm(
-        `Apakah Anda yakin ingin menghapus data profil "${name}"? Riwayat pesanan mereka akan tetap dipertahankan.`
+        `Apakah Anda yakin ingin menghapus user "${name}" secara permanen? Akun login dan data profil mereka akan dihapus. Riwayat pesanan akan tetap dipertahankan.`
       )
     ) {
       return;
     }
 
     try {
-      // Putuskan tautan user_id dari pesanan agar riwayat tidak ikut terhapus
-      await supabase.from("orders").update({ user_id: null }).eq("user_id", userId);
+      // 1. Putuskan tautan user_id dari pesanan agar riwayat tidak ikut terhapus
+      // Kita bungkus try-catch karena kolom user_id mungkin belum ada di tabel orders
+      try {
+        await supabase.from("orders").update({ user_id: null }).eq("user_id", userId);
+      } catch (err) {
+        console.log("Kolom user_id mungkin belum ada di tabel orders, melewati...");
+      }
 
-      const { error } = await supabase.from("profiles").delete().eq("id", userId);
-      if (error) throw error;
+      // 2. Panggil API server untuk menghapus user dari Authentication & Profiles
+      const response = await fetch("/api/admin/delete-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Gagal menghapus user dari server.");
+      }
+
       setUsers((prev) => prev.filter((entry) => entry.id !== userId));
-      alert("Profil pengguna berhasil dihapus, namun riwayat pesanan tetap tersimpan.");
+      alert("User berhasil dihapus sepenuhnya dari sistem (Authentication & Profil).");
     } catch (error: any) {
       console.error("Error deleting user:", error);
       alert("Gagal menghapus user: " + error.message);
