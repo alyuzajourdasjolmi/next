@@ -361,7 +361,7 @@ export default function AdminDashboard() {
   const deleteUser = async (userId: string, name: string) => {
     if (
       !confirm(
-        `Apakah Anda yakin ingin menghapus user "${name}" secara permanen? Akun login dan data profil mereka akan dihapus. Riwayat pesanan akan tetap dipertahankan.`
+        `Apakah Anda yakin ingin menghapus user "${name}" secara permanen? SELURUH data profil, riwayat pesanan, dan akun login mereka akan dihapus total dari sistem.`
       )
     ) {
       return;
