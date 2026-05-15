@@ -1034,7 +1034,7 @@ if (!user) {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin.hijrahtoko@gmail.com"
+                  placeholder="masukkan email admin"
                   required
                 />
               </div>
@@ -1072,79 +1072,429 @@ if (!user) {
   );
 }
 
+if (isUnauthorized) {
   return (
-    <div className={`admin-v2 ${isSidebarOpen ? "sidebar-open" : ""}`}>
-      {/* Overlay for mobile sidebar */}
-      {isSidebarOpen && (
-        <div className="admin-sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
-      )}
-
-      <aside className={`admin-v2-sidebar ${isSidebarOpen ? "open" : ""}`}>
-        <div className="admin-sidebar-brand">
-          <img src="/assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" />
-          <div>
-            <strong>Hijrah Toko</strong>
-            <span>Admin Portal</span>
+    <div className="admin-unauthorized-page">
+      <div className="unauthorized-card">
+        <div className="unauthorized-icon-wrap">
+          <div className="icon-pulse" />
+          <div className="icon-inner">
+            <X size={32} strokeWidth={3} />
           </div>
-          <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)}>
-            <X size={20} />
-          </button>
+        </div>
+        
+        <div className="unauthorized-text">
+          <h1>Akses Dibatasi</h1>
+          <p>Maaf, akun <strong>{user?.email}</strong> tidak memiliki otoritas untuk mengakses area administrasi ini.</p>
         </div>
 
-        <nav className="admin-sidebar-nav">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className={`admin-sidebar-link ${activeTab === item.id ? "active" : ""}`}
-                onClick={() => {
-                  setActiveTab(item.id);
-                  setIsSidebarOpen(false);
-                }}
-              >
-                <Icon size={18} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="admin-sidebar-footer">
-          <Link href="/" className="admin-sidebar-link">
-            <Home size={18} />
-            <span>Ke Toko</span>
-          </Link>
-          <button type="button" className="admin-sidebar-link danger" onClick={handleLogout}>
+        <div className="unauthorized-actions">
+          <button 
+            onClick={() => supabase.auth.signOut()} 
+            className="btn-action-primary"
+          >
             <LogOut size={18} />
-            <span>Keluar</span>
+            Keluar Akun
           </button>
+          <Link href="/" className="btn-action-secondary">
+            <Home size={18} />
+            Kembali ke Beranda
+          </Link>
         </div>
-      </aside>
 
-      <main className="admin-v2-main">
-        <header className="admin-topbar">
-          <div className="topbar-left">
-            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
-              <Menu size={20} />
-            </button>
-            <div>
-              <h1>{navItems.find(i => i.id === activeTab)?.label || "Dashboard"}</h1>
-              <p className="admin-user-info">Login: {user.email}</p>
+        <div className="unauthorized-footer">
+          Keamanan Hijrah Toko &copy; 2026
+        </div>
+      </div>
+
+      <style jsx>{`
+        .admin-unauthorized-page {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #0f172a;
+          background-image: 
+            radial-gradient(at 0% 0%, rgba(225, 29, 72, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(30, 64, 175, 0.15) 0px, transparent 50%);
+          padding: 2rem;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .unauthorized-card {
+          width: 100%;
+          max-width: 440px;
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 32px;
+          padding: 3rem 2rem;
+          text-align: center;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 2rem;
+        }
+        .unauthorized-icon-wrap {
+          position: relative;
+          width: 80px;
+          height: 80px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .icon-inner {
+          position: relative;
+          z-index: 2;
+          width: 64px;
+          height: 64px;
+          background: #e11d48;
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          box-shadow: 0 10px 20px -5px rgba(225, 29, 72, 0.5);
+        }
+        .icon-pulse {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background: #e11d48;
+          border-radius: 20px;
+          opacity: 0.3;
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); opacity: 0.3; }
+          50% { transform: scale(1.3); opacity: 0; }
+        }
+        .unauthorized-text h1 {
+          color: white;
+          font-size: 1.75rem;
+          font-weight: 800;
+          margin-bottom: 0.75rem;
+          letter-spacing: -0.02em;
+        }
+        .unauthorized-text p {
+          color: #94a3b8;
+          line-height: 1.6;
+          font-size: 0.95rem;
+        }
+        .unauthorized-text strong {
+          color: #e2e8f0;
+        }
+        .unauthorized-actions {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+        .btn-action-primary {
+          width: 100%;
+          padding: 1rem;
+          background: #e11d48;
+          color: white;
+          border: none;
+          border-radius: 14px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .btn-action-primary:hover {
+          background: #be123c;
+          transform: translateY(-2px);
+        }
+        .btn-action-secondary {
+          width: 100%;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.05);
+          color: #e2e8f0;
+          text-decoration: none;
+          border-radius: 14px;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          transition: all 0.2s;
+        }
+        .btn-action-secondary:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+        .unauthorized-footer {
+          font-size: 0.75rem;
+          color: #475569;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+if (!user) {
+  return (
+    <div className="admin-login-page">
+      <div className="login-card">
+        <div className="login-logo-wrap">
+          <img src="/assets/images/logo-hijrah-toko.png" alt="Hijrah Toko" />
+        </div>
+        
+        <div className="login-header">
+          <h1>Admin Portal</h1>
+          <p>Silakan masuk untuk mengelola toko Anda</p>
+        </div>
+
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="form-group">
+            <label>Email Address</label>
+            <div className="input-with-icon">
+              <UserCircle2 size={20} />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin.hijrahtoko@gmail.com"
+                required
+              />
             </div>
           </div>
-          <button
-            type="button"
-            className="admin-btn admin-btn-secondary"
-            onClick={fetchData}
-            disabled={loading}
-          >
-            <RefreshCw size={16} className={loading ? "spin" : ""} />
-            {loading ? "Memuat..." : "Refresh Data"}
-          </button>
-        </header>
 
+          <div className="form-group">
+            <label>Password</label>
+            <div className="input-with-icon">
+              <Lock size={20} />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="btn-login-submit"
+            disabled={isLoginLoading}
+          >
+            {isLoginLoading ? (
+              <Loader2 size={18} className="spin" />
+            ) : (
+              <>
+                Masuk Sekarang
+                <ArrowRight size={18} />
+              </>
+            )}
+          </button>
+        </form>
+
+        <div className="login-footer">
+          &copy; 2026 Hijrah Toko Admin Security
+        </div>
+      </div>
+
+      <style jsx>{`
+        .admin-login-page {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #f1f5f9;
+          background-image: 
+            radial-gradient(at 0% 0%, rgba(225, 29, 72, 0.05) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(30, 64, 175, 0.05) 0px, transparent 50%);
+          padding: 1.5rem;
+        }
+        .login-card {
+          width: 100%;
+          max-width: 420px;
+          background: #fff;
+          border-radius: 28px;
+          padding: 3rem 2rem;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+          border: 1px solid #e2e8f0;
+        }
+        .login-logo-wrap {
+          width: 64px;
+          height: 64px;
+          margin: 0 auto 1.5rem;
+          background: #fff;
+          border-radius: 16px;
+          padding: 8px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          border: 1px solid #f1f5f9;
+        }
+        .login-logo-wrap img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        .login-header {
+          text-align: center;
+          margin-bottom: 2.5rem;
+        }
+        .login-header h1 {
+          font-size: 1.75rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin-bottom: 0.5rem;
+        }
+        .login-header p {
+          color: #64748b;
+          font-size: 0.95rem;
+        }
+        .login-form {
+          display: grid;
+          gap: 1.5rem;
+        }
+        .form-group {
+          display: grid;
+          gap: 0.5rem;
+        }
+        .form-group label {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #475569;
+        }
+        .input-with-icon {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+        .input-with-icon :global(svg) {
+          position: absolute;
+          left: 1rem;
+          color: #94a3b8;
+        }
+        .input-with-icon input {
+          width: 100%;
+          padding: 0.75rem 1rem 0.75rem 3rem;
+          border-radius: 12px;
+          border: 1px solid #cbd5e1;
+          font-size: 1rem;
+          transition: all 0.2s;
+          outline: none;
+        }
+        .input-with-icon input:focus {
+          border-color: #e11d48;
+          box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.1);
+        }
+        .btn-login-submit {
+          width: 100%;
+          padding: 0.875rem;
+          background: #0f172a;
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .btn-login-submit:hover:not(:disabled) {
+          background: #1e293b;
+          transform: translateY(-1px);
+        }
+        .btn-login-submit:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+        .login-footer {
+          margin-top: 2.5rem;
+          text-align: center;
+          font-size: 0.75rem;
+          color: #94a3b8;
+        }
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
+    </div>
+  );
+}
+
+return (
+  <div className={`admin-v2 ${isSidebarOpen ? "sidebar-open" : ""}`}>
+    {isSidebarOpen && (
+      <div className="admin-sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
+    )}
+
+    <aside className={`admin-v2-sidebar ${isSidebarOpen ? "open" : ""}`}>
+      <div className="admin-sidebar-brand">
+        <img src="/assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" />
+        <div>
+          <strong>Hijrah Toko</strong>
+          <span>Admin Portal</span>
+        </div>
+        <button className="mobile-close-btn" onClick={() => setIsSidebarOpen(false)}>
+          <X size={20} />
+        </button>
+      </div>
+
+      <nav className="admin-sidebar-nav">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className={`admin-sidebar-link ${activeTab === item.id ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab(item.id);
+                setIsSidebarOpen(false);
+              }}
+            >
+              <Icon size={18} />
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      <div className="admin-sidebar-footer">
+        <Link href="/" className="admin-sidebar-link">
+          <Home size={18} />
+          <span>Ke Toko</span>
+        </Link>
+        <button type="button" className="admin-sidebar-link danger" onClick={handleLogout}>
+          <LogOut size={18} />
+          <span>Keluar</span>
+        </button>
+      </div>
+    </aside>
+
+    <main className="admin-v2-main">
+      <header className="admin-topbar">
+        <div className="topbar-left">
+          <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+            <Menu size={20} />
+          </button>
+          <div className="topbar-title-wrap">
+            <h1>{navItems.find(i => i.id === activeTab)?.label || "Dashboard"}</h1>
+            <p className="admin-user-info">{user.email}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="admin-btn admin-btn-secondary"
+          onClick={fetchData}
+          disabled={loading}
+        >
+          <RefreshCw size={16} className={loading ? "spin" : ""} />
+          <span>{loading ? "Memuat..." : "Refresh Data"}</span>
+        </button>
+      </header>
+
+      <div className="content-body">
         <section className="admin-kpi-grid">
           <article className="admin-kpi-card">
             <span className="kpi-icon green">
@@ -1268,9 +1618,10 @@ if (!user) {
                 </div>
               </section>
             )}
+
             {activeTab === "cashier" && (
               <section className="admin-pos-layout">
-                <article className="admin-panel pos-catalog">
+                <article className="admin-panel">
                   <div className="admin-panel-header split">
                     <h2>
                       <ShoppingCart size={18} />
@@ -1312,7 +1663,7 @@ if (!user) {
                   </div>
                 </article>
 
-                <article className="admin-panel pos-sidebar">
+                <article className="admin-panel">
                   <div className="admin-panel-header">
                     <h2>Detail Transaksi</h2>
                   </div>
@@ -1463,9 +1814,6 @@ if (!user) {
                                     </li>
                                   ))}
                                 </ul>
-                                {order.delivery_method === "delivery" && order.customer_address ? (
-                                  <small>{order.customer_address}</small>
-                                ) : null}
                               </div>
                             </td>
                             <td>
@@ -1481,7 +1829,7 @@ if (!user) {
                                 <option value="processing">Diproses</option>
                                 <option value="shipped">Dikirim</option>
                                 <option value="completed">Selesai</option>
-                                <option value="cancelled">Batalkan (hapus)</option>
+                                <option value="cancelled">Batalkan</option>
                               </select>
                             </td>
                             <td>
@@ -1491,16 +1839,6 @@ if (!user) {
                             </td>
                             <td>
                               <div className="admin-action-row">
-                                {order.status === "pending" && (
-                                  <button
-                                    type="button"
-                                    className="icon-action success"
-                                    title="Konfirmasi cepat"
-                                    onClick={() => updateOrderStatus(order.id, "confirmed")}
-                                  >
-                                    <CheckCircle2 size={16} />
-                                  </button>
-                                )}
                                 <button
                                   type="button"
                                   className="icon-action info"
@@ -1509,16 +1847,14 @@ if (!user) {
                                 >
                                   <Printer size={16} />
                                 </button>
-                                {order.status !== "cancelled" && order.status !== "completed" && (
-                                  <button
-                                    type="button"
-                                    className="icon-action danger"
-                                    title="Batalkan pesanan"
-                                    onClick={() => updateOrderStatus(order.id, "cancelled")}
-                                  >
-                                    <Trash2 size={16} />
-                                  </button>
-                                )}
+                                <button
+                                  type="button"
+                                  className="icon-action danger"
+                                  title="Hapus"
+                                  onClick={() => updateOrderStatus(order.id, "cancelled")}
+                                >
+                                  <Trash2 size={16} />
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -1526,73 +1862,6 @@ if (!user) {
                       )}
                     </tbody>
                   </table>
-                </div>
-              </section>
-            )}
-
-            {activeTab === "analytics" && (
-              <section className="admin-panel">
-                <div className="admin-panel-header split">
-                  <h2>
-                    <BarChart3 size={18} />
-                    Analitik Penjualan
-                  </h2>
-                  <span className="panel-chip">6 Bulan Terakhir</span>
-                </div>
-                <div style={{ display: 'grid', gap: '1rem' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                    <div style={{ background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)', padding: '1rem', borderRadius: '12px', border: '1px solid #86efac' }}>
-                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#166534', fontSize: '0.875rem' }}>Total Pendapatan</h4>
-                      <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#166534' }}>
-                        Rp {totalRevenue.toLocaleString('id-ID')}
-                      </p>
-                    </div>
-                    <div style={{ background: 'linear-gradient(135deg, #fef3c7, #fde68a)', padding: '1rem', borderRadius: '12px', border: '1px solid #fbbf24' }}>
-                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#92400e', fontSize: '0.875rem' }}>Pesanan Selesai</h4>
-                      <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#92400e' }}>
-                        {orders.filter(o => o.status === 'completed').length}
-                      </p>
-                    </div>
-                    <div style={{ background: 'linear-gradient(135deg, #dbeafe, #bfdbfe)', padding: '1rem', borderRadius: '12px', border: '1px solid #93c5fd' }}>
-                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#1d4ed8', fontSize: '0.875rem' }}>Rata-rata Pesanan</h4>
-                      <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold', color: '#1d4ed8' }}>
-                        Rp {orders.length > 0 ? Math.round(totalRevenue / orders.length).toLocaleString('id-ID') : '0'}
-                      </p>
-                    </div>
-                  </div>
-                  <div style={{ background: '#fff', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                    <h4 style={{ margin: '0 0 1rem 0', color: '#0f172a' }}>Produk Terlaris</h4>
-                    <div style={{ display: 'grid', gap: '0.5rem' }}>
-                      {orders.flatMap(o => o.order_items || [])
-                        .reduce((acc: any, item: any) => {
-                          const existing = acc.find((a: any) => a.product_name === item.product_name);
-                          if (existing) {
-                            existing.qty += item.qty;
-                            existing.total += item.price * item.qty;
-                          } else {
-                            acc.push({
-                              product_name: item.product_name,
-                              qty: item.qty,
-                              total: item.price * item.qty
-                            });
-                          }
-                          return acc;
-                        }, [])
-                        .sort((a: any, b: any) => b.qty - a.qty)
-                        .slice(0, 5)
-                        .map((product: any, index: number) => (
-                          <div key={index} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: '#f8fafc', borderRadius: '8px' }}>
-                            <div>
-                              <strong>{product.product_name}</strong>
-                              <p style={{ margin: 0, fontSize: '0.875rem', color: '#64748b' }}>{product.qty} terjual</p>
-                            </div>
-                            <span style={{ fontWeight: 'bold', color: '#0f172a' }}>
-                              Rp {product.total.toLocaleString('id-ID')}
-                            </span>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
                 </div>
               </section>
             )}
@@ -1605,25 +1874,6 @@ if (!user) {
                       <Edit3 size={18} />
                       {editingProductId ? "Edit Produk" : "Tambah Produk"}
                     </h2>
-                    {editingProductId ? (
-                      <button
-                        type="button"
-                        className="admin-btn admin-btn-secondary"
-                        onClick={() => {
-                          setEditingProductId(null);
-                          setProductForm({
-                            name: "",
-                            desc: "",
-                            price: 0,
-                            category: "frozen",
-                            img: "",
-                            stock: 0,
-                          });
-                        }}
-                      >
-                        Batalkan Edit
-                      </button>
-                    ) : null}
                   </div>
 
                   <form onSubmit={saveProduct} className="admin-form">
@@ -1632,104 +1882,69 @@ if (!user) {
                       <input
                         type="text"
                         value={productForm.name}
-                        onChange={(event) =>
-                          setProductForm((prev) => ({ ...prev, name: event.target.value }))
-                        }
-                        placeholder="Contoh: Bakso Sapi Premium"
+                        onChange={(e) => setProductForm(p => ({ ...p, name: e.target.value }))}
                         required
                       />
                     </label>
-
                     <label>
                       Deskripsi
                       <textarea
                         rows={3}
                         value={productForm.desc}
-                        onChange={(event) =>
-                          setProductForm((prev) => ({ ...prev, desc: event.target.value }))
-                        }
-                        placeholder="Tuliskan deskripsi singkat produk"
+                        onChange={(e) => setProductForm(p => ({ ...p, desc: e.target.value }))}
                         required
                       />
                     </label>
-
                     <div className="admin-form-grid">
                       <label>
-                        Harga (Rp)
+                        Harga
                         <input
                           type="number"
-                          min={0}
                           value={productForm.price}
-                          onChange={(event) =>
-                            setProductForm((prev) => ({
-                              ...prev,
-                              price: Number(event.target.value) || 0,
-                            }))
-                          }
+                          onChange={(e) => setProductForm(p => ({ ...p, price: Number(e.target.value) }))}
                           required
                         />
                       </label>
-
                       <label>
                         Kategori
                         <select
                           value={productForm.category}
-                          onChange={(event) =>
-                            setProductForm((prev) => ({
-                              ...prev,
-                              category: event.target.value,
-                            }))
-                          }
+                          onChange={(e) => setProductForm(p => ({ ...p, category: e.target.value }))}
                         >
                           <option value="frozen">Frozen Food</option>
                           <option value="atk">ATK</option>
                           <option value="other">Lainnya</option>
                         </select>
                       </label>
-
                       <label>
-                        Stok Produk
+                        Stok
                         <input
                           type="number"
-                          min={0}
                           value={productForm.stock}
-                          onChange={(event) =>
-                            setProductForm((prev) => ({
-                              ...prev,
-                              stock: Number(event.target.value) || 0,
-                            }))
-                          }
+                          onChange={(e) => setProductForm(p => ({ ...p, stock: Number(e.target.value) }))}
                           required
                         />
                       </label>
                     </div>
-
                     <label>
                       URL Gambar
                       <input
                         type="text"
                         value={productForm.img}
-                        onChange={(event) =>
-                          setProductForm((prev) => ({ ...prev, img: event.target.value }))
-                        }
-                        placeholder="https://..."
+                        onChange={(e) => setProductForm(p => ({ ...p, img: e.target.value }))}
                       />
                     </label>
-
                     <label className="upload-trigger">
-                      <Upload size={16} />
-                      Upload Gambar
+                      <Upload size={16} /> Upload Gambar
                       <input type="file" onChange={handleFileUpload} accept="image/*" hidden />
                     </label>
-
-                    {isUploading ? (
+                    {isUploading && (
                       <div className="upload-progress">
                         <span style={{ width: `${uploadProgress}%` }} />
                       </div>
-                    ) : null}
-
+                    )}
                     <button type="submit" className="admin-btn admin-btn-primary">
-                      {editingProductId ? "Perbarui Produk" : "Simpan Produk"}
+                      {editingProductId ? "Simpan Perubahan" : "Tambah Produk"}
                     </button>
                   </form>
                 </article>
@@ -1748,70 +1963,38 @@ if (!user) {
                       <thead>
                         <tr>
                           <th>Produk</th>
-                          <th>Kategori</th>
                           <th>Harga</th>
                           <th>Stok</th>
                           <th>Aksi</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {products.map((product) => (
+                        {products.map(product => (
                           <tr key={product.id}>
                             <td>
                               <div className="admin-product-cell">
-                                <img
-                                  src={product.img}
-                                  alt={product.name}
-                                  onError={(event) => {
-                                    event.currentTarget.src = "https://via.placeholder.com/56";
-                                  }}
-                                />
+                                <img src={product.img} alt="" />
                                 <div>
                                   <strong>{product.name}</strong>
-                                  <small>{String(product.desc || "").slice(0, 70)}</small>
+                                  <small>{product.category}</small>
                                 </div>
                               </div>
                             </td>
-                            <td>
-                              <span className={`category-pill ${product.category}`}>
-                                {String(product.category).toUpperCase()}
-                              </span>
-                            </td>
-                            <td>
-                              <strong>Rp {product.price.toLocaleString("id-ID")}</strong>
-                            </td>
-                            <td>
-                              <span className={`stock-badge ${product.stock <= 5 ? 'low' : ''}`}>
-                                {product.stock || 0}
-                              </span>
-                            </td>
+                            <td>Rp {product.price.toLocaleString('id-ID')}</td>
+                            <td>{product.stock}</td>
                             <td>
                               <div className="admin-action-row">
-                                <button
-                                  type="button"
+                                <button 
                                   className="icon-action info"
-                                  title="Edit produk"
                                   onClick={() => {
                                     setEditingProductId(product.id);
-                                    setProductForm({
-                                      name: product.name,
-                                      desc: product.desc,
-                                      price: product.price,
-                                      category: product.category,
-                                      img: product.img,
-                                      stock: product.stock || 0,
-                                    });
+                                    setProductForm({ ...product });
                                     window.scrollTo({ top: 0, behavior: "smooth" });
                                   }}
                                 >
                                   <Edit3 size={16} />
                                 </button>
-                                <button
-                                  type="button"
-                                  className="icon-action danger"
-                                  title="Hapus produk"
-                                  onClick={() => deleteProduct(product.id)}
-                                >
+                                <button className="icon-action danger" onClick={() => deleteProduct(product.id)}>
                                   <Trash2 size={16} />
                                 </button>
                               </div>
@@ -1839,67 +2022,31 @@ if (!user) {
                   <table className="admin-table">
                     <thead>
                       <tr>
-                        <th>Pengguna</th>
+                        <th>Nama / Email</th>
                         <th>WhatsApp</th>
-                        <th>Alamat</th>
-                        <th>Bergabung</th>
                         <th>Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {users.map((entry) => (
+                      {users.map(entry => (
                         <tr key={entry.id}>
                           <td>
                             <div className="admin-user-cell">
-                              <div className="avatar">
-                                <UserCircle2 size={18} />
-                              </div>
+                              <div className="avatar"><UserCircle2 size={18} /></div>
                               <div>
                                 <strong>{entry.full_name || "Tanpa Nama"}</strong>
-                                <small>{entry.email || "-"}</small>
+                                <small>{entry.email}</small>
                               </div>
                             </div>
                           </td>
                           <td>
-                            <a
-                              href={`https://wa.me/${entry.phone?.replace(/[^0-9]/g, "")}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="wa-link"
-                            >
+                            <a href={`https://wa.me/${entry.phone?.replace(/[^0-9]/g, '')}`} target="_blank" className="wa-link">
                               {entry.phone || "-"}
                             </a>
                           </td>
-                          <td>{entry.address || "-"}</td>
-                          <td>
-                            {entry.created_at
-                              ? new Date(entry.created_at).toLocaleDateString("id-ID", {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                })
-                              : "-"}
-                          </td>
                           <td>
                             <div className="admin-action-row">
-                              <button
-                                type="button"
-                                className="icon-action info"
-                                title="Lihat pesanan pengguna"
-                                onClick={() => {
-                                  setSearchTerm(entry.phone || entry.full_name || "");
-                                  setStatusFilter("all");
-                                  setActiveTab("orders");
-                                }}
-                              >
-                                <Search size={16} />
-                              </button>
-                              <button
-                                type="button"
-                                className="icon-action danger"
-                                title="Hapus pengguna"
-                                onClick={() => deleteUser(entry.id, entry.full_name || "Tanpa Nama")}
-                              >
+                              <button className="icon-action danger" onClick={() => deleteUser(entry.id, entry.full_name)}>
                                 <Trash2 size={16} />
                               </button>
                             </div>
@@ -1913,1229 +2060,8 @@ if (!user) {
             )}
           </>
         )}
+        </div>
       </main>
-
-      <style jsx>{`
-        .admin-v2 {
-          min-height: 100vh;
-          display: grid;
-          grid-template-columns: 280px 1fr;
-          background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-          overflow-x: hidden;
-        }
-
-        .admin-auth-page {
-          min-height: 100vh;
-          background: radial-gradient(circle at top right, #ffe4e6 0%, #f8fafc 45%, #eef2ff 100%);
-          display: grid;
-          place-items: center;
-          padding: 1.5rem;
-        }
-
-        .admin-auth-card {
-          width: 100%;
-          max-width: 420px;
-          background: rgba(255, 255, 255, 0.92);
-          border: 1px solid #e2e8f0;
-          border-radius: 24px;
-          padding: 2rem;
-          box-shadow: 0 24px 60px -40px rgba(15, 23, 42, 0.45);
-          display: grid;
-          gap: 1rem;
-        }
-
-        .admin-auth-logo {
-          width: 72px;
-          height: 72px;
-          margin: 0 auto;
-          border-radius: 18px;
-          background: #fff;
-          border: 1px solid #e2e8f0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .admin-auth-logo img {
-          width: 52px;
-          height: 52px;
-          object-fit: contain;
-        }
-
-        .admin-auth-card h1 {
-          font-size: 1.5rem;
-          font-weight: 800;
-          text-align: center;
-          color: #0f172a;
-          margin: 0;
-        }
-
-        .admin-auth-card p {
-          margin: 0;
-          color: #64748b;
-          text-align: center;
-        }
-
-        .admin-auth-card small {
-          color: #94a3b8;
-          text-align: center;
-        }
-
-        .admin-auth-form {
-          display: grid;
-          gap: 0.85rem;
-        }
-
-        .admin-auth-form label {
-          display: grid;
-          gap: 0.45rem;
-          color: #475569;
-          font-size: 0.86rem;
-          font-weight: 600;
-        }
-
-        .admin-auth-form input {
-          width: 100%;
-          padding: 0.8rem 0.95rem;
-          border-radius: 12px;
-          border: 1px solid #cbd5e1;
-          background: #fff;
-          color: #0f172a;
-          font-family: inherit;
-        }
-
-        .admin-auth-form input:focus {
-          outline: none;
-          border-color: #f43f5e;
-          box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.15);
-        }
-
-        .admin-auth-submit {
-          margin-top: 0.5rem;
-          width: 100%;
-          justify-content: center;
-        }
-
-        .admin-v2-sidebar {
-        position: sticky;
-        top: 0;
-        height: 100vh;
-        overflow-y: auto;
-        background: #0f172a;
-        color: #e2e8f0;
-        border-right: 1px solid #1e293b;
-        padding: 1.5rem 1.15rem;
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-        gap: 1.5rem;
-        }
-
-        .admin-sidebar-brand {
-          display: flex;
-          align-items: center;
-          gap: 0.85rem;
-          padding: 0.5rem;
-        }
-
-        .admin-sidebar-brand img {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          background: #fff;
-          padding: 0.2rem;
-          object-fit: contain;
-        }
-
-        .admin-sidebar-brand strong {
-          display: block;
-          font-size: 1rem;
-          color: #f8fafc;
-          line-height: 1.2;
-        }
-
-        .admin-sidebar-brand span {
-          font-size: 0.77rem;
-          color: #94a3b8;
-        }
-
-        .mobile-close-btn {
-          display: none;
-          background: rgba(255, 255, 255, 0.1);
-          border: none;
-          padding: 8px;
-          border-radius: 8px;
-          color: #fff;
-          cursor: pointer;
-        }
-
-        .admin-sidebar-nav,
-        .admin-sidebar-footer {
-          display: grid;
-          gap: 0.35rem;
-        }
-
-        /* Clean Navigation Styles */
-        .admin-sidebar-link {
-          width: 100%;
-          min-height: 44px;
-          display: flex;
-          align-items: center;
-          gap: 0.85rem;
-          padding: 0.75rem 0.85rem;
-          border: 1px solid transparent;
-          border-radius: 12px;
-          background: transparent;
-          color: #cbd5e1;
-          font-family: inherit;
-          font-size: 0.9rem;
-          font-weight: 600;
-          text-decoration: none;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          box-sizing: border-box;
-          outline: none;
-          white-space: nowrap;
-        }
-
-        .admin-sidebar-link svg {
-          flex-shrink: 0;
-        }
-
-        .admin-sidebar-link:hover {
-          background: #1e293b;
-          color: #fff;
-          margin: 0;
-        }
-
-        .admin-sidebar-link.active {
-          background: linear-gradient(135deg, #e11d48, #be123c);
-          color: #fff;
-          border-color: transparent;
-        }
-
-        .admin-sidebar-link.danger {
-          color: #fca5a5;
-        }
-
-        .admin-sidebar-link.danger:hover {
-          background: rgba(127, 29, 29, 0.3);
-          color: #fee2e2;
-        }
-
-        .admin-v2-main {
-          padding: 1rem;
-          display: grid;
-          gap: 1rem;
-          align-content: start;
-          overflow-x: hidden;
-          overflow-y: auto;
-          height: 100vh;
-          min-width: 0;
-        }
-
-        .admin-topbar {
-          background: rgba(255, 255, 255, 0.85);
-          border: 1px solid #e2e8f0;
-          border-radius: 18px;
-          padding: 0.85rem 1rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 1rem;
-          backdrop-filter: blur(8px);
-          position: sticky;
-          top: 0;
-          z-index: 50;
-        }
-
-        .topbar-left {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-        }
-
-        .mobile-menu-btn {
-          display: none;
-          background: #f1f5f9;
-          border: 1px solid #e2e8f0;
-          padding: 8px;
-          border-radius: 10px;
-          color: #0f172a;
-          cursor: pointer;
-        }
-
-        .admin-topbar h1 {
-          margin: 0;
-          font-size: 1.1rem;
-          color: #0f172a;
-          font-weight: 800;
-          line-height: 1.1;
-        }
-
-        .admin-user-info {
-          margin: 0;
-          color: #64748b;
-          font-size: 0.7rem;
-          font-weight: 500;
-          max-width: 150px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        .admin-kpi-grid {
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 0.75rem;
-          overflow-x: auto;
-          padding-bottom: 0.5rem;
-          scrollbar-width: none; /* Hide scrollbar for Chrome/Safari/Firefox */
-        }
-        .admin-kpi-grid::-webkit-scrollbar { display: none; }
-
-        .admin-kpi-card {
-          background: #fff;
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 0.85rem;
-          display: grid;
-          gap: 0.35rem;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-          min-width: 140px;
-        }
-
-        .admin-kpi-card.featured {
-          background: linear-gradient(135deg, #fff1f2, #ffe4e6);
-          border-color: #fecdd3;
-        }
-
-        .admin-kpi-card h3 {
-          margin: 0;
-          color: #64748b;
-          font-size: 0.75rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .admin-kpi-card strong {
-          color: #0f172a;
-          font-size: 1rem;
-          line-height: 1.2;
-          font-weight: 800;
-        }
-
-        .kpi-icon {
-          width: 30px;
-          height: 30px;
-          border-radius: 9px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .kpi-icon.green { background: #dcfce7; color: #166534; }
-        .kpi-icon.amber { background: #fef3c7; color: #92400e; }
-        .kpi-icon.blue { background: #dbeafe; color: #1d4ed8; }
-        .kpi-icon.slate { background: #e2e8f0; color: #334155; }
-        .kpi-icon.rose { background: #ffe4e6; color: #be123c; }
-
-        .admin-panel {
-          background: #fff;
-          border: 1px solid #e2e8f0;
-          border-radius: 18px;
-          padding: 1rem;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        }
-
-        .admin-panel-header {
-          display: flex;
-          align-items: center;
-          gap: 0.65rem;
-          margin-bottom: 1rem;
-        }
-
-        .admin-panel-header h2 {
-          margin: 0;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.55rem;
-          font-size: 1rem;
-          color: #0f172a;
-          font-weight: 700;
-        }
-
-        .admin-panel-header.split {
-          justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 0.75rem;
-        }
-
-        .admin-sidebar-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(15, 23, 42, 0.4);
-          backdrop-filter: blur(4px);
-          z-index: 998;
-        }
-
-        /* RESPONSIVE QUERIES */
-        @media (max-width: 1100px) {
-          .admin-kpi-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
-          .admin-kpi-card.featured {
-            grid-column: span 3;
-          }
-        }
-
-        @media (max-width: 1024px) {
-          .admin-v2 {
-            grid-template-columns: 1fr;
-          }
-
-          .admin-v2-sidebar {
-            position: fixed;
-            left: -280px;
-            z-index: 1000;
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          }
-
-          .admin-v2-sidebar.open {
-            left: 0;
-          }
-
-          .mobile-menu-btn, .mobile-close-btn {
-            display: flex;
-          }
-
-          .admin-pos-layout {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .admin-kpi-grid {
-            grid-template-columns: repeat(2, 1fr);
-            overflow-x: visible;
-          }
-          .admin-kpi-card.featured {
-            grid-column: span 2;
-          }
-          .admin-toolbar {
-            grid-template-columns: 1fr;
-            gap: 0.5rem;
-          }
-          .admin-product-layout {
-            grid-template-columns: 1fr;
-          }
-          .admin-topbar {
-            padding: 0.6rem 0.8rem;
-          }
-          .admin-topbar h1 {
-            font-size: 0.95rem;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .admin-v2-main {
-            padding: 0.75rem;
-          }
-          .admin-kpi-grid {
-            grid-template-columns: 1fr;
-          }
-          .admin-kpi-card.featured {
-            grid-column: span 1;
-          }
-          .admin-topbar {
-            flex-wrap: wrap;
-            justify-content: center;
-          }
-          .topbar-left {
-            width: 100%;
-            justify-content: flex-start;
-          }
-          .admin-topbar > button {
-            width: 100%;
-            justify-content: center;
-            margin-top: 0.25rem;
-            font-size: 0.8rem;
-          }
-          .admin-panel {
-            padding: 0.75rem;
-          }
-        }
-
-        /* POS LAYOUT */
-        .admin-pos-layout {
-          display: grid;
-          grid-template-columns: 1fr 340px;
-          gap: 1.5rem;
-          align-items: start;
-        }
-
-        @media (max-width: 1024px) {
-          .admin-pos-layout {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        .admin-search-minimal {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          background: #f1f5f9;
-          padding: 0.5rem 1rem;
-          border-radius: 10px;
-          border: 1px solid #e2e8f0;
-        }
-
-        .admin-search-minimal input {
-          border: none;
-          background: transparent;
-          font-size: 0.875rem;
-          outline: none;
-          width: 150px;
-        }
-
-        .pos-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-          gap: 1rem;
-          margin-top: 1rem;
-        }
-
-        .pos-card {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          overflow: hidden;
-          transition: transform 0.2s;
-        }
-
-        .pos-card:hover {
-          transform: translateY(-4px);
-          border-color: #f43f5e;
-        }
-
-        .pos-card img {
-          width: 100%;
-          height: 120px;
-          object-fit: cover;
-        }
-
-        .pos-card-info {
-          padding: 0.75rem;
-          display: grid;
-          gap: 0.25rem;
-        }
-
-        .pos-card-info strong {
-          font-size: 0.9rem;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .pos-card-info .price {
-          font-weight: 700;
-          color: #f43f5e;
-          font-size: 0.85rem;
-        }
-
-        .pos-card-info .stock {
-          font-size: 0.75rem;
-          color: #64748b;
-        }
-
-        .pos-card-info .stock.low {
-          color: #ef4444;
-          font-weight: 700;
-        }
-
-        .btn-add-pos {
-          margin-top: 0.5rem;
-          width: 100%;
-          padding: 0.5rem;
-          background: #0f172a;
-          color: #fff;
-          border: none;
-          border-radius: 8px;
-          font-size: 0.8rem;
-          font-weight: 600;
-          cursor: pointer;
-        }
-
-        .btn-add-pos:hover:not(:disabled) {
-          background: #f43f5e;
-        }
-
-        .btn-add-pos:disabled {
-          background: #cbd5e1;
-          cursor: not-allowed;
-        }
-
-        .pos-cart-list {
-          display: grid;
-          gap: 0.75rem;
-          max-height: 400px;
-          overflow-y: auto;
-          padding-right: 0.5rem;
-        }
-
-        .pos-empty {
-          text-align: center;
-          padding: 2rem;
-          color: #94a3b8;
-          font-style: italic;
-        }
-
-        .pos-cart-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0.75rem;
-          background: #f8fafc;
-          border-radius: 10px;
-          border: 1px solid #e2e8f0;
-        }
-
-        .pos-cart-item .item-info {
-          display: grid;
-          gap: 0.15rem;
-        }
-
-        .pos-cart-item .item-info strong {
-          font-size: 0.85rem;
-        }
-
-        .pos-cart-item .item-info span {
-          font-size: 0.8rem;
-          color: #64748b;
-        }
-
-        .item-qty-ctrl {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .item-qty-ctrl button {
-          background: none;
-          border: none;
-          color: #64748b;
-          cursor: pointer;
-          padding: 0;
-          display: flex;
-        }
-
-        .item-qty-ctrl button:hover {
-          color: #f43f5e;
-        }
-
-        .item-qty-ctrl button.remove {
-          margin-left: 0.25rem;
-          color: #94a3b8;
-        }
-
-        .item-qty-ctrl button.remove:hover {
-          color: #ef4444;
-        }
-
-        .pos-summary {
-          margin-top: 1.5rem;
-          padding-top: 1rem;
-          border-top: 2px dashed #e2e8f0;
-          display: grid;
-          gap: 1rem;
-        }
-
-        .summary-row {
-          display: flex;
-          justify-content: space-between;
-          font-size: 1.1rem;
-        }
-
-        .pos-calc {
-          display: grid;
-          gap: 1rem;
-          background: #f1f5f9;
-          padding: 1rem;
-          border-radius: 12px;
-          border: 1px solid #e2e8f0;
-        }
-
-        .calc-field {
-          display: grid;
-          gap: 0.35rem;
-        }
-
-        .calc-field label {
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: #64748b;
-          text-transform: uppercase;
-        }
-
-        .calc-field input {
-          width: 100%;
-          padding: 0.65rem;
-          border: 1px solid #cbd5e1;
-          border-radius: 8px;
-          font-size: 1rem;
-          font-weight: 700;
-          color: #0f172a;
-          outline: none;
-        }
-
-        .calc-field input:focus {
-          border-color: #f43f5e;
-          box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.1);
-        }
-
-        .calc-result {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding-top: 0.5rem;
-          border-top: 1px solid #cbd5e1;
-        }
-
-        .calc-result span {
-          font-size: 0.85rem;
-          color: #64748b;
-        }
-
-        .calc-result strong {
-          font-size: 1.1rem;
-          color: #10b981;
-        }
-
-        .calc-result strong.negative {
-          color: #ef4444;
-        }
-
-        .btn-process-pos {
-          width: 100%;
-          padding: 1rem;
-          background: linear-gradient(135deg, #10b981, #059669);
-          color: #fff;
-          border: none;
-          border-radius: 12px;
-          font-weight: 700;
-          cursor: pointer;
-          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-        }
-
-        .btn-process-pos:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-process-pos:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .stock-badge {
-          display: inline-block;
-          padding: 0.25rem 0.5rem;
-          background: #f1f5f9;
-          border-radius: 6px;
-          font-size: 0.75rem;
-          font-weight: 700;
-        }
-
-        .stock-badge.low {
-          background: #fee2e2;
-          color: #ef4444;
-        }
-
-        .panel-chip {
-          background: #f1f5f9;
-          color: #334155;
-          border: 1px solid #cbd5e1;
-          border-radius: 999px;
-          padding: 0.3rem 0.65rem;
-          font-size: 0.75rem;
-          font-weight: 700;
-        }
-
-        .admin-chart {
-          display: grid;
-          grid-template-columns: repeat(6, minmax(80px, 1fr));
-          align-items: end;
-          gap: 1rem;
-          min-height: 240px;
-          padding: 1rem 0.5rem 0.5rem;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-        }
-
-        .admin-bar-wrapper {
-          display: grid;
-          justify-items: center;
-          gap: 0.4rem;
-        }
-
-        .admin-bar-wrapper span {
-          font-size: 0.72rem;
-          color: #64748b;
-          font-weight: 700;
-        }
-
-        .admin-bar-wrapper small {
-          color: #475569;
-          font-size: 0.78rem;
-          text-transform: uppercase;
-          font-weight: 700;
-        }
-
-        .admin-bar {
-          width: 100%;
-          max-width: 42px;
-          border-radius: 12px 12px 0 0;
-          background: linear-gradient(180deg, #fb7185, #e11d48);
-          transition: transform 0.2s ease;
-        }
-
-        .admin-bar:hover {
-          transform: scaleX(1.06);
-        }
-
-        .admin-toolbar {
-          display: grid;
-          grid-template-columns: 1fr 220px;
-          gap: 0.8rem;
-          margin-bottom: 1rem;
-        }
-
-        .admin-searchbox {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.55rem;
-          padding: 0 0.85rem;
-          border: 1px solid #cbd5e1;
-          border-radius: 12px;
-          background: #f8fafc;
-          color: #64748b;
-          height: 42px;
-        }
-
-        .admin-searchbox input {
-          border: none;
-          outline: none;
-          background: transparent;
-          color: #0f172a;
-          width: 100%;
-          font-family: inherit;
-        }
-
-        .admin-status-filter {
-          height: 42px;
-          border-radius: 12px;
-          border: 1px solid #cbd5e1;
-          background: #fff;
-          color: #0f172a;
-          padding: 0 0.85rem;
-          font-family: inherit;
-          font-weight: 600;
-        }
-
-        .admin-table-wrap {
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          margin: 0 -1rem;
-          padding: 0 1rem;
-          width: calc(100% + 2rem);
-        }
-
-        .admin-table {
-          width: 100%;
-          border-collapse: collapse;
-          min-width: 800px;
-        }
-
-        .admin-table th {
-          text-align: left;
-          font-size: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: #64748b;
-          border-bottom: 1px solid #e2e8f0;
-          padding: 0.75rem 0.65rem;
-        }
-
-        .admin-table td {
-          border-bottom: 1px solid #f1f5f9;
-          padding: 0.75rem 0.65rem;
-          vertical-align: top;
-          color: #0f172a;
-          font-size: 0.9rem;
-        }
-
-        .admin-empty-row {
-          text-align: center;
-          color: #64748b;
-          padding: 2rem 1rem !important;
-        }
-
-        .admin-customer-cell {
-          display: grid;
-          gap: 0.25rem;
-        }
-
-        .admin-customer-cell strong {
-          font-size: 0.92rem;
-        }
-
-        .admin-customer-cell span {
-          color: #e11d48;
-          font-weight: 700;
-          font-size: 0.82rem;
-        }
-
-        .admin-customer-cell small {
-          color: #94a3b8;
-          font-size: 0.75rem;
-        }
-
-        .admin-order-items {
-          display: grid;
-          gap: 0.45rem;
-        }
-
-        .delivery-pill {
-          width: fit-content;
-          padding: 0.2rem 0.55rem;
-          border-radius: 999px;
-          border: 1px solid #bfdbfe;
-          background: #eff6ff;
-          color: #1e3a8a;
-          font-size: 0.72rem;
-          font-weight: 700;
-        }
-
-        .admin-order-items ul {
-          margin: 0;
-          padding: 0;
-          list-style: none;
-          display: grid;
-          gap: 0.2rem;
-        }
-
-        .admin-order-items li {
-          display: flex;
-          justify-content: space-between;
-          gap: 0.75rem;
-          color: #334155;
-          font-size: 0.82rem;
-        }
-
-        .admin-order-items small {
-          color: #64748b;
-          font-size: 0.74rem;
-        }
-
-        .status-select {
-          border-radius: 10px;
-          border: 1px solid #cbd5e1;
-          padding: 0.45rem 0.6rem;
-          font-family: inherit;
-          font-size: 0.82rem;
-          font-weight: 700;
-          background: #fff;
-          min-width: 145px;
-        }
-
-        .status-select.status-pending {
-          background: #fff7ed;
-          border-color: #fed7aa;
-          color: #9a3412;
-        }
-        .status-select.status-confirmed {
-          background: #f0fdf4;
-          border-color: #bbf7d0;
-          color: #166534;
-        }
-        .status-select.status-processing {
-          background: #eff6ff;
-          border-color: #bfdbfe;
-          color: #1d4ed8;
-        }
-        .status-select.status-shipped {
-          background: #eef2ff;
-          border-color: #c7d2fe;
-          color: #3730a3;
-        }
-        .status-select.status-completed {
-          background: #ecfdf5;
-          border-color: #a7f3d0;
-          color: #047857;
-        }
-        .status-select.status-cancelled {
-          background: #fef2f2;
-          border-color: #fecaca;
-          color: #b91c1c;
-        }
-
-        .order-total {
-          color: #be123c;
-          font-size: 0.95rem;
-        }
-
-        .admin-action-row {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.35rem;
-        }
-
-        .icon-action {
-          width: 34px;
-          height: 34px;
-          border-radius: 10px;
-          border: 1px solid transparent;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: 0.2s ease;
-        }
-
-        .icon-action.success {
-          background: #dcfce7;
-          border-color: #86efac;
-          color: #166534;
-        }
-
-        .icon-action.info {
-          background: #e0f2fe;
-          border-color: #bae6fd;
-          color: #075985;
-        }
-
-        .icon-action.danger {
-          background: #fee2e2;
-          border-color: #fecaca;
-          color: #b91c1c;
-        }
-
-        .icon-action:hover {
-          transform: translateY(-1px);
-        }
-
-        .admin-product-layout {
-          display: grid;
-          grid-template-columns: minmax(320px, 420px) 1fr;
-          gap: 1rem;
-        }
-
-        .admin-form {
-          display: grid;
-          gap: 0.8rem;
-        }
-
-        .admin-form label {
-          display: grid;
-          gap: 0.35rem;
-          font-size: 0.82rem;
-          color: #475569;
-          font-weight: 700;
-        }
-
-        .admin-form input,
-        .admin-form textarea,
-        .admin-form select {
-          width: 100%;
-          border-radius: 12px;
-          border: 1px solid #cbd5e1;
-          background: #f8fafc;
-          color: #0f172a;
-          padding: 0.7rem 0.85rem;
-          font-family: inherit;
-        }
-
-        .admin-form input:focus,
-        .admin-form textarea:focus,
-        .admin-form select:focus {
-          outline: none;
-          border-color: #f43f5e;
-          box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.15);
-          background: #fff;
-        }
-
-        .admin-form-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0.75rem;
-        }
-
-        .upload-trigger {
-          width: fit-content;
-          display: inline-flex !important;
-          align-items: center;
-          gap: 0.5rem;
-          background: #f1f5f9;
-          border: 1px solid #cbd5e1;
-          border-radius: 10px;
-          padding: 0.55rem 0.8rem;
-          cursor: pointer;
-          color: #334155 !important;
-        }
-
-        .upload-trigger:hover {
-          background: #e2e8f0;
-        }
-
-        .upload-progress {
-          width: 100%;
-          height: 6px;
-          border-radius: 999px;
-          background: #e2e8f0;
-          overflow: hidden;
-        }
-
-        .upload-progress span {
-          display: block;
-          height: 100%;
-          background: linear-gradient(90deg, #fb7185, #e11d48);
-          transition: width 0.3s ease;
-        }
-
-        .admin-product-cell {
-          display: flex;
-          align-items: center;
-          gap: 0.65rem;
-        }
-
-        .admin-product-cell img {
-          width: 56px;
-          height: 56px;
-          border-radius: 12px;
-          object-fit: cover;
-          border: 1px solid #e2e8f0;
-          background: #fff;
-        }
-
-        .admin-product-cell strong {
-          display: block;
-        }
-
-        .admin-product-cell small {
-          color: #64748b;
-          font-size: 0.75rem;
-        }
-
-        .category-pill {
-          display: inline-flex;
-          padding: 0.2rem 0.55rem;
-          border-radius: 999px;
-          font-size: 0.72rem;
-          font-weight: 700;
-          border: 1px solid transparent;
-        }
-
-        .category-pill.frozen {
-          background: #ffe4e6;
-          color: #be123c;
-          border-color: #fecdd3;
-        }
-
-        .category-pill.atk {
-          background: #e2e8f0;
-          color: #334155;
-          border-color: #cbd5e1;
-        }
-
-        .category-pill.other {
-          background: #fef3c7;
-          color: #92400e;
-          border-color: #fde68a;
-        }
-
-        .admin-user-cell {
-          display: flex;
-          align-items: center;
-          gap: 0.65rem;
-        }
-
-        .admin-user-cell .avatar {
-          width: 36px;
-          height: 36px;
-          border-radius: 999px;
-          border: 1px solid #cbd5e1;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          color: #475569;
-          background: #f8fafc;
-        }
-
-        .admin-user-cell strong {
-          display: block;
-        }
-
-        .admin-user-cell small {
-          color: #64748b;
-          font-size: 0.75rem;
-        }
-
-        .wa-link {
-          color: #0f766e;
-          text-decoration: none;
-          font-weight: 700;
-        }
-
-        .wa-link:hover {
-          text-decoration: underline;
-        }
-
-        .admin-loading-state {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.55rem;
-          color: #64748b;
-          background: #fff;
-          border: 1px solid #e2e8f0;
-          border-radius: 14px;
-          padding: 0.8rem 1rem;
-          width: fit-content;
-        }
-
-        .admin-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.45rem;
-          border-radius: 10px;
-          border: 1px solid transparent;
-          padding: 0.6rem 0.9rem;
-          font-size: 0.84rem;
-          font-weight: 700;
-          font-family: inherit;
-          cursor: pointer;
-          transition: 0.2s ease;
-        }
-
-        .admin-btn:disabled {
-          opacity: 0.65;
-          cursor: not-allowed;
-        }
-
-        .admin-btn-primary {
-          background: linear-gradient(135deg, #e11d48, #be123c);
-          color: #fff;
-          box-shadow: 0 12px 24px -16px rgba(225, 29, 72, 0.75);
-        }
-
-        .admin-btn-primary:hover:enabled {
-          transform: translateY(-1px);
-        }
-
-        .admin-btn-secondary {
-          background: #fff;
-          color: #0f172a;
-          border-color: #cbd5e1;
-        }
 
         .admin-btn-secondary:hover:enabled {
           background: #f8fafc;
