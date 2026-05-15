@@ -2024,8 +2024,10 @@ return (
                   <table className="admin-table">
                     <thead>
                       <tr>
-                        <th>Nama / Email</th>
-                        <th>WhatsApp</th>
+                        <th>Pengguna</th>
+                        <th>Kontak</th>
+                        <th>Alamat & Info</th>
+                        <th>Terdaftar Sejak</th>
                         <th>Aksi</th>
                       </tr>
                     </thead>
@@ -2042,13 +2044,27 @@ return (
                             </div>
                           </td>
                           <td>
-                            <a href={`https://wa.me/${entry.phone?.replace(/[^0-9]/g, '')}`} target="_blank" className="wa-link">
-                              {entry.phone || "-"}
-                            </a>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                              <a href={`https://wa.me/${entry.phone?.replace(/[^0-9]/g, '')}`} target="_blank" className="wa-link">
+                                {entry.phone || "-"}
+                              </a>
+                            </div>
+                          </td>
+                          <td>
+                            <div style={{ fontSize: '0.8rem', color: '#475569', maxWidth: '200px', lineHeight: '1.4' }}>
+                              {entry.address || "Belum ada alamat"}
+                            </div>
+                          </td>
+                          <td>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                              {entry.created_at ? new Date(entry.created_at).toLocaleDateString('id-ID', {
+                                day: 'numeric', month: 'long', year: 'numeric'
+                              }) : "-"}
+                            </div>
                           </td>
                           <td>
                             <div className="admin-action-row">
-                              <button className="icon-action danger" onClick={() => deleteUser(entry.id, entry.full_name)}>
+                              <button className="icon-action danger" title="Hapus Pengguna" onClick={() => deleteUser(entry.id, entry.full_name)}>
                                 <Trash2 size={16} />
                               </button>
                             </div>
@@ -2442,6 +2458,372 @@ return (
           border-radius: 6px;
           cursor: pointer;
         }
+
+        /* --- FORM STYLES --- */
+        .admin-form {
+          display: grid;
+          gap: 1.25rem;
+          margin-top: 1rem;
+        }
+        .admin-form label {
+          display: grid;
+          gap: 0.5rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #475569;
+        }
+        .admin-form input, .admin-form select, .admin-form textarea {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border-radius: 10px;
+          border: 1px solid #cbd5e1;
+          font-size: 0.9rem;
+          font-family: inherit;
+          background: #f8fafc;
+          transition: all 0.2s;
+        }
+        .admin-form input:focus, .admin-form select:focus, .admin-form textarea:focus {
+          border-color: #e11d48;
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+        }
+        .admin-form-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1.25rem;
+        }
+        .upload-trigger {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          border: 2px dashed #cbd5e1;
+          border-radius: 10px;
+          color: #64748b;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.2s;
+          background: #f8fafc;
+        }
+        .upload-trigger:hover {
+          border-color: #e11d48;
+          color: #e11d48;
+          background: #fff1f2;
+        }
+        .upload-progress {
+          height: 6px;
+          background: #e2e8f0;
+          border-radius: 4px;
+          overflow: hidden;
+        }
+        .upload-progress span {
+          display: block;
+          height: 100%;
+          background: #e11d48;
+          transition: width 0.3s;
+        }
+
+        /* --- TABLE CELLS --- */
+        .admin-product-cell {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+        .admin-product-cell img {
+          width: 48px;
+          height: 48px;
+          border-radius: 8px;
+          object-fit: cover;
+          border: 1px solid #e2e8f0;
+        }
+        .admin-product-cell strong {
+          display: block;
+          font-size: 0.9rem;
+          color: #0f172a;
+        }
+        .admin-product-cell small {
+          color: #64748b;
+          font-size: 0.75rem;
+          text-transform: capitalize;
+        }
+
+        .admin-user-cell {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+        .admin-user-cell .avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: #f1f5f9;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #64748b;
+        }
+        .admin-user-cell strong {
+          display: block;
+          font-size: 0.9rem;
+          color: #0f172a;
+        }
+        .admin-user-cell small {
+          color: #64748b;
+          font-size: 0.75rem;
+        }
+
+        .wa-link {
+          color: #10b981;
+          font-weight: 600;
+          text-decoration: none;
+        }
+        .wa-link:hover { text-decoration: underline; }
+
+        .admin-action-row {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+        }
+
+        .panel-chip {
+          padding: 0.25rem 0.75rem;
+          background: #f1f5f9;
+          color: #475569;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+
+        .admin-search-minimal {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: #f8fafc;
+          padding: 0.5rem 0.75rem;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+        }
+        .admin-search-minimal input {
+          border: none;
+          background: transparent;
+          outline: none;
+          font-size: 0.85rem;
+          color: #1e293b;
+        }
+
+        .admin-toolbar {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+          flex-wrap: wrap;
+        }
+        .admin-searchbox {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: #f8fafc;
+          padding: 0.75rem 1rem;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          flex: 1;
+          min-width: 250px;
+        }
+        .admin-searchbox input {
+          border: none;
+          background: transparent;
+          outline: none;
+          width: 100%;
+          font-size: 0.9rem;
+        }
+        .admin-status-filter {
+          padding: 0.75rem 1rem;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          font-family: inherit;
+          font-size: 0.9rem;
+          min-width: 150px;
+          outline: none;
+        }
+
+        .admin-customer-cell {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+        .admin-customer-cell strong { color: #0f172a; font-size: 0.9rem; }
+        .admin-customer-cell span { color: #475569; font-size: 0.8rem; }
+        .admin-customer-cell small { color: #94a3b8; font-size: 0.75rem; }
+
+        .admin-order-items {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          align-items: flex-start;
+        }
+        .delivery-pill {
+          padding: 0.2rem 0.5rem;
+          background: #e0f2fe;
+          color: #0284c7;
+          border-radius: 4px;
+          font-size: 0.7rem;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+        .admin-order-items ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+          width: 100%;
+        }
+        .admin-order-items li {
+          font-size: 0.8rem;
+          color: #475569;
+          display: flex;
+          justify-content: space-between;
+          gap: 1rem;
+        }
+        .admin-order-items li strong { color: #0f172a; }
+
+        .status-select {
+          padding: 0.4rem 0.8rem;
+          border-radius: 20px;
+          border: 1px solid transparent;
+          font-size: 0.8rem;
+          font-weight: 600;
+          outline: none;
+          cursor: pointer;
+          appearance: none;
+          background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23475569%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+          background-repeat: no-repeat;
+          background-position: right 0.5rem center;
+          padding-right: 2rem;
+        }
+        .status-select.status-pending { background-color: #fef3c7; color: #92400e; border-color: #fde68a; }
+        .status-select.status-confirmed { background-color: #e0f2fe; color: #0284c7; border-color: #bae6fd; }
+        .status-select.status-processing { background-color: #f3e8ff; color: #7e22ce; border-color: #e9d5ff; }
+        .status-select.status-shipped { background-color: #ffedd5; color: #c2410c; border-color: #fed7aa; }
+        .status-select.status-completed { background-color: #dcfce7; color: #166534; border-color: #bbf7d0; }
+        .status-select.status-cancelled { background-color: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+
+        .order-total { font-size: 0.95rem; color: #0f172a; }
+
+        /* --- POS CART --- */
+        .pos-cart-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          max-height: 400px;
+          overflow-y: auto;
+          margin-bottom: 1.5rem;
+        }
+        .pos-empty {
+          text-align: center;
+          padding: 2rem;
+          color: #94a3b8;
+          font-size: 0.9rem;
+          background: #f8fafc;
+          border-radius: 12px;
+          border: 1px dashed #cbd5e1;
+        }
+        .pos-cart-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.75rem;
+          background: #f8fafc;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+        }
+        .item-info {
+          display: flex;
+          flex-direction: column;
+        }
+        .item-info strong { font-size: 0.85rem; color: #0f172a; }
+        .item-info span { font-size: 0.8rem; color: #e11d48; font-weight: 600; }
+        .item-qty-ctrl {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .item-qty-ctrl button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.25rem;
+          border-radius: 4px;
+        }
+        .item-qty-ctrl button:hover { background: #e2e8f0; color: #0f172a; }
+        .item-qty-ctrl button.remove { color: #ef4444; }
+        .item-qty-ctrl button.remove:hover { background: #fee2e2; }
+        .item-qty-ctrl span { font-size: 0.9rem; font-weight: 600; min-width: 1.5rem; text-align: center; }
+
+        .pos-summary {
+          border-top: 2px dashed #e2e8f0;
+          padding-top: 1.5rem;
+        }
+        .summary-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+          font-size: 1.1rem;
+        }
+        .summary-row strong { color: #e11d48; font-size: 1.25rem; }
+
+        .pos-calc {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+          background: #f1f5f9;
+          padding: 1rem;
+          border-radius: 12px;
+        }
+        .calc-field {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        .calc-field label { font-size: 0.8rem; font-weight: 600; color: #475569; }
+        .calc-field input {
+          padding: 0.75rem;
+          border-radius: 8px;
+          border: 1px solid #cbd5e1;
+          font-family: inherit;
+          font-size: 1rem;
+        }
+        .calc-result {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .calc-result span { font-size: 0.9rem; font-weight: 600; color: #475569; }
+        .calc-result strong { font-size: 1.1rem; color: #10b981; }
+        .calc-result strong.negative { color: #ef4444; }
+
+        .btn-process-pos {
+          width: 100%;
+          padding: 1rem;
+          background: #10b981;
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-size: 1rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .btn-process-pos:hover:not(:disabled) { background: #059669; }
+        .btn-process-pos:disabled { background: #94a3b8; cursor: not-allowed; }
 
         .admin-sidebar-overlay {
           position: fixed;
