@@ -23,11 +23,9 @@ export async function POST(req: Request) {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    console.log(`Starting aggressive cleanup for user: ${userId}`);
+    // --- PEMBERSIHAN DATA MANUAL ---
 
-    // --- PEMBERSIHAN DATA MANUAL (Hapus semua yang berkaitan dengan user ini) ---
-
-    // 1. Ambil data pesanan user untuk menghapus order_items terlebih dahulu
+    // 1. Hapus Item Pesanan & Pesanan
     const { data: userOrders } = await supabaseAdmin
       .from("orders")
       .select("id")
@@ -35,28 +33,29 @@ export async function POST(req: Request) {
 
     if (userOrders && userOrders.length > 0) {
       const orderIds = userOrders.map(o => o.id);
-      // Hapus item pesanan
       await supabaseAdmin.from("order_items").delete().in("order_id", orderIds);
-      // Hapus pesanan
       await supabaseAdmin.from("orders").delete().in("id", orderIds);
     }
 
-    // 2. Hapus data di tabel-tabel pendukung lainnya
-    await Promise.all([
-      supabaseAdmin.from("push_subscriptions").delete().eq("user_id", userId),
-      supabaseAdmin.from("profiles").delete().eq("id", userId),
-      // Jika ada tabel alamat yang menggunakan user_id UUID
-      supabaseAdmin.from("user_addresses").delete().filter("user_id", "eq", userId).catch(() => {}),
-    ]);
+    // 2. Hapus data di tabel-tabel pendukung
+    // Kita jalankan satu per satu agar lebih aman dan mudah di-handle jika tabel tidak ada
+    await supabaseAdmin.from("push_subscriptions").delete().eq("user_id", userId);
+    await supabaseAdmin.from("profiles").delete().eq("id", userId);
+    
+    // Untuk tabel alamat, kita coba hapus tapi abaikan jika kolom/tabel tidak ada
+    try {
+      await supabaseAdmin.from("user_addresses").delete().eq("user_id", userId);
+    } catch (e) {
+      console.log("Table user_addresses skip or not found");
+    }
 
-    // 3. Langkah terakhir: Hapus dari Authentication
+    // 3. Hapus dari Authentication
     const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
 
     if (authError) {
       if (authError.message.includes("User not found")) {
         console.log("User already gone from Auth");
       } else {
-        // Jika masih error database, kemungkinan ada tabel lain yang belum kita bersihkan
         throw new Error(`Gagal menghapus akun (Database Lock): ${authError.message}`);
       }
     }
