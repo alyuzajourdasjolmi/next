@@ -27,6 +27,8 @@ import {
   MinusCircle,
   Menu,
   X,
+  Lock,
+  ArrowRight,
 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import "../style.css";
