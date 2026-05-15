@@ -20,7 +20,8 @@ import {
   Clock,
   CheckCircle2,
   Truck,
-  AlertCircle
+  AlertCircle,
+  Bell
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import AddressSelector from '../components/AddressSelector';
@@ -379,6 +380,62 @@ export default function Home() {
     await supabase.auth.signOut();
     setUser(null);
     setUserOrders([]);
+  };
+
+  const subscribeToPush = async () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      alert('Browser Anda tidak mendukung fitur notifikasi push.');
+      return;
+    }
+
+    try {
+      // 1. Request Notification Permission
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        alert('Izin notifikasi ditolak.');
+        return;
+      }
+
+      // 2. Register Service Worker
+      const registration = await navigator.serviceWorker.register('/sw.js');
+
+      // Helper function to convert VAPID key
+      const urlBase64ToUint8Array = (base64String: string) => {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+          outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+      };
+
+      // 3. Subscribe to PushManager
+      const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BBT4uu_E_FOpIUL3L02eWjVngna7ASi5gDDAG1w_k_a7-lc0VXHhhXKimWTGlhKLGRydjgAmDt9mIJmNz-GctjE';
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+      });
+
+      // 4. Send subscription to server
+      const role = user?.email === 'admin.hijrahtoko@gmail.com' ? 'admin' : 'customer';
+      const response = await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscription,
+          user_id: user?.id || null,
+          role
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to save subscription');
+      alert('Berhasil mengaktifkan notifikasi push!');
+    } catch (error: any) {
+      console.error('Push subscription error:', error);
+      alert('Gagal mengaktifkan notifikasi: ' + error.message);
+    }
   };
 
   useEffect(() => {
@@ -777,6 +834,9 @@ export default function Home() {
               <a href="/admin">
                 <CheckCircle2 size={16} /> Dashboard Admin
               </a>
+              <button className="user-menu-item-btn" onClick={subscribeToPush}>
+                <Bell size={16} /> Aktifkan Notifikasi
+              </button>
               <div className="user-menu-divider"></div>
               <button className="user-logout-btn" onClick={handleLogout}>
                 <LogOut size={16} /> Keluar
