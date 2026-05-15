@@ -2403,23 +2403,24 @@ return (
         .admin-chart {
           display: flex;
           align-items: flex-end;
+          justify-content: space-around;
           gap: 1rem;
           height: 200px;
           padding: 1rem 0;
           overflow-x: auto;
         }
         .admin-bar-wrapper {
-          flex: 1;
-          min-width: 40px;
+          min-width: 60px;
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 0.5rem;
         }
         .admin-bar {
-          width: 100%;
+          width: 40px;
           background: #e11d48;
           border-radius: 4px 4px 0 0;
+          transition: height 0.3s ease;
         }
         .admin-bar-wrapper span { font-size: 0.7rem; color: #64748b; }
         .admin-bar-wrapper small { font-size: 0.75rem; font-weight: 600; }
