@@ -431,7 +431,10 @@ export default function Home() {
         })
       });
 
-      if (!response.ok) throw new Error('Failed to save subscription');
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to save subscription');
+      }
       alert('Berhasil mengaktifkan notifikasi push!');
     } catch (error: any) {
       console.error('Push subscription error:', error);

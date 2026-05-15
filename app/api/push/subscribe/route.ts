@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       const { error } = await supabase
         .from('push_subscriptions')
         .update({
-          subscription: JSON.stringify(subscription),
+          subscription: subscription,
           role: role || 'user',
           updated_at: new Date().toISOString(),
         })
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
         .insert({
           user_id,
           endpoint,
-          subscription: JSON.stringify(subscription),
+          subscription: subscription,
           role: role || 'user',
         });
 
