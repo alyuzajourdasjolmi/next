@@ -649,10 +649,10 @@ if (isUnauthorized) {
         </div>
 
         <div className="unauthorized-actions">
-          <Link href="/" className="btn-action-primary">
+          <a href="/" className="btn-action-primary">
             <Home size={18} />
             Kembali ke Beranda
-          </Link>
+          </a>
         </div>
 
         <div className="unauthorized-footer">
