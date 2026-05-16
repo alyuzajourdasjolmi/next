@@ -1331,7 +1331,7 @@ return (
                     {products
                       .filter(p => p.name.toLowerCase().includes(posSearchTerm.toLowerCase()))
                       .map(product => (
-                        <div key={product.id} className="pos-card">
+                        <div key={product.id} className={`pos-card ${(product.stock || 0) <= 0 ? 'out-of-stock' : ''}`}>
                           <img src={product.img} alt={product.name} />
                           <div className="pos-card-info">
                             <strong>{product.name}</strong>
@@ -2187,6 +2187,26 @@ return (
           border: 1px solid #e2e8f0;
           border-radius: 12px;
           overflow: hidden;
+          position: relative;
+          transition: all 0.2s;
+        }
+        .pos-card.out-of-stock {
+          opacity: 0.7;
+          filter: grayscale(1);
+        }
+        .pos-card.out-of-stock::before {
+          content: "HABIS";
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: #e11d48;
+          color: white;
+          padding: 0.2rem 0.6rem;
+          font-size: 0.65rem;
+          font-weight: 800;
+          border-radius: 6px;
+          z-index: 5;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .pos-card img { width: 100%; height: 100px; object-fit: cover; }
