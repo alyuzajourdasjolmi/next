@@ -1333,12 +1333,14 @@ return (
                       .map(product => (
                         <div key={product.id} className={`pos-card ${(product.stock || 0) <= 0 ? 'out-of-stock' : ''}`}>
                           <img src={product.img} alt={product.name} />
-                          <div className="pos-card-info">
-                            <strong>{product.name}</strong>
-                            <span className="price">Rp {product.price.toLocaleString('id-ID')}</span>
-                            <span className={`stock ${product.stock <= 5 ? 'low' : ''}`}>
-                              Stok: {product.stock || 0}
-                            </span>
+                          <div className="pos-card-info" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                            <div style={{ flex: 1 }}>
+                              <strong>{product.name}</strong>
+                              <span className="price">Rp {product.price.toLocaleString('id-ID')}</span>
+                              <span className={`stock ${product.stock <= 5 ? 'low' : ''}`}>
+                                Stok: {product.stock || 0}
+                              </span>
+                            </div>
                             <button 
                               onClick={() => addToPosCart(product)}
                               disabled={product.stock <= 0}
@@ -2189,38 +2191,62 @@ return (
           overflow: hidden;
           position: relative;
           transition: all 0.2s;
+          display: flex;
+          flex-direction: column;
         }
         .pos-card.out-of-stock {
-          opacity: 0.7;
+          opacity: 0.9;
+        }
+        .pos-card.out-of-stock img {
           filter: grayscale(1);
+          opacity: 0.6;
         }
         .pos-card.out-of-stock::before {
           content: "HABIS";
           position: absolute;
-          top: 10px;
-          right: 10px;
-          background: #e11d48;
+          top: 8px;
+          right: 8px;
+          background: #ef4444;
           color: white;
-          padding: 0.2rem 0.6rem;
-          font-size: 0.65rem;
+          padding: 0.25rem 0.5rem;
+          font-size: 0.6rem;
           font-weight: 800;
-          border-radius: 6px;
-          z-index: 5;
+          border-radius: 4px;
+          z-index: 10;
           box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .pos-card img { width: 100%; height: 100px; object-fit: cover; }
-        .pos-card-info { padding: 0.75rem; display: grid; gap: 0.25rem; }
-        .pos-card-info strong { font-size: 0.875rem; }
-        .pos-card-info .price { color: #e11d48; font-weight: 700; }
+        .pos-card-info { padding: 0.75rem; flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
+        .pos-card-info strong { 
+          font-size: 0.8rem; 
+          color: #1e293b; 
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          height: 2.4em;
+          line-height: 1.2em;
+          margin-bottom: 0.25rem;
+        }
+        .pos-card-info .price { color: #e11d48; font-weight: 700; font-size: 0.9rem; }
+        .pos-card-info .stock { font-size: 0.75rem; color: #64748b; font-weight: 600; }
+        .pos-card-info .stock.low { color: #f59e0b; }
         .btn-add-pos {
           margin-top: 0.5rem;
-          padding: 0.4rem;
+          padding: 0.5rem;
           background: #0f172a;
           color: #fff;
           border: none;
-          border-radius: 6px;
+          border-radius: 8px;
           cursor: pointer;
+          font-size: 0.8rem;
+          font-weight: 600;
+          width: 100%;
+        }
+        .pos-card.out-of-stock .btn-add-pos {
+          background: #94a3b8;
+          cursor: not-allowed;
         }
 
         /* --- FORM STYLES --- */
