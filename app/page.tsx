@@ -945,6 +945,11 @@ export default function Home() {
             <li><a href="#inbox" onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</a></li>
             <li><a href="#lokasi" onClick={() => setMobileNavOpen(false)}>📍 Lokasi</a></li>
             <li><a href="#kontak" onClick={() => setMobileNavOpen(false)}>📞 Kontak</a></li>
+            {user && (
+              <li style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+                <a href="/admin" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>⚙️ Dashboard Admin</a>
+              </li>
+            )}
           </ul>
         </div>
 
