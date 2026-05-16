@@ -2828,3 +2828,58 @@ body.dark-mode .login-glass-card {
   .hero-actions-modern { gap: 1rem !important; }
   .btn-modern-primary, .btn-modern-outline { width: 100%; justify-content: center; padding: 0.8rem 1.5rem !important; }
 }
+
+/* Visibility Fix for Navbar Actions */
+.navbar:not(.scrolled) .theme-toggle,
+.navbar:not(.scrolled) .cart-btn,
+.navbar:not(.scrolled) .user-profile-trigger {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  backdrop-filter: blur(8px);
+}
+.navbar:not(.scrolled) .cart-btn svg {
+  stroke: white !important;
+}
+.navbar:not(.scrolled) .btn-login-pill {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Mobile Toggle Visibility Fix */
+.navbar:not(.scrolled) .mobile-toggle {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  display: flex !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Mobile Product Card Refinement */
+@media (max-width: 768px) {
+  .card-footer {
+    padding: 0 0.75rem 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+  .btn-wa {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    border-radius: 12px !important; /* Ganti jadi rounded square agar lebih modern */
+    background: var(--primary) !important;
+    box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2) !important;
+  }
+  .btn-wa svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .price {
+    font-size: 1rem !important;
+    letter-spacing: -0.02em;
+  }
+  .product-card {
+    border-radius: 16px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+  }
+}
