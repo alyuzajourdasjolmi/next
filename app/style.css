@@ -2779,3 +2779,14 @@ body.dark-mode .login-glass-card {
 .search-input-focus:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.15) !important; }
 .search-input-focus:hover { border-color: var(--primary) !important; }
 .clear-search:hover { color: var(--primary) !important; transform: translateY(-50%) scale(1.1); transition: all 0.2s; }
+
+/* New Hero Storefront Styles */
+.hero-bg-image { position: absolute; inset: 0; z-index: 0; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7)); z-index: 1; }
+.hero-content.centered { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; color: white !important; z-index: 2; }
+.hero-title-large { font-size: clamp(3rem, 10vw, 5.5rem) !important; font-weight: 900 !important; color: white !important; letter-spacing: -0.02em !important; margin-bottom: 1rem !important; text-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.hero-subtitle { font-size: 1.25rem !important; color: rgba(255,255,255,0.9) !important; max-width: 700px !important; margin-bottom: 2.5rem !important; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.hero-brand-badge.transparent { background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); border-color: rgba(255,255,255,0.2); color: white; }
+.hero-buttons.centered { justify-content: center; }
+.btn-primary.pill { border-radius: 999px !important; padding: 1rem 3rem !important; font-size: 1.1rem !important; background: #E11D48 !important; }
+.hero { min-height: 100vh !important; }

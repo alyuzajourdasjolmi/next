@@ -975,67 +975,47 @@ export default function Home() {
   )}
 </AnimatePresence>
 
-{/*  Hero  */}
 <section className="hero" id="home">
-  <div className="hero-container">
-    <motion.div 
-      className="hero-content"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-    >
-      <div className="hero-brand-badge">
-        <TrendingUp size={16} />
-        <span>Toko Terpercaya & Berkualitas</span>
-      </div>
-      <h1>
-        Solusi <span className="highlight">Dapur & Kantor</span> <br />
-        Dalam Satu Genggaman.
-      </h1>
-      <p>
-        Hijrah Toko menghadirkan pilihan frozen food premium dan kebutuhan kantor terlengkap. 
-        Belanja praktis, pengiriman cepat, harga bersahabat.
-      </p>
-      <div className="hero-buttons">
-        <motion.a 
-          href="#produk" 
-          className="btn-primary"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <ShoppingCart size={18} /> Belanja Sekarang
-        </motion.a>
-        <motion.a 
-          href="https://wa.me/6285263965031" 
-          className="btn-secondary" 
-          target="_blank"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <MessageSquare size={18} /> Tanya Admin
-        </motion.a>
-      </div>
-    </motion.div>
-    
-    <motion.div 
-      className="hero-image"
-      initial={{ opacity: 0, scale: 0.9 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 1, ease: "easeOut" }}
-    >
-      <Image 
-        src="/assets/images/hero-banner-new.jpg" 
-        alt="Hijrah Toko Products" 
-        fill
-        priority
-        sizes="(max-width: 768px) 100vw, 50vw"
-        style={{ objectFit: 'cover' }}
-      />
-      <div className="hero-floating-card top-right" style={{ display: "none" }}></div>
-    </motion.div>
+  <div className="hero-bg-image">
+    <Image 
+      src="/assets/images/hero-banner-new.jpg" 
+      alt="Hijrah Toko Storefront" 
+      fill
+      priority
+      sizes="100vw"
+      style={{ objectFit: 'cover' }}
+    />
+    <div className="hero-overlay"></div>
   </div>
+
+  <motion.div 
+    className="hero-content centered"
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 1, ease: "easeOut" }}
+  >
+    <div className="hero-brand-badge transparent">
+      <TrendingUp size={16} />
+      <span>Toko Terpercaya & Berkualitas</span>
+    </div>
+    <h1 className="hero-title-large">
+      HIJRAH TOKO
+    </h1>
+    <p className="hero-subtitle">
+      Warung ATK dan frozen food terlengkap untuk kebutuhan harian Anda.
+    </p>
+    <div className="hero-buttons centered">
+      <motion.a 
+        href="#produk" 
+        className="btn-primary pill"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        Lihat Produk
+      </motion.a>
+    </div>
+  </motion.div>
 </section>
 
 {/*  Stats  */}
