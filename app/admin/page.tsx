@@ -59,6 +59,7 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [email, setEmail] = useState("");
@@ -74,7 +75,7 @@ export default function AdminDashboard() {
     stock: 0,
   });
 
-  const [activeTab, setActiveTab] = useState<"dashboard" | "orders" | "products" | "users" | "analytics" | "cashier">(
+  const [activeTab, setActiveTab] = useState<"dashboard" | "orders" | "products" | "users" | "analytics" | "cashier" | "reviews">(
     "dashboard"
   );
   const [searchTerm, setSearchTerm] = useState("");
@@ -163,6 +164,12 @@ export default function AdminDashboard() {
         .select("*")
         .order("created_at", { ascending: false });
 
+      const { data: reviewsData } = await supabase
+        .from("reviews")
+        .select("*")
+        .order("created_at", { ascending: false });
+      setReviews(reviewsData || []);
+
       if (!usersError) {
         setUsers(usersData || []);
       } else {
@@ -188,6 +195,27 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleExportCSV = () => {
+    if (orders.length === 0) return alert("Tidak ada data pesanan untuk di-export.");
+    
+    const headers = ["ID Pesanan", "Nama Pelanggan", "No HP", "Total", "Status", "Tanggal"];
+    const csvContent = [
+      headers.join(","),
+      ...orders.map(order => 
+        `"${order.id}","${order.customer_name}","${order.customer_phone}","${order.grand_total}","${order.status}","${new Date(order.created_at).toLocaleDateString('id-ID')}"`
+      )
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", \`Laporan_Penjualan_\${new Date().toISOString().split('T')[0]}.csv\`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -629,6 +657,7 @@ export default function AdminDashboard() {
     { id: "orders" as const, label: "Pesanan", icon: ClipboardList },
     { id: "products" as const, label: "Produk", icon: Box },
     { id: "users" as const, label: "Pengguna", icon: Users },
+    { id: "reviews" as const, label: "Ulasan", icon: Edit3 },
     { id: "analytics" as const, label: "Analitik", icon: BarChart3 },
   ];
 
@@ -1218,6 +1247,20 @@ return (
                   <span className="panel-chip">Hari Ini</span>
                 </div>
                 <div style={{ display: 'grid', gap: '1rem' }}>
+                  {products.filter(p => (p.stock || 0) <= 5).length > 0 && (
+                    <div style={{ background: '#fef2f2', padding: '1rem', borderRadius: '12px', border: '1px solid #fecaca' }}>
+                      <h4 style={{ margin: '0 0 0.5rem 0', color: '#dc2626', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <AlertCircle size={18} /> Peringatan Stok Menipis
+                      </h4>
+                      <ul style={{ margin: 0, paddingLeft: '1.5rem', color: '#991b1b', fontSize: '0.9rem' }}>
+                        {products.filter(p => (p.stock || 0) <= 5).map(p => (
+                          <li key={p.id}>
+                            <strong>{p.name}</strong> - Sisa stok: {p.stock || 0}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                     <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                       <h4 style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.875rem' }}>Pesanan Hari Ini</h4>
@@ -1717,6 +1760,62 @@ return (
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </section>
+            )}
+
+            {activeTab === "reviews" && (
+              <section className="admin-panel">
+                <div className="admin-panel-header split">
+                  <h2>
+                    <Edit3 size={18} />
+                    Ulasan & Rating
+                  </h2>
+                  <span className="panel-chip">{reviews.length} ulasan</span>
+                </div>
+                <div className="admin-table-wrap">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Pelanggan</th>
+                        <th>Rating</th>
+                        <th>Ulasan</th>
+                        <th>Tanggal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reviews.length === 0 ? (
+                        <tr><td colSpan={4} className="admin-empty-row">Belum ada ulasan.</td></tr>
+                      ) : (
+                        reviews.map(review => (
+                          <tr key={review.id}>
+                            <td><strong>{review.name}</strong></td>
+                            <td style={{ color: '#fbbf24', fontWeight: 'bold' }}>{"⭐".repeat(review.rating)}</td>
+                            <td style={{ fontSize: '0.9rem', color: '#475569' }}>{review.text}</td>
+                            <td>{new Date(review.date).toLocaleDateString('id-ID')}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            )}
+
+            {activeTab === "analytics" && (
+              <section className="admin-panel">
+                <div className="admin-panel-header split">
+                  <h2>
+                    <BarChart3 size={18} />
+                    Laporan Penjualan
+                  </h2>
+                  <button onClick={handleExportCSV} className="admin-btn admin-btn-primary">
+                    <Upload size={16} style={{ transform: 'rotate(180deg)' }} />
+                    Export CSV
+                  </button>
+                </div>
+                <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', marginTop: '1rem' }}>
+                  <p style={{ margin: 0, color: '#64748b' }}>Gunakan tombol di atas untuk mengunduh laporan seluruh data transaksi dalam format CSV untuk pembukuan.</p>
                 </div>
               </section>
             )}
