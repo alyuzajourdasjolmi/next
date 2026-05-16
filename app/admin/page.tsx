@@ -201,12 +201,12 @@ export default function AdminDashboard() {
     if (orders.length === 0) return alert("Tidak ada data pesanan untuk di-export.");
     
     const headers = ["ID Pesanan", "Nama Pelanggan", "No HP", "Total", "Status", "Tanggal"];
-    const csvContent = [
-      headers.join(","),
-      ...orders.map(order => 
-        `"${order.id}","${order.customer_name}","${order.customer_phone}","${order.grand_total}","${order.status}","${new Date(order.created_at).toLocaleDateString('id-ID')}"`
-      )
-    ].join("\n");
+    const csvRows = orders.map(order => 
+      `"${order.id}";"${order.customer_name}";"${order.customer_phone}";"${order.grand_total}";"${order.status}";"${new Date(order.created_at).toLocaleDateString('id-ID')}"`
+    );
+
+    // Prefix with BOM (\uFEFF) and 'sep=;' to make it Excel-friendly (especially for regional settings)
+    const csvContent = "\uFEFF" + "sep=;\n" + headers.join(";") + "\n" + csvRows.join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
