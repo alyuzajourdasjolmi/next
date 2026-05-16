@@ -2775,3 +2775,7 @@ body.dark-mode .login-glass-card {
   color: var(--primary);
   transform: translateX(4px);
 }
+
+.search-input-focus:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.15) !important; }
+.search-input-focus:hover { border-color: var(--primary) !important; }
+.clear-search:hover { color: var(--primary) !important; transform: translateY(-50%) scale(1.1); transition: all 0.2s; }

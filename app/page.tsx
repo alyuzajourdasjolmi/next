@@ -71,6 +71,7 @@ export default function Home() {
   const [theme, setTheme] = useState('light');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState([]);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -1060,6 +1061,39 @@ export default function Home() {
     <div className="underline"></div>
   </div>
 
+  <div className="section-search-bar" style={{ maxWidth: '600px', margin: '0 auto 2.5rem', position: 'relative' }}>
+    <div style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', display: 'flex' }}>
+      <Search size={20} />
+    </div>
+    <input 
+      type="text" 
+      placeholder="Cari camilan, sosis, buku, atau lainnya..." 
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      style={{
+        width: '100%',
+        padding: '1.1rem 3.5rem 1.1rem 3.25rem',
+        borderRadius: '50px',
+        border: '2px solid var(--border-main)',
+        background: 'var(--bg-surface)',
+        color: 'var(--text-main)',
+        fontSize: '1rem',
+        boxShadow: 'var(--shadow-sm)',
+        outline: 'none',
+        transition: 'all 0.3s ease'
+      }}
+      className="search-input-focus"
+    />
+    {searchTerm && (
+      <button 
+        onClick={() => setSearchTerm('')} 
+        style={{ position: 'absolute', right: '1.25rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)', display: 'flex' }}
+      >
+        <X size={20} />
+      </button>
+    )}
+  </div>
+
   <div className="filter-tabs">
     {[
       { id: 'all', label: 'Semua', icon: '🏪' },
@@ -1090,7 +1124,12 @@ export default function Home() {
     <div className="products-grid">
       <AnimatePresence mode="popLayout">
         {productsData
-          .filter((p: any) => activeTab === 'all' || p.category === activeTab)
+          .filter((p: any) => {
+            const matchesTab = activeTab === 'all' || p.category === activeTab;
+            const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                p.desc.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesTab && matchesSearch;
+          })
           .map((p: any, i: number) => (
             <motion.div 
               layout
