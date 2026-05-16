@@ -2790,3 +2790,23 @@ body.dark-mode .login-glass-card {
 .hero-buttons.centered { justify-content: center; }
 .btn-primary.pill { border-radius: 999px !important; padding: 1rem 3rem !important; font-size: 1.1rem !important; background: #E11D48 !important; }
 .hero { min-height: 100vh !important; }
+
+/* Modern Hero Styles */
+.hero-overlay-gradient { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(15, 23, 42, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%); z-index: 1; }
+.hero-glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px; padding: 4rem 3rem; max-width: 800px; width: 90%; z-index: 10; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+.hero-brand-badge.modern { background: rgba(225, 29, 72, 0.2); border: 1px solid rgba(225, 29, 72, 0.3); color: #FDA4AF; padding: 0.6rem 1.2rem; border-radius: 99px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; }
+.hero-title-modern { font-size: clamp(3rem, 10vw, 5rem); font-weight: 900; color: white; margin-bottom: 1.5rem; letter-spacing: -0.04em; line-height: 1; }
+.hero-title-modern span { color: #E11D48; }
+.hero-divider { width: 60px; height: 4px; background: #E11D48; border-radius: 99px; margin-bottom: 2rem; }
+.hero-subtitle-modern { font-size: 1.2rem; line-height: 1.6; color: rgba(255, 255, 255, 0.8); max-width: 600px; margin-bottom: 3rem; }
+.hero-subtitle-modern strong { color: white; }
+.hero-actions-modern { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+.btn-modern-primary { background: #E11D48; color: white; padding: 1.1rem 2.5rem; border-radius: 16px; font-weight: 800; display: flex; align-items: center; gap: 0.75rem; text-decoration: none; transition: all 0.3s; }
+.btn-modern-outline { background: rgba(255, 255, 255, 0.05); color: white; padding: 1.1rem 2.5rem; border-radius: 16px; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s; }
+.scroll-indicator { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.75rem; color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; z-index: 10; }
+.mouse { width: 26px; height: 42px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 20px; display: flex; justify-content: center; padding-top: 8px; }
+.wheel { width: 4px; height: 8px; background: white; border-radius: 2px; }
+.hero-decoration { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.floating-shape { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.2; }
+.shape-1 { width: 300px; height: 300px; background: #E11D48; top: 10%; left: -5%; }
+.shape-2 { width: 400px; height: 400px; background: #312E81; bottom: 10%; right: -5%; }

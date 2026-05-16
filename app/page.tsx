@@ -985,36 +985,88 @@ export default function Home() {
       sizes="100vw"
       style={{ objectFit: 'cover' }}
     />
-    <div className="hero-overlay"></div>
+    <div className="hero-overlay-gradient"></div>
+  </div>
+
+  {/* Decorative Elements */}
+  <div className="hero-decoration">
+    <motion.div 
+      className="floating-shape shape-1"
+      animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
+      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+    />
+    <motion.div 
+      className="floating-shape shape-2"
+      animate={{ y: [0, 20, 0], rotate: [0, -10, 0] }}
+      transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+    />
   </div>
 
   <motion.div 
-    className="hero-content centered"
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
+    className="hero-glass-card"
+    initial={{ opacity: 0, y: 40, scale: 0.95 }}
+    whileInView={{ opacity: 1, y: 0, scale: 1 }}
     viewport={{ once: true }}
-    transition={{ duration: 1, ease: "easeOut" }}
+    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
   >
-    <div className="hero-brand-badge transparent">
-      <TrendingUp size={16} />
-      <span>Toko Terpercaya & Berkualitas</span>
-    </div>
-    <h1 className="hero-title-large">
-      HIJRAH TOKO
+    <motion.div 
+      className="hero-brand-badge modern"
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.5 }}
+    >
+      <TrendingUp size={14} />
+      <span>Satu Pintu Solusi Anda</span>
+    </motion.div>
+    
+    <h1 className="hero-title-modern">
+      HIJRAH <span>TOKO</span>
     </h1>
-    <p className="hero-subtitle">
-      Warung ATK dan frozen food terlengkap untuk kebutuhan harian Anda.
+    
+    <div className="hero-divider"></div>
+    
+    <p className="hero-subtitle-modern">
+      Menghadirkan kenyamanan belanja <strong>Frozen Food</strong> premium dan 
+      kelengkapan <strong>ATK</strong> dalam satu genggaman modern.
     </p>
-    <div className="hero-buttons centered">
+    
+    <div className="hero-actions-modern">
       <motion.a 
         href="#produk" 
-        className="btn-primary pill"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        className="btn-modern-primary"
+        whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(225, 29, 72, 0.4)" }}
+        whileTap={{ scale: 0.98 }}
       >
-        Lihat Produk
+        Jelajahi Produk
+        <ShoppingCart size={18} />
+      </motion.a>
+      
+      <motion.a 
+        href="https://wa.me/6285263965031" 
+        className="btn-modern-outline"
+        whileHover={{ background: "rgba(255,255,255,0.1)" }}
+      >
+        <MessageSquare size={18} />
+        Hubungi Admin
       </motion.a>
     </div>
+  </motion.div>
+
+  {/* Scroll Indicator */}
+  <motion.div 
+    className="scroll-indicator"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ delay: 2 }}
+  >
+    <div className="mouse">
+      <motion.div 
+        className="wheel"
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+      />
+    </div>
+    <span>Scroll Kebawah</span>
   </motion.div>
 </section>
 
