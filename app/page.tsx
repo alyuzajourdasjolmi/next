@@ -485,6 +485,11 @@ export default function Home() {
     }
     const product = productsData.find(p => p.id === id);
     if (!product) return;
+
+    if ((product.stock || 0) <= 0) {
+      alert('Maaf, stok produk ini sedang habis!');
+      return;
+    }
     setCart((prev: any) => {
       const existing = prev.find((item: any) => item.id === id);
       if (existing) return prev.map((item: any) => item.id === id ? { ...item, qty: item.qty + 1 } : item);
@@ -493,7 +498,17 @@ export default function Home() {
   };
 
   const changeQuantity = (id: number, delta: number) => {
-    setCart((prev: any) => prev.map((item: any) => item.id === id ? { ...item, qty: item.qty + delta } : item).filter((item: any) => item.qty > 0));
+    const product = productsData.find(p => p.id === id);
+    setCart((prev: any) => prev.map((item: any) => {
+      if (item.id === id) {
+        if (delta > 0 && product && (item.qty + delta) > (product.stock || 0)) {
+          alert(`Maaf, stok ${product.name} tidak mencukupi!`);
+          return item;
+        }
+        return { ...item, qty: item.qty + delta };
+      }
+      return item;
+    }).filter((item: any) => item.qty > 0));
   };
 
   const clearCart = () => setCart([]);
@@ -1109,10 +1124,21 @@ export default function Home() {
                 <p className="desc">{p.desc.length > 70 ? p.desc.substring(0, 70) + '...' : p.desc}</p>
               </div>
               <div className="card-footer">
-                <span className="price">Rp {p.price.toLocaleString('id-ID')}</span>
-                <button type="button" className="btn-wa" onClick={() => addToCart(p.id)}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span className="price">Rp {p.price.toLocaleString('id-ID')}</span>
+                  <span style={{ fontSize: '0.7rem', color: (p.stock || 0) <= 5 ? '#ef4444' : '#64748b' }}>
+                    Stok: {p.stock || 0}
+                  </span>
+                </div>
+                <button 
+                  type="button" 
+                  className="btn-wa" 
+                  onClick={() => addToCart(p.id)}
+                  disabled={(p.stock || 0) <= 0}
+                  style={{ opacity: (p.stock || 0) <= 0 ? 0.5 : 1, cursor: (p.stock || 0) <= 0 ? 'not-allowed' : 'pointer' }}
+                >
                   <ShoppingCart size={16} />
-                  Tambah
+                  {(p.stock || 0) <= 0 ? 'Habis' : 'Tambah'}
                 </button>
               </div>
             </motion.div>
@@ -1761,13 +1787,13 @@ export default function Home() {
                 <div style={{ textAlign: 'right' }}>
                    <span style={{ fontSize: '0.9rem', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem' }}>Status Stok</span>
                    <strong style={{ 
-                     color: selectedProduct.stock > 0 ? '#059669' : '#ef4444', 
+                     color: (selectedProduct.stock || 0) > 0 ? '#059669' : '#ef4444', 
                      display: 'flex', 
                      alignItems: 'center', 
                      gap: '0.5rem',
                      justifyContent: 'flex-end' 
                    }}>
-                     {selectedProduct.stock > 0 ? (
+                     {(selectedProduct.stock || 0) > 0 ? (
                        <><CheckCircle2 size={16} /> {selectedProduct.stock} Tersisa</>
                      ) : (
                        <>Stok Habis</>
@@ -1782,13 +1808,13 @@ export default function Home() {
                   flex: 2, 
                   justifyContent: 'center', 
                   padding: '1.25rem',
-                  opacity: selectedProduct.stock > 0 ? 1 : 0.6,
-                  cursor: selectedProduct.stock > 0 ? 'pointer' : 'not-allowed'
+                  opacity: (selectedProduct.stock || 0) > 0 ? 1 : 0.6,
+                  cursor: (selectedProduct.stock || 0) > 0 ? 'pointer' : 'not-allowed'
                 }} 
-                onClick={() => { if(selectedProduct.stock > 0) { addToCart(selectedProduct.id); setSelectedProduct(null); } }}
-                disabled={selectedProduct.stock <= 0}
+                onClick={() => { if((selectedProduct.stock || 0) > 0) { addToCart(selectedProduct.id); setSelectedProduct(null); } }}
+                disabled={(selectedProduct.stock || 0) <= 0}
               >
-                <ShoppingCart size={20} /> {selectedProduct.stock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis'}
+                <ShoppingCart size={20} /> {(selectedProduct.stock || 0) > 0 ? 'Tambah ke Keranjang' : 'Stok Habis'}
               </button>
               <button className="btn-secondary" style={{ flex: 1, justifyContent: 'center' }} onClick={() => window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya tertarik dengan ${selectedProduct.name}`)}`, '_blank')}>
                 <MessageSquare size={20} /> Chat
