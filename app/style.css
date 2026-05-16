@@ -2848,12 +2848,14 @@ body.dark-mode .login-glass-card {
 }
 
 /* Mobile Toggle Visibility Fix */
-.navbar:not(.scrolled) .mobile-toggle {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  color: white !important;
-  display: flex !important;
-  backdrop-filter: blur(8px);
+@media (max-width: 768px) {
+  .navbar:not(.scrolled) .mobile-toggle {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    display: flex !important;
+    backdrop-filter: blur(8px);
+  }
 }
 
 /* Mobile Product Card Refinement */
