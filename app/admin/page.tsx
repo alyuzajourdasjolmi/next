@@ -360,10 +360,37 @@ export default function AdminDashboard() {
           return;
         }
 
+        // --- STOCK ROLLBACK LOGIC ---
+        // 1. Ambil item-item dari pesanan ini
+        const { data: itemsToRollback } = await supabase
+          .from("order_items")
+          .select("*")
+          .eq("order_id", orderId);
+
+        if (itemsToRollback && itemsToRollback.length > 0) {
+          for (const item of itemsToRollback) {
+            // 2. Ambil stok produk saat ini
+            const { data: product } = await supabase
+              .from("products")
+              .select("stock")
+              .eq("id", item.product_id)
+              .single();
+            
+            if (product && typeof product.stock === 'number') {
+              // 3. Kembalikan stok
+              await supabase
+                .from("products")
+                .update({ stock: product.stock + item.qty })
+                .eq("id", item.product_id);
+            }
+          }
+        }
+
         const { error } = await supabase.from("orders").delete().eq("id", orderId);
         if (error) throw error;
 
         setOrders((prev) => prev.filter((order) => order.id !== orderId));
+        fetchData(); // Refresh data biar angka stok di dashboard admin terupdate
         return;
       }
 
@@ -507,6 +534,12 @@ export default function AdminDashboard() {
   };
 
   const addToPosCart = (product: any) => {
+    const currentInCart = posCart.find(item => item.id === product.id)?.qty || 0;
+    if (currentInCart + 1 > (product.stock || 0)) {
+      alert(`Stok tidak mencukupi! Sisa stok: ${product.stock || 0}`);
+      return;
+    }
+
     setPosCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
@@ -517,10 +550,15 @@ export default function AdminDashboard() {
   };
 
   const updatePosQty = (id: number, delta: number) => {
+    const product = products.find(p => p.id === id);
     setPosCart(prev => prev.map(item => {
       if (item.id === id) {
-        const newQty = Math.max(1, item.qty + delta);
-        return { ...item, qty: newQty };
+        const newQty = item.qty + delta;
+        if (newQty > (product?.stock || 0)) {
+          alert(`Stok tidak mencukupi! Sisa stok: ${product?.stock || 0}`);
+          return item;
+        }
+        return { ...item, qty: Math.max(1, newQty) };
       }
       return item;
     }));

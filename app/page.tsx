@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingCart, 
@@ -701,6 +702,23 @@ export default function Home() {
 
         if (itemsError) throw itemsError;
 
+        // --- UPDATE STOCK IN DATABASE ---
+        for (const item of cart) {
+          const { data: product } = await supabase
+            .from('products')
+            .select('stock')
+            .eq('id', item.id)
+            .single();
+          
+          if (product && typeof product.stock === 'number') {
+            const newStock = Math.max(0, product.stock - item.qty);
+            await supabase
+              .from('products')
+              .update({ stock: newStock })
+              .eq('id', item.id);
+          }
+        }
+
         // Refresh order list for akun yang sedang login
         fetchUserOrders(user.id, false);
       }
@@ -1007,7 +1025,14 @@ export default function Home() {
       viewport={{ once: true }}
       transition={{ duration: 1, ease: "easeOut" }}
     >
-      <img src="/assets/images/hero-banner-new.jpg" alt="Hijrah Toko Products" />
+      <Image 
+        src="/assets/images/hero-banner-new.jpg" 
+        alt="Hijrah Toko Products" 
+        fill
+        priority
+        sizes="(max-width: 768px) 100vw, 50vw"
+        style={{ objectFit: 'cover' }}
+      />
       <div className="hero-floating-card top-right" style={{ display: "none" }}></div>
     </motion.div>
   </div>
@@ -1144,7 +1169,14 @@ export default function Home() {
                 {p.category === 'frozen' ? 'Frozen' : p.category === 'atk' ? 'ATK' : 'Lainnya'}
               </span>
               <div className="card-img-wrap" onClick={() => setSelectedProduct(p)}>
-                <img src={p.img} alt={p.name} className="card-img" loading="lazy" />
+                <Image 
+                  src={p.img} 
+                  alt={p.name} 
+                  fill
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                  className="card-img" 
+                  style={{ objectFit: 'cover' }}
+                />
                 <div className="card-overlay">
                   <Search size={24} color="white" />
                   <span>Detail</span>
@@ -1804,7 +1836,13 @@ export default function Home() {
         exit={{ opacity: 0, scale: 0.9, y: 30 }}
       >
         <div className="modal-img-container">
-          <img src={selectedProduct.img} alt={selectedProduct.name} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+          <Image 
+            src={selectedProduct.img} 
+            alt={selectedProduct.name} 
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            style={{ objectFit: 'cover' }} 
+          />
           <button onClick={() => setSelectedProduct(null)} style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', background: 'white', border: 'none', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)', cursor: 'pointer' }}>
             <X size={20} color="#0f172a" />
           </button>
