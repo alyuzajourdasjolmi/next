@@ -233,7 +233,8 @@ export default function Home() {
     const initialCart = localStorage.getItem('hijrahTokoCart_guest') || '[]';
     setCart(JSON.parse(initialCart));
     
-    setOrderInfo(JSON.parse(localStorage.getItem('hijrahTokoOrderInfo') || '{}'));
+    const savedOrderInfo = JSON.parse(localStorage.getItem('hijrahTokoOrderInfo') || '{}');
+    setOrderInfo(prev => ({ ...prev, ...savedOrderInfo }));
     setInbox(JSON.parse(localStorage.getItem('hijrahTokoInbox') || '{"title":"","message":"","icon":"📨"}'));
     
 
@@ -669,7 +670,7 @@ export default function Home() {
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
-          customer_name: orderInfo.customerName,
+          customer_name: orderInfo.customerName || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pelanggan',
           customer_phone: orderInfo.customerPhone,
           delivery_method: orderInfo.deliveryMethod,
           customer_address: orderInfo.customerAddress,
@@ -1491,7 +1492,7 @@ export default function Home() {
         <form onSubmit={submitOrder} className="order-form" style={{ marginTop: '1.5rem' }}>
           <div className="form-group">
             <label>Nama Penerima</label>
-            <input type="text" required value={orderInfo.customerName} onChange={e => setOrderInfo({...orderInfo, customerName: e.target.value})} disabled />
+            <input type="text" required value={orderInfo.customerName || ''} onChange={e => setOrderInfo({...orderInfo, customerName: e.target.value})} />
           </div>
           
           <div className="form-group">
