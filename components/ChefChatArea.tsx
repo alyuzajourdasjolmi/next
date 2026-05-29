@@ -86,11 +86,10 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
         </button>
       </div>
 
-      {/* Security Guardrail Info */}
-      <div className="px-4 sm:px-6 py-2 sm:py-3 bg-rose-500/5 border-b border-rose-500/10 flex items-center gap-2 sm:gap-3 shrink-0">
-        <ShieldCheck className="text-rose-500 shrink-0" size={14} />
-        <p className="text-[10px] sm:text-[11px] text-rose-500/80 leading-tight font-medium">
-          AI hanya merespons topik Kuliner & Resep Toko Hijrah.
+      <div className="px-4 py-2 bg-rose-500/5 border-b border-rose-500/10 flex items-center gap-2 shrink-0">
+        <ShieldCheck className="text-rose-500 shrink-0" size={13} />
+        <p className="text-[10px] text-rose-500/80 leading-snug font-medium">
+          AI hanya merespons topik kuliner & resep Toko Hijrah.
         </p>
       </div>
 
@@ -101,20 +100,20 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
         style={{ scrollBehavior: 'smooth' }}
       >
         {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-center p-4 sm:p-8 space-y-4 sm:space-y-6">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/5 rounded-3xl flex items-center justify-center text-rose-500/20 relative">
-              <Sparkles size={32} className="text-rose-500/30" />
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 rounded-full flex items-center justify-center text-white animate-bounce">
-                <Zap size={10} fill="currentColor" />
+          <div className="min-h-[200px] flex flex-col items-center justify-center text-center py-8 px-4 space-y-4">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/5 rounded-2xl flex items-center justify-center relative">
+              <Sparkles size={28} className="text-rose-500/40" />
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full flex items-center justify-center text-white">
+                <Zap size={9} fill="currentColor" />
               </div>
             </div>
-            <div className="max-w-[280px]">
-              <h4 className="text-white font-bold text-lg sm:text-xl">Halo Sahabat Hijrah! 👋</h4>
-              <p className="text-white/40 text-xs sm:text-sm mt-2 sm:mt-3 leading-relaxed">
-                Aku siap bantu resep masakan & tips olahan *frozen food* spesial di dapurmu!
+            <div className="max-w-[260px]">
+              <h4 className="text-white font-bold text-base sm:text-lg">Halo Sahabat Hijrah!</h4>
+              <p className="text-white/45 text-xs sm:text-sm mt-2 leading-relaxed">
+                Aku siap bantu resep masakan dan tips olahan frozen food di dapurmu.
               </p>
-              <p className="text-rose-500/60 text-[10px] sm:text-xs mt-4 sm:mt-6 italic font-medium">
-                Tanyakan resep, atau klik "Tanya Resep Q" di katalog!
+              <p className="text-rose-500/70 text-[11px] mt-4 font-medium">
+                Tanyakan resep di sini, atau klik &quot;Tanya Resep&quot; di katalog produk.
               </p>
             </div>
           </div>
@@ -175,14 +174,16 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
         )}
       </div>
 
-      {/* Quick Chips & Input */}
-      <div className="p-4 sm:p-6 bg-[#1f2937] border-t border-white/5 shrink-0">
-        <div className="flex gap-2 mb-4 sm:mb-5 overflow-x-auto pb-2 no-scrollbar">
+      <div className="p-4 bg-[#1f2937] border-t border-white/5 shrink-0">
+        <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">
+          Quick Action
+        </p>
+        <div className="flex flex-wrap gap-2 mb-4">
           {QUICK_CHIPS.map(chip => (
             <button
               key={chip.label}
               onClick={() => handleSend(chip.value)}
-              className="whitespace-nowrap px-3 sm:px-4 py-2 sm:py-2.5 bg-white/5 hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 rounded-xl text-[10px] sm:text-xs text-white/60 hover:text-rose-400 transition-all font-medium"
+              className="px-3 py-1.5 bg-white/5 hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 rounded-lg text-[11px] text-white/60 hover:text-rose-400 transition-all font-medium"
             >
               {chip.label}
             </button>
@@ -213,9 +214,11 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
             {!isLoading && <Send size={12} />}
           </button>
         </form>
-        <div className="mt-3 sm:mt-4 flex items-center justify-between gap-2">
-          <p className="text-[8px] sm:text-[10px] text-white/20 font-medium tracking-tight truncate">Powered by Llama-3.3-70b</p>
-          <div className="px-2 py-0.5 bg-amber-500/10 text-amber-500 text-[7px] sm:text-[9px] font-bold rounded uppercase tracking-widest border border-amber-500/20 shrink-0">Chef Mode</div>
+        <div className="mt-3 flex items-center justify-between gap-2 text-[10px] text-white/25">
+          <span className="truncate">Powered by Llama-3.3-70b</span>
+          <span className="shrink-0 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500/90 font-bold uppercase tracking-wide border border-amber-500/20 text-[9px]">
+            Chef Mode
+          </span>
         </div>
       </div>
     </div>
