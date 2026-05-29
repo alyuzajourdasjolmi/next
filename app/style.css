@@ -489,6 +489,52 @@ html {
   }
 }
 
+/* Button Base Styles */
+.btn-primary {
+  display: inline-flex; 
+  align-items: center; 
+  gap: 0.75rem;
+  padding: 0.9rem 2rem; 
+  background: var(--primary);
+  color: white !important; 
+  border: none; 
+  border-radius: 12px; 
+  font-weight: 700;
+  font-size: 1rem; 
+  cursor: pointer; 
+  text-decoration: none;
+  transition: all var(--transition-fast); 
+  box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.3);
+  justify-content: center;
+}
+.btn-primary:hover { 
+  background: var(--primary-dark);
+  transform: translateY(-2px); 
+  box-shadow: 0 20px 25px -5px rgba(225, 29, 72, 0.4); 
+}
+
+.btn-secondary {
+  display: inline-flex; 
+  align-items: center; 
+  gap: 0.75rem;
+  padding: 0.9rem 2rem; 
+  background: var(--bg-surface);
+  color: var(--text-main); 
+  border: 1px solid var(--border-main); 
+  border-radius: 12px;
+  font-weight: 700; 
+  font-size: 1rem; 
+  cursor: pointer; 
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  justify-content: center;
+}
+.btn-secondary:hover { 
+  background: var(--bg-surface-soft);
+  border-color: var(--primary);
+  transform: translateY(-2px); 
+}
+
 /* Stats */
 .stats-bar {
   background: var(--bg-surface); 

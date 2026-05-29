@@ -1520,10 +1520,10 @@ export default function Home() {
               >
                 <label>Alamat Pengiriman</label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <button type="button" className="btn-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', fontSize: '0.85rem' }} onClick={() => setIsAddressModalOpen(true)}>
+                  <button type="button" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', fontSize: '0.85rem' }} onClick={() => setIsAddressModalOpen(true)}>
                     <MapPin size={16} /> Alamat Tersimpan
                   </button>
-                  <button type="button" className="btn-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', fontSize: '0.85rem' }} onClick={useCurrentLocation} disabled={isLocating}>
+                  <button type="button" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', fontSize: '0.85rem' }} onClick={useCurrentLocation} disabled={isLocating}>
                     {isLocating ? '📍 Mencari...' : '📍 Lokasi Saat Ini'}
                   </button>
                 </div>
@@ -1654,7 +1654,7 @@ export default function Home() {
                     {new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} • Rp {order.grand_total.toLocaleString('id-ID')}
                   </span>
                 </div>
-                <button className="btn-secondary btn-small tracking-help-btn" onClick={() => window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya ingin bertanya status pesanan saya #${order.id}`)}`, '_blank')}>
+                <button className="btn-primary btn-small tracking-help-btn" onClick={() => window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya ingin bertanya status pesanan saya #${order.id}`)}`, '_blank')}>
                    Bantuan
                 </button>
               </div>
