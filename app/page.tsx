@@ -13,16 +13,16 @@ import {
   User as UserIcon, 
   LogOut, 
   MapPin, 
-  Phone, 
+  Phone,
   MessageSquare,
   Package,
-  TrendingUp,
   Star,
   Clock,
   CheckCircle2,
   Truck,
   AlertCircle,
-  Bell
+  Bell,
+  Mouse
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import AddressSelector from '../components/AddressSelector';
@@ -991,88 +991,73 @@ export default function Home() {
       sizes="100vw"
       style={{ objectFit: 'cover' }}
     />
-    <div className="hero-overlay-gradient"></div>
+    <div className="hero-dark-overlay"></div>
+    <div className="hero-gradient-blob top-left"></div>
+    <div className="hero-gradient-blob bottom-right"></div>
   </div>
 
   {/* Decorative Elements */}
-  <div className="hero-decoration">
-    <motion.div 
-      className="floating-shape shape-1"
-      animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
-      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-    />
-    <motion.div 
-      className="floating-shape shape-2"
-      animate={{ y: [0, 20, 0], rotate: [0, -10, 0] }}
-      transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-    />
-  </div>
+  <div className="dot-grid top-right"></div>
+  <div className="dot-grid bottom-left"></div>
 
-  <motion.div 
-    className="hero-glass-card"
-    initial={{ opacity: 0, y: 40, scale: 0.95 }}
-    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-    viewport={{ once: true }}
-    transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-  >
+  <div className="hero-container-new">
     <motion.div 
-      className="hero-brand-badge modern"
-      initial={{ opacity: 0, x: -20 }}
+      className="hero-content-new"
+      initial={{ opacity: 0, x: -30 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.5 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
     >
-      <TrendingUp size={14} />
-      <span>Satu Pintu Solusi Anda</span>
-    </motion.div>
-    
-    <h1 className="hero-title-modern">
-      HIJRAH <span>TOKO</span>
-    </h1>
-    
-    <div className="hero-divider"></div>
-    
-    <p className="hero-subtitle-modern">
-      Menghadirkan kenyamanan belanja <strong>Frozen Food</strong> premium dan 
-      kelengkapan <strong>ATK</strong> dalam satu genggaman modern.
-    </p>
-    
-    <div className="hero-actions-modern">
-      <motion.a 
-        href="#produk" 
-        className="btn-modern-primary"
-        whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(225, 29, 72, 0.4)" }}
-        whileTap={{ scale: 0.98 }}
-      >
-        Jelajahi Produk
-        <ShoppingCart size={18} />
-      </motion.a>
+      <div className="hero-subtitle-new">
+        <span className="subtitle-line"></span>
+        <span className="subtitle-text">SATU PINTU SOLUSI ANDA</span>
+      </div>
       
-      <motion.a 
-        href="https://wa.me/6285263965031" 
-        className="btn-modern-outline"
-        whileHover={{ background: "rgba(255,255,255,0.1)" }}
-      >
-        <MessageSquare size={18} />
-        Hubungi Admin
-      </motion.a>
-    </div>
-  </motion.div>
+      <h1 className="hero-title-new">
+        HIJRAH<span>TOKO</span>
+      </h1>
+      
+      <p className="hero-desc-new">
+        Menghadirkan kenyamanan belanja <strong>Frozen Food</strong> premium dan 
+        kelengkapan <strong>ATK</strong> dalam satu genggaman modern.
+      </p>
+      
+      <div className="hero-actions-new">
+        <motion.a 
+          href="#produk" 
+          className="btn-hero-primary"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Jelajahi Produk <ShoppingCart size={18} />
+        </motion.a>
+        
+        <motion.a 
+          href="https://wa.me/6285263965031" 
+          className="btn-hero-outline"
+          whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <MessageSquare size={18} /> Hubungi Admin
+        </motion.a>
+      </div>
+    </motion.div>
+  </div>
 
   {/* Scroll Indicator */}
   <motion.div 
-    className="scroll-indicator"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ delay: 2 }}
+    className="hero-scroll-new"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 1, duration: 1 }}
   >
-    <div className="mouse">
+    <div className="mouse-icon">
       <motion.div 
-        className="wheel"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
+        className="mouse-wheel"
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
       />
     </div>
-    <span>Scroll Kebawah</span>
+    <span>SCROLL KEBAWAH</span>
   </motion.div>
 </section>
 
