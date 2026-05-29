@@ -575,103 +575,52 @@ export default function Home() {
     }
 
     setIsLocating(true);
-    isLocatingRef.current = true;
     
-    let watchId: number | null = null;
-    let locationTimeout: NodeJS.Timeout | null = null;
-
-    const clearLocationRequest = () => {
-      if (watchId !== null) navigator.geolocation.clearWatch(watchId);
-      if (locationTimeout !== null) clearTimeout(locationTimeout);
-      setIsLocating(false);
-      isLocatingRef.current = false;
-    };
-
-    const successCallback = async (pos: any) => {
-      const { latitude, longitude, accuracy } = pos.coords;
-      console.log(`Mencoba lokasi: ${latitude}, ${longitude} (${accuracy}m)`);
+    // Gunakan getCurrentPosition langsung agar lebih cepat (tidak menunggu warmup)
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const link = `https://www.google.com/maps?q=${latitude},${longitude}`;
+      let address = `Koordinat: ${latitude}, ${longitude}`;
       
-      // Jika akurasi sudah sangat baik (< 50m) atau ini adalah fallback terakhir
-      if (accuracy < 50 || !isLocatingRef.current) {
-        const link = `https://www.google.com/maps?q=${latitude},${longitude}`;
-        let address = `Koordinat: ${latitude}, ${longitude}`;
-        
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`, {
-            headers: {
-              'Accept-Language': 'id',
-              'User-Agent': 'HijrahTokoWeb/1.2'
-            }
-          });
-          
-          if (res.ok) {
-            const data = await res.json();
-            if(data.display_name) address = data.display_name;
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`, {
+          headers: {
+            'Accept-Language': 'id',
+            'User-Agent': 'HijrahTokoWeb/1.3'
           }
-        } catch (e) {
-          console.error("Geocoding error:", e);
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          if(data.display_name) address = data.display_name;
         }
-
-        setOrderInfo(prev => ({ 
-          ...prev, 
-          customerLatitude: latitude.toString(), 
-          customerLongitude: longitude.toString(), 
-          customerMapsLink: link, 
-          customerAddress: address 
-        }));
-        
-        const isAcurate = accuracy < 100;
-        const msg = isAcurate 
-          ? `Lokasi berhasil ditemukan! (Akurasi: ${Math.round(accuracy)}m)`
-          : `Lokasi ditemukan, namun akurasi mungkin rendah (${Math.round(accuracy)}m). Pastikan GPS Anda aktif untuk hasil terbaik.`;
-        
-        alert(msg);
-        clearLocationRequest();
-      } else {
-        console.log(`Menunggu akurasi lebih baik... (${accuracy}m)`);
+      } catch (e) {
+        console.error("Geocoding error:", e);
       }
-    };
 
-    const errorCallback = (err: any) => {
-      if (!isLocatingRef.current) return;
+      // Pastikan state diupdate secara sinkron
+      setOrderInfo(prev => ({ 
+        ...prev, 
+        customerLatitude: latitude.toString(), 
+        customerLongitude: longitude.toString(), 
+        customerMapsLink: link, 
+        customerAddress: address 
+      }));
       
-      clearLocationRequest();
+      setIsLocating(false);
+      alert('Lokasi berhasil diperbarui!');
+    }, (err) => {
+      setIsLocating(false);
       let errorMsg = 'Gagal mengambil lokasi.';
-      switch(err.code) {
-        case err.PERMISSION_DENIED:
-          errorMsg = 'Izin lokasi ditolak. Silakan aktifkan izin lokasi di browser Anda dan muat ulang halaman.';
-          break;
-        case err.POSITION_UNAVAILABLE:
-          errorMsg = 'Informasi lokasi tidak tersedia. Pastikan GPS/Layanan Lokasi perangkat Anda sudah aktif.';
-          break;
-        case err.TIMEOUT:
-          errorMsg = 'Waktu permintaan lokasi habis. Pastikan Anda berada di tempat dengan sinyal GPS yang baik.';
-          break;
-      }
+      if (err.code === 1) errorMsg = 'Izin lokasi ditolak.';
+      else if (err.code === 2) errorMsg = 'Lokasi tidak tersedia.';
+      else if (err.code === 3) errorMsg = 'Waktu habis.';
       alert(errorMsg);
-    };
-
-    // Mulai memantau lokasi untuk mendapatkan akurasi terbaik
-    watchId = navigator.geolocation.watchPosition(successCallback, errorCallback, { 
-      enableHighAccuracy: true,
-      maximumAge: 0,
-      timeout: 20000
+    }, { 
+      enableHighAccuracy: true, 
+      timeout: 8000, 
+      maximumAge: 0 
     });
-
-    // Batas waktu maksimal 15 detik untuk mendapatkan lokasi terbaik, jika tidak ambil yang ada
-    locationTimeout = setTimeout(() => {
-      if (isLocatingRef.current) {
-        console.log("Timeout tercapai, mengambil lokasi terakhir yang tersedia...");
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            isLocatingRef.current = false; // Paksa ambil lokasi ini
-            successCallback(pos);
-          }, 
-          errorCallback, 
-          { enableHighAccuracy: true, timeout: 5000 }
-        );
-      }
-    }, 15000);
   };
 
   const submitReview = async (e: any) => {
