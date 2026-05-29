@@ -449,7 +449,7 @@ body.dark-mode .theme-icon {
   gap: 0.5rem;
   padding: 0.9rem 2rem;
   background: linear-gradient(135deg, var(--mint), var(--mint-dark));
-  color: white;
+  color: rgb(212, 14, 14);
   border: none;
   border-radius: 14px;
   font-weight: 600;
