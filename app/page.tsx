@@ -22,11 +22,13 @@ import {
   Truck,
   AlertCircle,
   Bell,
-  Mouse
+  Mouse,
+  ChefHat
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import AddressSelector from '../components/AddressSelector';
 import AddressManager from '../components/AddressManager';
+import ChefVirtual from '../components/ChefVirtual';
 
 
 
@@ -84,6 +86,7 @@ export default function Home() {
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [showProfileManager, setShowProfileManager] = useState(false);
   const isLocatingRef = useRef(false);
+  const [chefChat, setChefChat] = useState<{ isOpen: boolean; initialMessage?: string }>({ isOpen: false });
 
   const [orderInfo, setOrderInfo] = useState({
     customerName: '',
@@ -1080,6 +1083,16 @@ export default function Home() {
         >
           <MessageSquare size={18} /> Hubungi Admin
         </motion.a>
+
+        <motion.button 
+          onClick={() => setChefChat({ isOpen: true })}
+          className="btn-hero-outline"
+          style={{ background: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)', border: 'none' }}
+          whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(225, 29, 72, 0.4)' }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <ChefHat size={18} /> Chef Virtual
+        </motion.button>
       </div>
     </motion.div>
   </div>
@@ -1265,16 +1278,29 @@ export default function Home() {
                     Stok: {p.stock || 0}
                   </span>
                 </div>
-                <button 
-                  type="button" 
-                  className="btn-wa" 
-                  onClick={() => addToCart(p.id)}
-                  disabled={(p.stock || 0) <= 0}
-                  style={{ opacity: (p.stock || 0) <= 0 ? 0.5 : 1, cursor: (p.stock || 0) <= 0 ? 'not-allowed' : 'pointer' }}
-                >
-                  <ShoppingCart size={16} />
-                  {(p.stock || 0) <= 0 ? 'Habis' : 'Tambah'}
-                </button>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {p.category === 'frozen' && (
+                    <button 
+                      type="button" 
+                      className="btn-wa" 
+                      onClick={() => setChefChat({ isOpen: true, initialMessage: `Tolong berikan resep kreatif menggunakan ${p.name}` })}
+                      style={{ background: 'var(--bg-surface-soft)', color: 'var(--text-main)', border: '1px solid var(--border-main)' }}
+                      title="Tanya Resep"
+                    >
+                      <ChefHat size={16} />
+                    </button>
+                  )}
+                  <button 
+                    type="button" 
+                    className="btn-wa" 
+                    onClick={() => addToCart(p.id)}
+                    disabled={(p.stock || 0) <= 0}
+                    style={{ opacity: (p.stock || 0) <= 0 ? 0.5 : 1, cursor: (p.stock || 0) <= 0 ? 'not-allowed' : 'pointer' }}
+                  >
+                    <ShoppingCart size={16} />
+                    {(p.stock || 0) <= 0 ? 'Habis' : 'Tambah'}
+                  </button>
+                </div>
               </div>
             </motion.div>
           ))}
@@ -1877,6 +1903,15 @@ export default function Home() {
     <p>&copy; {new Date().getFullYear()} Hijrah Toko. Seluruh hak cipta dilindungi. Built with ❤️ for your home and office.</p>
   </div>
 </footer>
+
+<AnimatePresence>
+  {chefChat.isOpen && (
+    <ChefVirtual 
+      initialMessage={chefChat.initialMessage} 
+      onClose={() => setChefChat({ isOpen: false })} 
+    />
+  )}
+</AnimatePresence>
 
 {/*  Modals  */}
 <AnimatePresence>
