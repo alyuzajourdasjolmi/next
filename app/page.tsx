@@ -730,14 +730,14 @@ export default function Home() {
       `Metode: ${orderInfo.deliveryMethod === 'pickup' ? 'Ambil di Kedai' : 'Diantarkan'}`, '',
       'List Barang:', itemsText, '',
       `Pembayaran: ${orderInfo.paymentMethod}`,
-      orderInfo.deliveryMethod === 'pickup' ? `Jadwal Ambil: ${orderInfo.pickupDate}` : 'Jadwal: Segera (Diantar)', '',
+      orderInfo.deliveryMethod === 'pickup' ? `Jadwal Ambil: ${orderInfo.pickupDate}` : `Alamat Kirim: ${orderInfo.customerAddress}\nJadwal: Segera (Diantar)`, '',
       'Rincian Biaya:',
       `Subtotal: Rp ${subtotal.toLocaleString('id-ID')}`,
-      `Jarak Tempuh: ${shipInfo.distanceKm || '-'}`,
+      `Jarak Tempuh: ${shipInfo.distanceKm || '-'} km`,
       `Ongkir: Rp ${(shipInfo.shippingCost || 0).toLocaleString('id-ID')}`,
       `Diskon Ongkir: Rp ${shipInfo.discount.toLocaleString('id-ID')}`,
       `Total Bayar: Rp ${grandTotal.toLocaleString('id-ID')}`, '',
-      `Lokasi: ${orderInfo.deliveryMethod === 'delivery' ? orderInfo.customerMapsLink : 'Tidak diperlukan'}`
+      `Link Lokasi: ${orderInfo.deliveryMethod === 'delivery' ? orderInfo.customerMapsLink : 'Tidak diperlukan'}`
     ].join('\n');
 
     // Save order to Supabase
@@ -1614,7 +1614,15 @@ export default function Home() {
                     className="shipping-info-alert"
                   >
                     <h5><CheckCircle2 size={18} /> Ongkir Berhasil Dihitung</h5>
-                    <p>{shipInfo.detail}</p>
+                    <p style={{ marginBottom: '0.5rem' }}>{shipInfo.detail}</p>
+                    <div style={{ fontSize: '0.8rem', opacity: 0.8, borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: '0.5rem', marginTop: '0.5rem' }}>
+                      <strong>📍 Alamat Terdeteksi:</strong> {orderInfo.customerAddress}
+                    </div>
+                    {shipInfo.distanceKm && shipInfo.distanceKm > 30 && (
+                      <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#B91C1C', fontWeight: 'bold' }}>
+                        ⚠️ Lokasi terdeteksi cukup jauh. Jika Anda menggunakan PC, lokasi mungkin kurang akurat. Anda dapat mengedit alamat secara manual di atas.
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </motion.div>
@@ -1665,6 +1673,40 @@ export default function Home() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Ringkasan Pesanan (Table) */}
+          <div className="order-summary-table" style={{ 
+            marginTop: '2rem', 
+            marginBottom: '2rem', 
+            padding: '1.5rem', 
+            background: 'var(--bg-surface-soft)', 
+            borderRadius: '20px',
+            border: '1px solid var(--border-main)'
+          }}>
+            <h4 style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Package size={18} color="var(--primary)" /> Ringkasan Pesanan
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Nama Penerima</span>
+                <span style={{ fontWeight: '600' }}>{orderInfo.customerName || '-'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Metode</span>
+                <span style={{ fontWeight: '600' }}>{orderInfo.deliveryMethod === 'pickup' ? 'Ambil di Kedai' : 'Kirim ke Alamat'}</span>
+              </div>
+              {orderInfo.deliveryMethod === 'delivery' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-main)' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Alamat Pengiriman:</span>
+                  <span style={{ fontWeight: '500', fontSize: '0.85rem', lineHeight: '1.4' }}>{orderInfo.customerAddress || 'Belum diisi'}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border-main)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Total Pembayaran</span>
+                <span style={{ fontWeight: '800', color: 'var(--primary)', fontSize: '1.1rem' }}>Rp {grandTotal.toLocaleString('id-ID')}</span>
+              </div>
+            </div>
+          </div>
 
           <button type="submit" className="btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '1.25rem' }}>
             <MessageSquare size={20} /> Konfirmasi Pesanan via WhatsApp
