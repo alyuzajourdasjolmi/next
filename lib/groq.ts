@@ -1,5 +1,3 @@
-
-export const GROQ_API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY;
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 export type Message = {
@@ -10,8 +8,10 @@ export type Message = {
 const SYSTEM_PROMPT = `Kamu adalah Chef Virtual resmi Toko Hijrah. Kamu HANYA boleh menjawab pertanyaan seputar resep makanan, tips memasak, dan dunia kuliner. Jika user bertanya di luar topik makanan (seperti coding, matematika, politik, sekolah, dll), kamu WAJIB menolak dengan sopan menggunakan kalimat: 'Maaf ya, sebagai Chef Virtual Toko Hijrah, aku cuma bisa bantu jawab pertanyaan seputar makanan dan resep masakan! 🍳'`;
 
 export async function chatWithChef(messages: Message[]) {
-  if (!GROQ_API_KEY) {
-    throw new Error("GROQ_API_KEY is not configured");
+  const apiKey = process.env.NEXT_PUBLIC_GROQ_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error("GROQ_API_KEY is not configured in .env.local");
   }
 
   const payload = {
@@ -27,7 +27,7 @@ export async function chatWithChef(messages: Message[]) {
   const response = await fetch(GROQ_API_URL, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${GROQ_API_KEY}`,
+      "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
