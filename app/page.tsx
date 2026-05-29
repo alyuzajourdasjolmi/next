@@ -1488,22 +1488,22 @@ export default function Home() {
             <div className="option-grid">
               <label className={`option-card ${orderInfo.deliveryMethod === 'pickup' ? 'active' : ''}`}>
                 <input type="radio" name="deliveryMethod" value="pickup" checked={orderInfo.deliveryMethod === 'pickup'} onChange={e => setOrderInfo({...orderInfo, deliveryMethod: e.target.value})} />
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
-                  <Package size={20} />
-                  <div>
-                    <strong>Ambil di Kedai</strong>
-                    <small style={{ display: 'block' }}>Gratis biaya pengiriman</small>
-                  </div>
+                <div className="option-icon-wrap">
+                  <Package size={24} />
+                </div>
+                <div className="option-content">
+                  <strong>Ambil di Kedai</strong>
+                  <small>Gratis biaya pengiriman</small>
                 </div>
               </label>
               <label className={`option-card ${orderInfo.deliveryMethod === 'delivery' ? 'active' : ''}`}>
                 <input type="radio" name="deliveryMethod" value="delivery" checked={orderInfo.deliveryMethod === 'delivery'} onChange={e => setOrderInfo({...orderInfo, deliveryMethod: e.target.value})} />
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
-                  <Truck size={20} />
-                  <div>
-                    <strong>Kirim ke Alamat</strong>
-                    <small style={{ display: 'block' }}>Otomatis hitung ongkir</small>
-                  </div>
+                <div className="option-icon-wrap">
+                  <Truck size={24} />
+                </div>
+                <div className="option-content">
+                  <strong>Kirim ke Alamat</strong>
+                  <small>Otomatis hitung ongkir</small>
                 </div>
               </label>
             </div>
@@ -1513,18 +1513,18 @@ export default function Home() {
             {orderInfo.deliveryMethod === 'delivery' ? (
               <motion.div 
                 key="delivery"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
                 className="form-group"
               >
                 <label>Alamat Pengiriman</label>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-                  <button type="button" className="btn-secondary btn-small" onClick={() => setIsAddressModalOpen(true)}>
-                    <MapPin size={16} /> Pilih Alamat Tersimpan
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+                  <button type="button" className="btn-secondary" style={{ padding: '0.75rem', fontSize: '0.85rem' }} onClick={() => setIsAddressModalOpen(true)}>
+                    <MapPin size={16} /> Alamat Tersimpan
                   </button>
-                  <button type="button" className="btn-secondary btn-small" onClick={useCurrentLocation} disabled={isLocating}>
-                    {isLocating ? '📍 Mencari...' : '📍 Gunakan Lokasi Saat Ini'}
+                  <button type="button" className="btn-secondary" style={{ padding: '0.75rem', fontSize: '0.85rem' }} onClick={useCurrentLocation} disabled={isLocating}>
+                    {isLocating ? '📍 Mencari...' : '📍 Lokasi Saat Ini'}
                   </button>
                 </div>
                 <textarea 
@@ -1533,14 +1533,16 @@ export default function Home() {
                   rows={3} 
                   value={orderInfo.customerAddress} 
                   onChange={e => setOrderInfo({...orderInfo, customerAddress: e.target.value})}
+                  style={{ minHeight: '100px' }}
                 />
                 {shipInfo.status === 'ok' && (
                   <motion.div 
                     initial={{ scale: 0.95, opacity: 0 }} 
                     animate={{ scale: 1, opacity: 1 }}
-                    style={{ marginTop: '1rem', padding: '1rem', background: 'var(--primary-light)', borderRadius: '12px', border: '1px solid var(--primary)', color: 'var(--primary-dark)', fontSize: '0.9rem' }}
+                    className="shipping-info-alert"
                   >
-                    <strong>✅ Ongkir Dihitung:</strong> {shipInfo.detail}
+                    <h5><CheckCircle2 size={18} /> Ongkir Berhasil Dihitung</h5>
+                    <p>{shipInfo.detail}</p>
                   </motion.div>
                 )}
               </motion.div>
@@ -1570,25 +1572,21 @@ export default function Home() {
           <AnimatePresence>
             {orderInfo.paymentMethod !== 'COD' && (
               <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                style={{ 
-                  background: 'var(--bg-surface-soft)', 
-                  padding: '1.5rem', 
-                  borderRadius: '16px', 
-                  borderLeft: '4px solid var(--primary)',
-                  marginBottom: '1.5rem'
-                }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="shipping-info-alert"
+                style={{ background: 'var(--bg-surface-soft)', borderLeft: '4px solid var(--primary)' }}
               >
-                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--primary)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-                  Tutorial Pembayaran
+                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--primary)', marginBottom: '0.75rem', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <AlertCircle size={18} /> Tutorial Pembayaran
                 </h4>
                 <p style={{ 
                   fontSize: '0.95rem', 
                   lineHeight: '1.6', 
                   whiteSpace: 'pre-line',
-                  color: 'var(--text-main)'
+                  color: 'var(--text-main)',
+                  fontWeight: '500'
                 }}>
                   {PAYMENT_INFO[orderInfo.paymentMethod as keyof typeof PAYMENT_INFO]}
                 </p>
