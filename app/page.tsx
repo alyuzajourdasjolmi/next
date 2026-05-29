@@ -38,7 +38,6 @@ const SHIPPING_MAX_KM = 20;
 const SHIPPING_NEAR_BASE = 5000;
 const SHIPPING_FAR_BASE = 15000;
 const SHIPPING_FAR_PER_KM = 3000;
-const SHIPPING_SERVICE_FEE = 10000;
 
 const PAYMENT_INFO = {
   COD: "Pembayaran dilakukan saat barang diterima atau saat ambil di kedai.",
@@ -538,13 +537,13 @@ export default function Home() {
     
     let cost, detail;
     if (dist <= SHIPPING_NEAR_MAX_KM) {
-      cost = SHIPPING_NEAR_BASE + SHIPPING_SERVICE_FEE;
-      detail = `0 - 2 km: tarif dasar Rp ${SHIPPING_NEAR_BASE.toLocaleString('id-ID')} + biaya tambahan Rp ${SHIPPING_SERVICE_FEE.toLocaleString('id-ID')}.`;
+      cost = SHIPPING_NEAR_BASE;
+      detail = `0 - 2 km: tarif dasar Rp ${SHIPPING_NEAR_BASE.toLocaleString('id-ID')}.`;
     } else {
       const extraDist = dist - SHIPPING_NEAR_MAX_KM;
       const extraCost = Math.ceil(extraDist) * SHIPPING_FAR_PER_KM;
-      cost = SHIPPING_FAR_BASE + extraCost + SHIPPING_SERVICE_FEE;
-      detail = `> 2 km: tarif dasar Rp ${SHIPPING_FAR_BASE.toLocaleString('id-ID')} + ${Math.ceil(extraDist)} km x Rp ${SHIPPING_FAR_PER_KM.toLocaleString('id-ID')} + biaya tambahan Rp ${SHIPPING_SERVICE_FEE.toLocaleString('id-ID')}.`;
+      cost = SHIPPING_FAR_BASE + extraCost;
+      detail = `> 2 km: tarif dasar Rp ${SHIPPING_FAR_BASE.toLocaleString('id-ID')} + ${Math.ceil(extraDist)} km x Rp ${SHIPPING_FAR_PER_KM.toLocaleString('id-ID')}.`;
     }
 
     let discount = 0;
