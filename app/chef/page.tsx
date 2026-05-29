@@ -6,7 +6,6 @@ import {
   ChefHat,
   ShoppingCart,
   Sparkles,
-  Info,
   ShoppingBag,
   ArrowRight,
   Moon,
@@ -31,6 +30,19 @@ type Product = {
   stock?: number;
 };
 
+function formatProductName(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((word) =>
+      word
+        .split('-')
+        .map((part) => (part ? part.charAt(0).toUpperCase() + part.slice(1).toLowerCase() : ''))
+        .join('-')
+    )
+    .join(' ');
+}
+
 function ProductImage({ src, alt }: { src?: string; alt: string }) {
   const [failed, setFailed] = useState(false);
   const imageSrc = src?.trim();
@@ -38,9 +50,9 @@ function ProductImage({ src, alt }: { src?: string; alt: string }) {
   if (!imageSrc || failed) {
     return (
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-slate-800 to-slate-900 text-white/30">
-        <Package size={40} strokeWidth={1.5} />
-        <span className="text-[10px] font-semibold uppercase tracking-wider px-3 text-center line-clamp-2">
-          {alt}
+        <Package size={36} strokeWidth={1.5} />
+        <span className="text-[10px] font-medium text-white/40 px-3 text-center line-clamp-2">
+          {formatProductName(alt)}
         </span>
       </div>
     );
@@ -50,7 +62,7 @@ function ProductImage({ src, alt }: { src?: string; alt: string }) {
     <img
       src={imageSrc}
       alt={alt}
-      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
       onError={() => setFailed(true)}
     />
   );
@@ -58,13 +70,12 @@ function ProductImage({ src, alt }: { src?: string; alt: string }) {
 
 function ProductCardSkeleton() {
   return (
-    <div className="bg-[#111827] border border-white/5 rounded-2xl overflow-hidden animate-pulse">
-      <div className="aspect-[4/3] bg-white/5" />
-      <div className="p-5 space-y-3">
-        <div className="h-5 bg-white/5 rounded-lg w-2/3" />
-        <div className="h-4 bg-white/5 rounded-lg w-full" />
-        <div className="h-4 bg-white/5 rounded-lg w-4/5" />
-        <div className="h-10 bg-white/5 rounded-xl w-full mt-4" />
+    <div className="bg-[#131b2e] border border-white/[0.06] rounded-xl overflow-hidden animate-pulse">
+      <div className="aspect-[5/4] bg-white/5" />
+      <div className="p-4 space-y-3">
+        <div className="h-4 bg-white/5 rounded w-2/3" />
+        <div className="h-3 bg-white/5 rounded w-full" />
+        <div className="h-9 bg-white/5 rounded-lg w-full mt-2" />
       </div>
     </div>
   );
@@ -133,9 +144,18 @@ function ChefContent() {
     localStorage.setItem('hijrahTokoTheme', newTheme);
   };
 
+  const scrollToChat = () => {
+    document.getElementById('chef-chat')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const askRecipe = (productName: string) => {
     setInitialChefMessage(`Tolong berikan resep kreatif menggunakan ${productName}`);
-    document.getElementById('chef-chat')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    scrollToChat();
+  };
+
+  const startChefChat = () => {
+    setInitialChefMessage('Halo Chef! Aku bingung mau masak apa hari ini, bisa beri saran?');
+    scrollToChat();
   };
 
   const addToCart = (product: Product) => {
@@ -158,8 +178,10 @@ function ChefContent() {
   };
 
   const getProductImage = (p: Product) => p.img || p.image_url;
-  const getProductDesc = (p: Product) =>
-    p.desc || p.description || 'Kualitas premium terbaik untuk keluarga Anda.';
+  const getProductDesc = (p: Product) => {
+    const desc = (p.desc || p.description || '').trim();
+    return desc || 'Produk frozen pilihan dari Toko Hijrah.';
+  };
 
   const extractWeight = (p: Product) => {
     const text = getProductDesc(p);
@@ -168,61 +190,63 @@ function ChefContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0f1a] text-white font-sans selection:bg-rose-500/30">
-      <nav className="sticky top-0 z-50 bg-[#0a0f1a]/90 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity min-w-0">
-            <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center shrink-0">
-              <ChefHat className="text-white" size={22} />
+    <div className="min-h-screen bg-[#080d16] text-white">
+      <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#080d16]/95 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between gap-4 px-4 sm:h-16 sm:px-6 lg:px-8">
+          <Link href="/" className="flex min-w-0 items-center gap-2.5 hover:opacity-90">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-500">
+              <ChefHat className="text-white" size={20} />
             </div>
-            <div className="hidden sm:block min-w-0">
-              <h1 className="text-base sm:text-lg font-black tracking-tight leading-none truncate">HIJRAH TOKO</h1>
-              <p className="text-[10px] text-rose-500 font-bold uppercase tracking-widest mt-1">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold leading-tight sm:text-base">Hijrah Toko</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-rose-400">
                 Chef Virtual
               </p>
             </div>
           </Link>
 
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <button
+              type="button"
               onClick={() =>
                 alert('Gunakan file .env.local untuk mengatur API Key Groq secara permanen.')
               }
-              className="hidden lg:flex items-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold transition-all"
+              className="hidden items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80 transition hover:bg-white/10 xl:flex"
             >
-              <Key size={14} className="text-rose-500" />
-              Set API Key Groq
+              <Key size={13} className="text-rose-400" />
+              API Key Groq
             </button>
 
             <Link
               href="/"
-              className="p-2.5 hover:bg-white/5 rounded-xl transition-colors relative"
-              aria-label="Keranjang belanja"
+              className="relative rounded-lg p-2 text-white/70 transition hover:bg-white/5 hover:text-white"
+              aria-label="Keranjang"
             >
-              <ShoppingBag size={20} />
+              <ShoppingBag size={19} />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[1.25rem] h-5 px-1 bg-rose-500 text-[10px] font-black flex items-center justify-center rounded-full border-2 border-[#0a0f1a]">
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold">
                   {cartCount}
                 </span>
               )}
             </Link>
 
             <button
+              type="button"
               onClick={toggleTheme}
-              className="p-2.5 hover:bg-white/5 rounded-xl transition-colors"
+              className="rounded-lg p-2 text-white/70 transition hover:bg-white/5 hover:text-white"
               aria-label="Ganti tema"
             >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
             </button>
 
             {user ? (
-              <div className="w-9 h-9 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center font-bold text-sm shrink-0">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500 text-xs font-bold">
                 {user.user_metadata?.full_name?.charAt(0).toUpperCase() || 'U'}
               </div>
             ) : (
               <Link
                 href="/#login"
-                className="px-3 sm:px-4 py-2 bg-rose-500 hover:bg-rose-600 rounded-xl text-xs font-bold transition-all shrink-0"
+                className="rounded-lg bg-rose-500 px-3 py-1.5 text-xs font-semibold transition hover:bg-rose-600"
               >
                 Masuk
               </Link>
@@ -231,134 +255,132 @@ function ChefContent() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-8 sm:gap-10 min-w-0">
+      <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-8">
+          {/* Hero + produk (urutan mobile: hero → chat → produk) */}
+          <div className="contents lg:flex lg:min-w-0 lg:flex-1 lg:flex-col lg:gap-10">
             <motion.section
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden rounded-3xl sm:rounded-[2rem] border border-white/5 bg-gradient-to-br from-[#1e293b] to-[#0f172a] p-6 sm:p-8 lg:p-10 shadow-xl"
+              className="order-1 relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#121a2b] p-5 sm:p-7"
             >
-              <div className="relative z-10 max-w-lg">
-                <span className="inline-flex items-center px-3 py-1 mb-4 text-[10px] font-black uppercase tracking-widest text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-full">
-                  Fitur Baru Toko Hijrah
+              <div
+                className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-rose-500/10 blur-3xl"
+                aria-hidden
+              />
+              <div className="relative max-w-2xl">
+                <span className="mb-3 inline-block rounded-md bg-rose-500/15 px-2.5 py-1 text-[11px] font-semibold text-rose-300">
+                  Fitur baru
                 </span>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black mb-3 sm:mb-4 leading-tight tracking-tight">
-                  Bingung Mau Masak Apa Hari Ini?
-                </h2>
-                <p className="text-white/60 text-sm sm:text-base mb-6 leading-relaxed">
-                  Tenang! <span className="text-rose-400 font-semibold">Chef Virtual Hijrah</span> siap
-                  merekomendasikan resep praktis, ide olahan frozen food, dan tips dapur.
+                <h1 className="text-xl font-bold leading-snug sm:text-2xl lg:text-[1.75rem]">
+                  Bingung mau masak apa hari ini?
+                </h1>
+                <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/55 sm:text-[15px]">
+                  <span className="font-medium text-white/85">Chef Virtual Hijrah</span> siap bantu
+                  resep praktis, ide olahan frozen food, dan tips dapur.
                 </p>
-                <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+                <div className="mt-5 flex flex-wrap gap-2.5">
                   <button
-                    onClick={() =>
-                      setInitialChefMessage(
-                        'Halo Chef! Aku bingung mau masak apa hari ini, bisa beri saran?'
-                      )
-                    }
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-rose-500/20"
+                    type="button"
+                    onClick={startChefChat}
+                    className="rounded-lg bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-600"
                   >
-                    Mulai Tanya Chef
+                    Mulai tanya chef
                   </button>
                   <Link
                     href="/#produk"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold text-sm border border-white/10 transition-all"
+                    className="rounded-lg border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/90 transition hover:bg-white/10"
                   >
-                    Lihat Bahan Frozen
+                    Lihat bahan frozen
                   </Link>
                 </div>
               </div>
-              <div className="hidden md:block absolute right-4 lg:right-8 bottom-4 text-white/[0.04] pointer-events-none select-none">
-                <Info size={180} strokeWidth={1} />
-              </div>
             </motion.section>
 
-            <section className="min-w-0">
-              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5 sm:mb-6">
+            <section className="order-3 lg:order-2">
+              <div className="mb-4 flex items-end justify-between gap-4 border-b border-white/[0.06] pb-4">
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-black">Bahan Frozen Terlaris</h3>
-                  <p className="text-white/40 text-sm mt-1">
-                    Pilih bahan favoritmu & kreasikan resepnya
+                  <h2 className="text-lg font-bold sm:text-xl">Bahan frozen terlaris</h2>
+                  <p className="mt-0.5 text-sm text-white/45">
+                    Pilih bahan, lalu tanya resep ke chef
                   </p>
                 </div>
                 <Link
                   href="/#produk"
-                  className="inline-flex items-center gap-1.5 text-rose-400 text-sm font-bold hover:text-rose-300 transition-colors shrink-0"
+                  className="flex shrink-0 items-center gap-1 text-sm font-semibold text-rose-400 hover:text-rose-300"
                 >
-                  Lihat Semua
-                  <ArrowRight size={16} />
+                  Semua
+                  <ArrowRight size={15} />
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-2 xl:gap-5">
                 {loadingProducts &&
                   Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)}
 
                 {!loadingProducts && products.length === 0 && (
-                  <p className="sm:col-span-2 text-center text-white/40 text-sm py-12 rounded-2xl border border-dashed border-white/10">
-                    Belum ada produk frozen. Cek kembali nanti.
+                  <p className="col-span-2 rounded-xl border border-dashed border-white/10 py-10 text-center text-sm text-white/40">
+                    Belum ada produk frozen.
                   </p>
                 )}
 
                 {!loadingProducts &&
                   products.map((p, idx) => {
+                    const displayName = formatProductName(p.name);
                     const weight = extractWeight(p);
+                    const desc = getProductDesc(p);
+
                     return (
                       <motion.article
                         key={p.id}
-                        initial={{ opacity: 0, y: 12 }}
+                        initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.05 }}
-                        className="group flex flex-col bg-[#111827] border border-white/5 rounded-2xl overflow-hidden hover:border-rose-500/25 transition-colors shadow-lg"
+                        transition={{ delay: idx * 0.04 }}
+                        className="group flex flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-[#131b2e] transition hover:border-rose-500/20"
                       >
-                        <div className="relative aspect-[4/3] bg-slate-800/80 overflow-hidden">
-                          <ProductImage src={getProductImage(p)} alt={p.name} />
-                          <span className="absolute top-3 left-3 px-2.5 py-1 bg-black/60 backdrop-blur-sm rounded-lg text-[10px] font-bold uppercase tracking-wide text-white/90">
+                        <div className="relative aspect-[5/4] overflow-hidden bg-slate-800/50">
+                          <ProductImage src={getProductImage(p)} alt={displayName} />
+                          <span className="absolute left-2 top-2 rounded-md bg-black/55 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white/90">
                             Frozen
                           </span>
                         </div>
 
-                        <div className="flex flex-col flex-1 p-4 sm:p-5 gap-3">
-                          <div className="flex items-start justify-between gap-3">
-                            <h4 className="font-bold text-base leading-snug line-clamp-2">{p.name}</h4>
+                        <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="line-clamp-2 text-sm font-semibold leading-snug sm:text-[15px]">
+                              {displayName}
+                            </h3>
                             {weight && (
-                              <span className="shrink-0 px-2 py-1 rounded-md bg-white/5 text-[10px] font-semibold text-white/50">
+                              <span className="shrink-0 rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-white/45">
                                 {weight}
                               </span>
                             )}
                           </div>
 
-                          <p className="text-white/45 text-xs sm:text-sm leading-relaxed line-clamp-2 flex-1">
-                            {getProductDesc(p)}
+                          <p className="line-clamp-2 min-h-[2.25rem] text-xs leading-relaxed text-white/45">
+                            {desc}
                           </p>
 
-                          <div className="flex items-center justify-between gap-3 pt-3 mt-auto border-t border-white/5">
-                            <div>
-                              <p className="text-[10px] text-white/35 uppercase font-semibold tracking-wide">
-                                Harga
-                              </p>
-                              <p className="text-rose-400 font-black text-base sm:text-lg">
-                                Rp {p.price.toLocaleString('id-ID')}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
+                          <div className="mt-auto flex items-center justify-between gap-2 border-t border-white/[0.06] pt-3">
+                            <p className="text-sm font-bold text-rose-400">
+                              Rp {p.price.toLocaleString('id-ID')}
+                            </p>
+                            <div className="flex gap-1.5">
                               <button
                                 type="button"
                                 onClick={() => askRecipe(p.name)}
-                                className="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl text-xs font-bold border border-rose-500/20 transition-colors"
+                                className="flex items-center gap-1 rounded-lg border border-rose-500/25 bg-rose-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-rose-300 transition hover:bg-rose-500/20 sm:px-3 sm:text-xs"
                               >
-                                <span className="hidden min-[400px]:inline">Tanya Resep</span>
-                                <span className="min-[400px]:hidden">Resep</span>
-                                <Sparkles size={14} />
+                                Resep
+                                <Sparkles size={12} />
                               </button>
                               <button
                                 type="button"
                                 onClick={() => addToCart(p)}
-                                className="w-10 h-10 bg-white hover:bg-rose-500 text-slate-900 hover:text-white rounded-xl flex items-center justify-center transition-colors"
-                                aria-label={`Tambah ${p.name} ke keranjang`}
+                                className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-slate-900 transition hover:bg-rose-500 hover:text-white sm:h-9 sm:w-9"
+                                aria-label={`Tambah ${displayName}`}
                               >
-                                <ShoppingCart size={18} />
+                                <ShoppingCart size={16} />
                               </button>
                             </div>
                           </div>
@@ -372,9 +394,14 @@ function ChefContent() {
 
           <aside
             id="chef-chat"
-            className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-20 h-[min(70vh,640px)] sm:h-[min(75vh,700px)] lg:h-[calc(100vh-6rem)] min-h-[480px]"
+            className="order-2 flex min-h-0 w-full shrink-0 flex-col lg:order-none lg:w-[min(100%,480px)] lg:max-w-[42%]"
           >
-            <ChefChatArea initialMessage={initialChefMessage} />
+            <div className="h-[min(72vh,580px)] lg:sticky lg:top-[4.25rem] lg:flex lg:min-h-[calc(100vh-4.25rem)] lg:flex-1 lg:flex-col lg:h-auto">
+              <ChefChatArea
+                initialMessage={initialChefMessage}
+                className="min-h-0 flex-1"
+              />
+            </div>
           </aside>
         </div>
       </main>
@@ -386,8 +413,8 @@ export default function ChefPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0a0f1a] flex items-center justify-center text-white/60 text-sm">
-          Memuat Chef...
+        <div className="flex min-h-screen items-center justify-center bg-[#080d16] text-sm text-white/50">
+          Memuat...
         </div>
       }
     >

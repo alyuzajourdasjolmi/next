@@ -1,37 +1,38 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Send, User, Bot, Loader2, X, ChefHat, Sparkles, Trash2, ShieldCheck, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Send, User, Bot, Loader2, ChefHat, Sparkles, Trash2, ShieldCheck, Zap } from 'lucide-react';
 import { chatWithChef, Message } from '../lib/groq';
 
 interface ChefChatAreaProps {
   initialMessage?: string;
+  className?: string;
 }
 
 const QUICK_CHIPS = [
-  { label: "💡 Resep Nugget", value: "Tolong berikan resep nugget yang praktis dan lezat" },
-  { label: "❄️ Tips Frozen Food", value: "Bagaimana cara menyimpan frozen food agar awet dan tetap segar?" },
-  { label: "🍟 Saus Kentang", value: "Apa resep saus cocolan yang enak untuk kentang goreng?" }
+  { label: 'Resep nugget', value: 'Tolong berikan resep nugget yang praktis dan lezat' },
+  { label: 'Tips frozen food', value: 'Bagaimana cara menyimpan frozen food agar awet dan tetap segar?' },
+  { label: 'Saus kentang', value: 'Apa resep saus cocolan yang enak untuk kentang goreng?' },
 ];
 
-export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
+export default function ChefChatArea({ initialMessage, className = '' }: ChefChatAreaProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastInitialRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    if (initialMessage) {
+    if (initialMessage && initialMessage !== lastInitialRef.current) {
+      lastInitialRef.current = initialMessage;
       handleSend(initialMessage);
     }
   }, [initialMessage]);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, isLoading]);
 
   const handleSend = async (text: string) => {
@@ -47,100 +48,107 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
     try {
       const reply = await chatWithChef(newMessages);
       setMessages([...newMessages, { role: 'assistant', content: reply }]);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Terjadi kesalahan');
     } finally {
       setIsLoading(false);
     }
   };
 
   const clearChat = () => {
-    if (confirm("Hapus semua riwayat chat?")) {
+    if (confirm('Hapus semua riwayat chat?')) {
       setMessages([]);
       setError(null);
+      lastInitialRef.current = undefined;
     }
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#111827] rounded-3xl border border-white/5 shadow-2xl overflow-hidden min-h-[500px]">
-      {/* Header */}
-      <div className="p-4 sm:p-6 bg-[#1f2937] border-b border-white/5 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#e11d48] to-[#be123c] rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/20 shrink-0">
-            <ChefHat className="text-white" size={24} />
+    <div
+      className={`flex h-full min-h-[480px] flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111827] shadow-xl ${className}`}
+    >
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.06] bg-[#1a2332] px-4 py-3.5 sm:px-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-rose-700">
+            <ChefHat className="text-white" size={22} />
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="text-white font-bold text-sm sm:text-lg truncate">Chef Virtual Hijrah</h3>
-              <span className="px-2 py-0.5 bg-green-500/10 text-green-400 text-[9px] sm:text-[10px] font-bold rounded-full border border-green-500/20 tracking-wider shrink-0">AKTIF</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-base font-bold text-white">Chef Virtual Hijrah</h3>
+              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                Aktif
+              </span>
             </div>
-            <p className="text-white/50 text-[10px] sm:text-xs truncate">Asisten Kuliner & Resep Makanan</p>
+            <p className="text-sm text-white/50">Asisten kuliner & resep</p>
           </div>
         </div>
-        <button 
+        <button
+          type="button"
           onClick={clearChat}
-          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all shrink-0"
-          title="Bersihkan Chat"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white/40 transition hover:bg-white/10 hover:text-white"
+          title="Bersihkan chat"
         >
-          <Trash2 size={16} />
+          <Trash2 size={17} />
         </button>
       </div>
 
-      <div className="px-4 py-2 bg-rose-500/5 border-b border-rose-500/10 flex items-center gap-2 shrink-0">
-        <ShieldCheck className="text-rose-500 shrink-0" size={13} />
-        <p className="text-[10px] text-rose-500/80 leading-snug font-medium">
-          AI hanya merespons topik kuliner & resep Toko Hijrah.
+      <div className="flex shrink-0 items-start gap-2.5 border-b border-white/[0.06] bg-[#151f2e] px-4 py-2.5 sm:px-5">
+        <ShieldCheck className="mt-0.5 shrink-0 text-white/40" size={15} />
+        <p className="text-[13px] leading-snug text-white/55">
+          Asisten ini hanya membahas kuliner dan resep produk Toko Hijrah.
         </p>
       </div>
 
-      {/* Messages Area */}
-      <div 
+      <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
-        style={{ scrollBehavior: 'smooth' }}
+        className="flex-1 space-y-4 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5"
       >
         {messages.length === 0 && (
-          <div className="min-h-[200px] flex flex-col items-center justify-center text-center py-8 px-4 space-y-4">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/5 rounded-2xl flex items-center justify-center relative">
-              <Sparkles size={28} className="text-rose-500/40" />
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full flex items-center justify-center text-white">
+          <div className="flex h-full min-h-[180px] flex-col items-center justify-center px-2 py-6 text-center">
+            <div className="relative mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5">
+              <Sparkles size={26} className="text-rose-400/50" />
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-white">
                 <Zap size={9} fill="currentColor" />
-              </div>
+              </span>
             </div>
-            <div className="max-w-[260px]">
-              <h4 className="text-white font-bold text-base sm:text-lg">Halo Sahabat Hijrah!</h4>
-              <p className="text-white/45 text-xs sm:text-sm mt-2 leading-relaxed">
-                Aku siap bantu resep masakan dan tips olahan frozen food di dapurmu.
-              </p>
-              <p className="text-rose-500/70 text-[11px] mt-4 font-medium">
-                Tanyakan resep di sini, atau klik &quot;Tanya Resep&quot; di katalog produk.
-              </p>
-            </div>
+            <h4 className="text-base font-semibold text-white">Halo, Sahabat Hijrah!</h4>
+            <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/50">
+              Tanyakan resep, cara masak, atau tips frozen food. Kamu juga bisa klik tombol{' '}
+              <span className="text-white/70">Resep</span> di kartu produk.
+            </p>
           </div>
         )}
 
         {messages.map((msg, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div className={`flex gap-2 sm:gap-3 max-w-[90%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-              <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 shadow-lg ${
-                msg.role === 'user' ? 'bg-[#e11d48] text-white' : 'bg-[#1f2937] text-white/70 border border-white/5'
-              }`}>
-                {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
+            <div
+              className={`flex max-w-[92%] gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+            >
+              <div
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                  msg.role === 'user'
+                    ? 'bg-rose-500 text-white'
+                    : 'border border-white/10 bg-[#1f2937] text-white/60'
+                }`}
+              >
+                {msg.role === 'user' ? <User size={15} /> : <Bot size={15} />}
               </div>
-              <div className={`p-3 sm:p-4 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-sm ${
-                msg.role === 'user' 
-                ? 'bg-[#e11d48] text-white rounded-tr-none' 
-                : 'bg-[#1f2937] text-white/90 border border-white/5 rounded-tl-none'
-              }`}>
-                {msg.content.split('\n').map((line, idx) => (
+              <div
+                className={`rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                  msg.role === 'user'
+                    ? 'rounded-tr-md bg-rose-500 text-white'
+                    : 'rounded-tl-md border border-white/[0.06] bg-[#1f2937] text-white/90'
+                }`}
+              >
+                {msg.content.split('\n').map((line, idx, arr) => (
                   <React.Fragment key={idx}>
                     {line}
-                    {idx < msg.content.split('\n').length - 1 && <br />}
+                    {idx < arr.length - 1 && <br />}
                   </React.Fragment>
                 ))}
               </div>
@@ -150,74 +158,81 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="flex gap-2 sm:gap-3 max-w-[90%]">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-[#1f2937] border border-white/5 flex items-center justify-center text-white/70">
-                <Bot size={16} />
+            <div className="flex gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-[#1f2937] text-white/60">
+                <Bot size={15} />
               </div>
-              <div className="bg-[#1f2937] border border-white/5 p-3 sm:p-4 rounded-2xl rounded-tl-none flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 bg-rose-500/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-1.5 h-1.5 bg-rose-500/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-1.5 h-1.5 bg-rose-500/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-md border border-white/[0.06] bg-[#1f2937] px-4 py-3">
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-rose-400/60" />
+                <span
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-rose-400/60"
+                  style={{ animationDelay: '120ms' }}
+                />
+                <span
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-rose-400/60"
+                  style={{ animationDelay: '240ms' }}
+                />
               </div>
             </div>
           </div>
         )}
 
         {error && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-400 text-[10px] sm:text-xs text-center font-medium"
-          >
+          <p className="rounded-xl border border-rose-500/25 bg-rose-500/10 px-3 py-2 text-center text-sm text-rose-300">
             {error}
-          </motion.div>
+          </p>
         )}
       </div>
 
-      <div className="p-4 bg-[#1f2937] border-t border-white/5 shrink-0">
-        <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider mb-2">
-          Quick Action
+      <div className="shrink-0 border-t border-white/[0.06] bg-[#1a2332] p-4 sm:p-5">
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-white/35">
+          Quick action
         </p>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {QUICK_CHIPS.map(chip => (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {QUICK_CHIPS.map((chip) => (
             <button
               key={chip.label}
+              type="button"
               onClick={() => handleSend(chip.value)}
-              className="px-3 py-1.5 bg-white/5 hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 rounded-lg text-[11px] text-white/60 hover:text-rose-400 transition-all font-medium"
+              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/65 transition hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-200"
             >
               {chip.label}
             </button>
           ))}
         </div>
 
-        <form 
-          onSubmit={(e) => { e.preventDefault(); handleSend(input); }}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSend(input);
+          }}
           className="relative"
         >
-          <input 
+          <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Tanya resep..."
-            className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 sm:py-4 pl-4 sm:pl-5 pr-16 sm:pr-20 text-xs sm:text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/20 transition-all"
+            placeholder="Tanya resep atau tips masak..."
+            className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-4 pr-[5.5rem] text-sm text-white placeholder:text-white/30 focus:border-rose-500/40 focus:outline-none focus:ring-1 focus:ring-rose-500/25"
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className={`absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 px-3 sm:px-5 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-bold flex items-center gap-1.5 sm:gap-2 transition-all ${
-              !input.trim() || isLoading 
-              ? 'bg-white/5 text-white/20' 
-              : 'bg-white text-black hover:bg-rose-500 hover:text-white'
+            className={`absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition ${
+              !input.trim() || isLoading
+                ? 'cursor-not-allowed bg-white/5 text-white/25'
+                : 'bg-white text-slate-900 hover:bg-rose-500 hover:text-white'
             }`}
           >
             {isLoading ? <Loader2 className="animate-spin" size={14} /> : 'Kirim'}
-            {!isLoading && <Send size={12} />}
+            {!isLoading && <Send size={13} />}
           </button>
         </form>
-        <div className="mt-3 flex items-center justify-between gap-2 text-[10px] text-white/25">
-          <span className="truncate">Powered by Llama-3.3-70b</span>
-          <span className="shrink-0 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500/90 font-bold uppercase tracking-wide border border-amber-500/20 text-[9px]">
-            Chef Mode
+
+        <div className="mt-3 flex items-center justify-between gap-2 text-[11px] text-white/30">
+          <span>Powered by Llama 3.3 70B</span>
+          <span className="rounded border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 font-semibold uppercase tracking-wide text-amber-400/90">
+            Chef mode
           </span>
         </div>
       </div>
