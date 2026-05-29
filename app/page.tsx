@@ -1520,10 +1520,10 @@ export default function Home() {
               >
                 <label>Alamat Pengiriman</label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <button type="button" className="btn-secondary" style={{ padding: '0.75rem', fontSize: '0.85rem' }} onClick={() => setIsAddressModalOpen(true)}>
+                  <button type="button" className="btn-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', fontSize: '0.85rem' }} onClick={() => setIsAddressModalOpen(true)}>
                     <MapPin size={16} /> Alamat Tersimpan
                   </button>
-                  <button type="button" className="btn-secondary" style={{ padding: '0.75rem', fontSize: '0.85rem' }} onClick={useCurrentLocation} disabled={isLocating}>
+                  <button type="button" className="btn-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', fontSize: '0.85rem' }} onClick={useCurrentLocation} disabled={isLocating}>
                     {isLocating ? '📍 Mencari...' : '📍 Lokasi Saat Ini'}
                   </button>
                 </div>
@@ -1594,7 +1594,7 @@ export default function Home() {
             )}
           </AnimatePresence>
 
-          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '1.25rem' }}>
+          <button type="submit" className="btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '1.25rem' }}>
             <MessageSquare size={20} /> Konfirmasi Pesanan via WhatsApp
           </button>
         </form>
