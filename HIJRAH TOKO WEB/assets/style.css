@@ -448,9 +448,10 @@ body.dark-mode .theme-icon {
   align-items: center;
   gap: 0.5rem;
   padding: 0.9rem 2rem;
-  background: linear-gradient(135deg, var(--mint), var(--mint-dark));
-  color: rgb(212, 14, 14);
-  border: none;
+  /* GANTI BARIS INI: */
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  color: rgb(255, 255, 255);
+  /* Mengubah warna teks "Muat Ulang" jadi putih agar kontras */
   border-radius: 14px;
   font-weight: 600;
   font-size: 1rem;
@@ -459,8 +460,7 @@ body.dark-mode .theme-icon {
   transition: all 0.3s;
   box-shadow: 0 10px 22px rgba(220, 38, 38, 0.28);
   font-family: 'Poppins', sans-serif;
-  box-shadow:
-    0 0 25px rgba(255, 0, 80, 0.45);
+  box-shadow: 0 0 25px rgba(255, 0, 80, 0.45);
 }
 
 .btn-primary:hover {
