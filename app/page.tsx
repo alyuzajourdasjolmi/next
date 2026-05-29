@@ -42,8 +42,8 @@ const SHIPPING_SERVICE_FEE = 10000;
 
 const PAYMENT_INFO = {
   COD: "Pembayaran dilakukan saat barang diterima atau saat ambil di kedai.",
-  Mandiri: "Transfer Bank Mandiri ke 1230012345678 a.n. Hijrah Toko. Mohon kirim bukti transfer setelah pembayaran.",
-  BSI: "Transfer Bank BSI ke 7123456789 a.n. Hijrah Toko. Mohon kirim bukti transfer setelah pembayaran."
+  Mandiri: "Transfer Bank Mandiri ke 1230012345678 a.n. Hijrah Toko.\n\n⚠️ PENTING: Tolong kirim bukti pembayaran jika tidak maka admin tidak akan mengirim barangnya.",
+  BSI: "Transfer Bank BSI ke 7123456789 a.n. Hijrah Toko.\n\n⚠️ PENTING: Tolong kirim bukti pembayaran jika tidak maka admin tidak akan mengirim barangnya."
 };
 
 function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -185,15 +185,16 @@ export default function Home() {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        setUser(session.user);
-        // Pre-fill order info if user is logged in
+        const userData = session.user;
+        setUser(userData);
+        // Pre-fill order info strictly from user metadata
         setOrderInfo(prev => ({
           ...prev,
-          customerName: session.user.user_metadata?.full_name || prev.customerName,
-          customerPhone: session.user.user_metadata?.phone || session.user.phone || prev.customerPhone,
-          customerAddress: session.user.user_metadata?.address || prev.customerAddress
+          customerName: userData.user_metadata?.full_name || prev.customerName,
+          customerPhone: userData.user_metadata?.phone || userData.phone || prev.customerPhone,
+          customerAddress: userData.user_metadata?.address || prev.customerAddress
         }));
-        fetchUserOrders(session.user.id, false);
+        fetchUserOrders(userData.id, false);
       } else {
         setUserOrders([]);
         setInbox({
@@ -209,16 +210,18 @@ export default function Home() {
 
     // Listen for auth changes
     const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
       if (session?.user) {
+        const userData = session.user;
+        setUser(userData);
         setOrderInfo(prev => ({
           ...prev,
-          customerName: session.user.user_metadata?.full_name || prev.customerName,
-          customerPhone: session.user.user_metadata?.phone || session.user.phone || prev.customerPhone,
-          customerAddress: session.user.user_metadata?.address || prev.customerAddress
+          customerName: userData.user_metadata?.full_name || prev.customerName,
+          customerPhone: userData.user_metadata?.phone || userData.phone || prev.customerPhone,
+          customerAddress: userData.user_metadata?.address || prev.customerAddress
         }));
-        fetchUserOrders(session.user.id, false);
+        fetchUserOrders(userData.id, false);
       } else {
+        setUser(null);
         setUserOrders([]);
         setInbox({
           title: 'Login untuk lacak pesanan',
@@ -1563,6 +1566,35 @@ export default function Home() {
               <option value="BSI">Transfer Bank BSI</option>
             </select>
           </div>
+
+          <AnimatePresence>
+            {orderInfo.paymentMethod !== 'COD' && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                style={{ 
+                  background: 'var(--bg-surface-soft)', 
+                  padding: '1.5rem', 
+                  borderRadius: '16px', 
+                  borderLeft: '4px solid var(--primary)',
+                  marginBottom: '1.5rem'
+                }}
+              >
+                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--primary)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
+                  Tutorial Pembayaran
+                </h4>
+                <p style={{ 
+                  fontSize: '0.95rem', 
+                  lineHeight: '1.6', 
+                  whiteSpace: 'pre-line',
+                  color: 'var(--text-main)'
+                }}>
+                  {PAYMENT_INFO[orderInfo.paymentMethod as keyof typeof PAYMENT_INFO]}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '1.25rem' }}>
             <MessageSquare size={20} /> Konfirmasi Pesanan via WhatsApp
