@@ -580,7 +580,12 @@ export default function Home() {
       let address = `Koordinat: ${latitude}, ${longitude}`;
       
       try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
+        // Menggunakan accept-language: id untuk mendapatkan alamat dalam Bahasa Indonesia jika tersedia
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`, {
+          headers: {
+            'Accept-Language': 'id'
+          }
+        });
         const data = await res.json();
         if(data.display_name) address = data.display_name;
       } catch (e) {
@@ -597,9 +602,25 @@ export default function Home() {
       setIsLocating(false);
     }, (err) => {
       setIsLocating(false);
-      alert('Izin lokasi ditolak atau gagal mengambil koordinat.');
+      let errorMsg = 'Gagal mengambil lokasi.';
+      switch(err.code) {
+        case err.PERMISSION_DENIED:
+          errorMsg = 'Izin lokasi ditolak. Silakan aktifkan izin lokasi di browser Anda.';
+          break;
+        case err.POSITION_UNAVAILABLE:
+          errorMsg = 'Informasi lokasi tidak tersedia.';
+          break;
+        case err.TIMEOUT:
+          errorMsg = 'Waktu permintaan lokasi habis.';
+          break;
+      }
+      alert(errorMsg);
       console.error("Location error:", err);
-    }, { enableHighAccuracy: true });
+    }, { 
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0 
+    });
   };
 
   const submitReview = async (e: any) => {
