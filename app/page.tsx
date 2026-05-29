@@ -237,7 +237,14 @@ export default function Home() {
     setCart(JSON.parse(initialCart));
     
     const savedOrderInfo = JSON.parse(localStorage.getItem('hijrahTokoOrderInfo') || '{}');
-    setOrderInfo(prev => ({ ...prev, ...savedOrderInfo }));
+    setOrderInfo(prev => {
+      const merged = { ...prev, ...savedOrderInfo };
+      // Always prioritize user metadata if available
+      if (user?.user_metadata?.full_name) merged.customerName = user.user_metadata.full_name;
+      if (user?.user_metadata?.phone || user?.phone) merged.customerPhone = user.user_metadata?.phone || user.phone;
+      if (user?.user_metadata?.address) merged.customerAddress = user.user_metadata.address;
+      return merged;
+    });
     setInbox(JSON.parse(localStorage.getItem('hijrahTokoInbox') || '{"title":"","message":"","icon":"📨"}'));
     
 
@@ -477,6 +484,17 @@ export default function Home() {
       setCart(JSON.parse(savedCart || '[]'));
     }
   }, [user, isClient]);
+
+  useEffect(() => {
+    if (user) {
+      setOrderInfo(prev => ({
+        ...prev,
+        customerName: user.user_metadata?.full_name || prev.customerName,
+        customerPhone: user.user_metadata?.phone || user.phone || prev.customerPhone,
+        customerAddress: user.user_metadata?.address || prev.customerAddress
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     if (isClient) localStorage.setItem('hijrahTokoOrderInfo', JSON.stringify(orderInfo));
