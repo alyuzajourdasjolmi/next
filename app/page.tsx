@@ -1540,7 +1540,23 @@ export default function Home() {
         <form onSubmit={submitOrder} className="order-form" style={{ marginTop: '1.5rem' }}>
           <div className="form-group">
             <label>Nama Penerima</label>
-            <input type="text" required value={orderInfo.customerName || ''} onChange={e => setOrderInfo({...orderInfo, customerName: e.target.value})} />
+            <input 
+              type="text" 
+              required 
+              value={orderInfo.customerName || user?.user_metadata?.full_name || ''} 
+              readOnly
+              style={{ 
+                background: 'var(--bg-surface-soft)', 
+                cursor: 'not-allowed', 
+                opacity: 0.8,
+                border: '1px solid var(--border-main)',
+                fontWeight: '600'
+              }}
+              title="Nama diambil dari profil akun dan tidak dapat diubah"
+            />
+            <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
+              * Nama otomatis diambil dari data pendaftaran akun Anda.
+            </small>
           </div>
           
           <div className="form-group">
