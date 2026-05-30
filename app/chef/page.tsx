@@ -256,13 +256,15 @@ function ChefContent() {
       </nav>
 
       <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-8">
-          {/* Hero + produk (urutan mobile: hero → chat → produk) */}
-          <div className="contents lg:flex lg:min-w-0 lg:flex-1 lg:flex-col lg:gap-10">
+        {/* MENGUBAH LAYOUT UTAMA MENJADI GRID SISTEM 12 KOLOM DI LAYAR DESKTOP */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8 items-start">
+
+          {/* SISI KIRI: HERO + PRODUK (Mengambil 7 Kolom dari 12) */}
+          <div className="flex flex-col gap-6 lg:col-span-7 xl:col-span-8 lg:gap-10">
             <motion.section
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="order-1 relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#121a2b] p-5 sm:p-7"
+              className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#121a2b] p-5 sm:p-7"
             >
               <div
                 className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-rose-500/10 blur-3xl"
@@ -297,7 +299,7 @@ function ChefContent() {
               </div>
             </motion.section>
 
-            <section className="order-3 lg:order-2">
+            <section>
               <div className="mb-4 flex items-end justify-between gap-4 border-b border-white/[0.06] pb-4">
                 <div>
                   <h2 className="text-lg font-bold sm:text-xl">Bahan frozen terlaris</h2>
@@ -314,7 +316,8 @@ function ChefContent() {
                 </Link>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-2 xl:gap-5">
+              {/* GRID KARTU PRODUK */}
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:gap-5">
                 {loadingProducts &&
                   Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)}
 
@@ -338,16 +341,17 @@ function ChefContent() {
                         transition={{ delay: idx * 0.04 }}
                         className="group flex flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-[#131b2e] transition hover:border-rose-500/20"
                       >
-                        <div className="relative aspect-[5/4] overflow-hidden bg-slate-800/50">
+                        {/* DISERAGAMKAN TINGGI GAMBARNYA AGAR GRID SEJAJAR */}
+                        <div className="relative h-[180px] sm:h-[220px] w-full overflow-hidden bg-slate-800/50">
                           <ProductImage src={getProductImage(p)} alt={displayName} />
                           <span className="absolute left-2 top-2 rounded-md bg-black/55 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white/90">
                             Frozen
                           </span>
                         </div>
 
-                        <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
+                        <div className="flex flex-1 flex-col gap-2 p-3.5 sm:p-4">
                           <div className="flex items-start justify-between gap-2">
-                            <h3 className="line-clamp-2 text-sm font-semibold leading-snug sm:text-[15px]">
+                            <h3 className="line-clamp-2 text-sm font-semibold leading-snug sm:text-[15px] text-white/90">
                               {displayName}
                             </h3>
                             {weight && (
@@ -392,17 +396,19 @@ function ChefContent() {
             </section>
           </div>
 
+          {/* SISI KANAN: CHAT AREA (Mengambil sisa 5 Kolom dari 12) */}
           <aside
             id="chef-chat"
-            className="order-2 flex min-h-0 w-full shrink-0 flex-col lg:order-none lg:w-[min(100%,480px)] lg:max-w-[42%]"
+            className="w-full flex flex-col lg:col-span-5 xl:col-span-4 lg:sticky lg:top-[5.25rem]"
           >
-            <div className="h-[min(72vh,580px)] lg:sticky lg:top-[4.25rem] lg:flex lg:min-h-[calc(100vh-4.25rem)] lg:flex-1 lg:flex-col lg:h-auto">
+            <div className="h-[520px] lg:h-[calc(100vh-8rem)] min-h-[450px] flex flex-col">
               <ChefChatArea
                 initialMessage={initialChefMessage}
-                className="min-h-0 flex-1"
+                className="w-full h-full min-h-0 flex-1"
               />
             </div>
           </aside>
+
         </div>
       </main>
     </div>
