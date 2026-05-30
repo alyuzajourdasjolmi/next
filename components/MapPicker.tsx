@@ -74,13 +74,11 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
     const L = (window as any).L;
     
     const newMap = L.map(mapRef.current, {
-      zoomControl: false // Hide default zoom control to customize UI
+      zoomControl: false
     }).setView([coords.lat, coords.lng], 16);
     
-    // Add custom zoom control at bottom left
     L.control.zoom({ position: 'bottomleft' }).addTo(newMap);
     
-    // Load Google Maps Tile (Standard Roadmap)
     const newTileLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
       attribution: '&copy; Google Maps',
       maxZoom: 20
@@ -91,7 +89,6 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
     setIsMapLoaded(true);
     updateAddress(coords.lat, coords.lng);
 
-    // Map Event Listeners for Center Marker
     newMap.on('dragstart', () => {
       setIsDragging(true);
     });
@@ -104,10 +101,9 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
       updateAddress(newCoords.lat, newCoords.lng);
     });
 
-    // Fix map sizing issues in modal
     setTimeout(() => {
       newMap.invalidateSize();
-    }, 100);
+    }, 200);
   }, [coords.lat, coords.lng, map]);
 
   useEffect(() => {
@@ -126,7 +122,7 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
     const newType = mapType === 'roadmap' ? 'satellite' : 'roadmap';
     const url = newType === 'roadmap' 
       ? 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}' 
-      : 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}'; // Satellite with labels
+      : 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}';
     
     tileLayer.setUrl(url);
     setMapType(newType);
@@ -152,20 +148,26 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
 
   return (
     <>
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossOrigin="" />
+      <style>{`
+        @import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+        .leaflet-container { width: 100%; height: 100%; z-index: 10; font-family: inherit; }
+        .leaflet-control-zoom { border: none !important; box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important; border-radius: 12px !important; overflow: hidden; margin-bottom: 20px !important; margin-left: 12px !important; }
+        .leaflet-control-zoom a { color: #334155 !important; background-color: white !important; width: 36px !important; height: 36px !important; line-height: 36px !important; }
+        .leaflet-control-zoom a:hover { color: #e11d48 !important; background-color: #fff1f2 !important; }
+      `}</style>
       <Script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" strategy="lazyOnload" />
       
-      <div className="flex flex-col h-full overflow-hidden">
-        <div className="relative flex-1 bg-slate-100 flex flex-col min-h-[250px]">
+      <div className="flex flex-col w-full h-full overflow-hidden bg-slate-100">
+        <div className="relative flex-1 w-full min-h-[300px] flex flex-col">
           {/* Search Overlay */}
-          <div className="absolute top-3 left-3 right-3 z-[1000]">
+          <div className="absolute top-4 left-4 right-4 z-[1000]">
             <form onSubmit={handleSearch} className="relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Cari lokasi atau nama tempat..."
-                className="w-full bg-white border-none rounded-2xl px-5 py-3.5 pr-12 text-[14px] shadow-[0_4px_20px_rgb(0,0,0,0.1)] focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all font-medium text-slate-800"
+                className="w-full bg-white border-none rounded-2xl px-5 py-3.5 pr-12 text-[14px] shadow-[0_6px_20px_rgb(0,0,0,0.12)] focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all font-medium text-slate-800"
               />
               <button 
                 type="submit" 
@@ -191,24 +193,21 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
                 ))}
               </div>
             )}
-            
-            {/* Overlay text indicating to drag map - Moved below search bar dynamically */}
-            {isMapLoaded && searchResults.length === 0 && (
-              <div className="mt-3 flex justify-center pointer-events-none">
-                <div className="bg-slate-900/75 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[11px] font-medium shadow-lg">
-                  Geser peta untuk menentukan titik akurat
-                </div>
-              </div>
-            )}
           </div>
           
           {/* Map Container */}
-          <div className="relative w-full flex-1 z-[10] min-h-[250px]">
+          <div className="relative w-full flex-1 z-[10]">
             <div ref={mapRef} className="w-full h-full" />
             
-            {/* Center Fixed Marker (Gojek/Grab style) */}
+            {/* Center Fixed Marker */}
             {isMapLoaded && (
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[100%] z-[1000] pointer-events-none flex flex-col items-center">
+                
+                {/* Tooltip Overlay */}
+                <div className="mb-2 whitespace-nowrap bg-slate-900/80 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[11px] font-medium shadow-lg transition-opacity duration-300">
+                  Geser peta untuk akurasi
+                </div>
+
                 {/* Marker Pin */}
                 <div className={`relative transition-transform duration-200 ${isDragging ? '-translate-y-2 scale-110' : 'translate-y-0 scale-100'}`}>
                   <div className="flex items-center justify-center w-10 h-10 bg-rose-600 rounded-[50%_50%_50%_0] border-4 border-white shadow-[0_6px_16px_rgba(225,29,72,0.4)] -rotate-45">
@@ -222,7 +221,7 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
           </div>
           
           {!isMapLoaded && (
-            <div className="absolute inset-0 z-[20] flex flex-col items-center justify-center bg-slate-50/90 backdrop-blur-sm">
+            <div className="absolute inset-0 z-[20] flex flex-col items-center justify-center bg-slate-50">
               <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-rose-500 mb-4"></div>
               <p className="text-slate-600 text-sm font-semibold">Memuat Peta...</p>
             </div>
@@ -232,14 +231,14 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
           <div className="absolute bottom-6 right-3 z-[1000] flex flex-col gap-2">
             <button 
               onClick={toggleMapType}
-              className="bg-white p-3 rounded-full shadow-[0_4px_15px_rgb(0,0,0,0.15)] hover:bg-slate-50 text-slate-700 hover:text-indigo-600 transition-all border border-slate-100 group"
+              className="bg-white p-3 rounded-xl shadow-[0_4px_15px_rgb(0,0,0,0.15)] hover:bg-slate-50 text-slate-700 hover:text-indigo-600 transition-all border border-slate-100 group"
               title="Ganti Tampilan Peta"
             >
               <Layers size={20} strokeWidth={2} className="group-hover:scale-110 transition-transform" />
             </button>
             <button 
               onClick={useCurrentLocation}
-              className="bg-white p-3 rounded-full shadow-[0_4px_15px_rgb(0,0,0,0.15)] hover:bg-slate-50 text-slate-700 hover:text-rose-600 transition-all border border-slate-100 group"
+              className="bg-white p-3 rounded-xl shadow-[0_4px_15px_rgb(0,0,0,0.15)] hover:bg-slate-50 text-slate-700 hover:text-rose-600 transition-all border border-slate-100 group"
               title="Gunakan Lokasi Saya"
             >
               <Navigation size={20} strokeWidth={2} className="group-hover:scale-110 transition-transform" />
@@ -248,33 +247,33 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
         </div>
 
         {/* Footer Area */}
-        <div className="p-4 sm:p-5 bg-white space-y-4 z-[20] border-t border-slate-100 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] rounded-t-3xl -mt-4 relative shrink-0">
-          <div className="flex items-start gap-3">
+        <div className="w-full p-4 sm:p-5 bg-white space-y-4 z-[20] border-t border-slate-100 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] rounded-t-3xl relative shrink-0">
+          <div className="flex items-start gap-3 w-full">
             <div className="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5 text-rose-600 border border-rose-100">
               <MapPin size={20} strokeWidth={2.5} />
             </div>
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 min-w-0">
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 Lokasi Pengiriman
               </p>
-              <p className="text-[13px] sm:text-[14px] text-slate-800 font-semibold leading-relaxed line-clamp-2">
+              <p className="text-[13px] sm:text-[14px] text-slate-800 font-semibold leading-relaxed truncate whitespace-normal line-clamp-2">
                 {isDragging ? "Menyesuaikan titik..." : address}
               </p>
             </div>
           </div>
 
-          <div className="flex gap-2 sm:gap-3 pt-1">
+          <div className="flex w-full gap-2 sm:gap-3 pt-1">
             <button 
               onClick={onCancel}
-              className="px-4 sm:px-6 py-3 sm:py-3.5 rounded-xl text-[14px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all focus:ring-4 focus:ring-slate-100 focus:outline-none shrink-0"
+              className="flex-[0.35] min-w-[80px] px-2 py-3 sm:py-3.5 rounded-xl text-[14px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all focus:ring-4 focus:ring-slate-100 focus:outline-none text-center"
             >
               Batal
             </button>
             <button 
               onClick={() => onConfirm(address, coords.lat, coords.lng)}
               disabled={isDragging}
-              className={`flex-1 px-4 sm:px-6 py-3 sm:py-3.5 rounded-xl text-[14px] font-bold text-white transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
+              className={`flex-[0.65] min-w-[150px] px-2 py-3 sm:py-3.5 rounded-xl text-[14px] font-bold text-white transition-all flex items-center justify-center gap-1.5 sm:gap-2 ${
                 isDragging 
                   ? 'bg-rose-400 cursor-not-allowed shadow-none' 
                   : 'bg-rose-600 shadow-[0_8px_20px_rgba(225,29,72,0.3)] hover:bg-rose-700 hover:shadow-[0_12px_25px_rgba(225,29,72,0.4)] hover:-translate-y-0.5 focus:ring-4 focus:ring-rose-200'
