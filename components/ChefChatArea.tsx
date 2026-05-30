@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Send, User, Bot, Loader2, ChefHat, Sparkles, Trash2, ShieldCheck, Zap } from 'lucide-react';
+import { Send, User, Bot, Loader2, ChefHat, Sparkles, RotateCcw } from 'lucide-react';
 import { chatWithChef, Message } from '../lib/groq';
 
 interface ChefChatAreaProps {
@@ -65,56 +65,46 @@ export default function ChefChatArea({ initialMessage, className = '' }: ChefCha
 
   return (
     <div
-      className={`flex h-full min-h-[480px] flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111827] shadow-xl ${className}`}
+      className={`flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-[#161B22] shadow-2xl ${className}`}
     >
-      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.06] bg-[#1a2332] px-4 py-3.5 sm:px-5">
+      {/* Header pink — seperti mockup */}
+      <div className="flex shrink-0 items-center justify-between gap-3 bg-gradient-to-r from-[#FF006E] to-[#d4005c] px-4 py-4">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-rose-700">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/20">
             <ChefHat className="text-white" size={22} />
           </div>
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-base font-bold text-white">Chef Virtual Hijrah</h3>
-              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
-                Aktif
-              </span>
+            <p className="truncate text-[15px] font-bold text-white">Chef Virtual Hijrah</p>
+            <div className="mt-0.5 flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+              <span className="text-xs text-white/80">Online & Siap Membantu</span>
             </div>
-            <p className="text-sm text-white/50">Asisten kuliner & resep</p>
           </div>
         </div>
         <button
           type="button"
           onClick={clearChat}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white/40 transition hover:bg-white/10 hover:text-white"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/15 text-white/80 transition hover:bg-white/25 hover:text-white"
           title="Bersihkan chat"
         >
-          <Trash2 size={17} />
+          <RotateCcw size={17} />
         </button>
       </div>
 
-      <div className="flex shrink-0 items-start gap-2.5 border-b border-white/[0.06] bg-[#151f2e] px-4 py-2.5 sm:px-5">
-        <ShieldCheck className="mt-0.5 shrink-0 text-white/40" size={15} />
-        <p className="text-[13px] leading-snug text-white/55">
-          Asisten ini hanya membahas kuliner dan resep produk Toko Hijrah.
-        </p>
-      </div>
-
+      {/* Chat body */}
       <div
         ref={scrollRef}
-        className="flex-1 space-y-4 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5"
+        className="flex-1 space-y-4 overflow-y-auto bg-[#0B0E14] px-4 py-4"
       >
         {messages.length === 0 && (
-          <div className="flex h-full min-h-[180px] flex-col items-center justify-center px-2 py-6 text-center">
-            <div className="relative mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5">
-              <Sparkles size={26} className="text-rose-400/50" />
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-white">
-                <Zap size={9} fill="currentColor" />
-              </span>
+          <div className="flex h-full min-h-[200px] flex-col items-center justify-center px-3 py-8 text-center">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.05]">
+              <Sparkles size={26} className="text-[#FF006E]/50" />
             </div>
-            <h4 className="text-base font-semibold text-white">Halo, Sahabat Hijrah!</h4>
-            <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/50">
-              Tanyakan resep, cara masak, atau tips frozen food. Kamu juga bisa klik tombol{' '}
-              <span className="text-white/70">Resep</span> di kartu produk.
+            <h4 className="text-base font-bold text-white">Halo, Sahabat Hijrah!</h4>
+            <p className="mt-2 max-w-[240px] text-sm leading-relaxed text-white/45">
+              Tanyakan resep atau tips masak frozen food. Klik tombol{' '}
+              <span className="text-[#FF006E]">Resep</span> di kartu produk.
             </p>
           </div>
         )}
@@ -127,22 +117,22 @@ export default function ChefChatArea({ initialMessage, className = '' }: ChefCha
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`flex max-w-[92%] gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+              className={`flex max-w-[90%] gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
             >
               <div
                 className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
                   msg.role === 'user'
-                    ? 'bg-rose-500 text-white'
-                    : 'border border-white/10 bg-[#1f2937] text-white/60'
+                    ? 'bg-[#FF006E] text-white'
+                    : 'border border-white/[0.08] bg-[#161B22] text-white/50'
                 }`}
               >
-                {msg.role === 'user' ? <User size={15} /> : <Bot size={15} />}
+                {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
               </div>
               <div
                 className={`rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                   msg.role === 'user'
-                    ? 'rounded-tr-md bg-rose-500 text-white'
-                    : 'rounded-tl-md border border-white/[0.06] bg-[#1f2937] text-white/90'
+                    ? 'rounded-tr-sm bg-[#FF006E] text-white'
+                    : 'rounded-tl-sm border border-white/[0.06] bg-[#161B22] text-white/85'
                 }`}
               >
                 {msg.content.split('\n').map((line, idx, arr) => (
@@ -158,18 +148,18 @@ export default function ChefChatArea({ initialMessage, className = '' }: ChefCha
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="flex gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-[#1f2937] text-white/60">
-                <Bot size={15} />
+            <div className="flex gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-[#161B22] text-white/50">
+                <Bot size={14} />
               </div>
-              <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-md border border-white/[0.06] bg-[#1f2937] px-4 py-3">
-                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-rose-400/60" />
+              <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-white/[0.06] bg-[#161B22] px-4 py-3">
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#FF006E]/60" />
                 <span
-                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-rose-400/60"
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#FF006E]/60"
                   style={{ animationDelay: '120ms' }}
                 />
                 <span
-                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-rose-400/60"
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#FF006E]/60"
                   style={{ animationDelay: '240ms' }}
                 />
               </div>
@@ -178,61 +168,66 @@ export default function ChefChatArea({ initialMessage, className = '' }: ChefCha
         )}
 
         {error && (
-          <p className="rounded-xl border border-rose-500/25 bg-rose-500/10 px-3 py-2 text-center text-sm text-rose-300">
+          <p className="rounded-xl border border-[#FF006E]/30 bg-[#FF006E]/10 px-3 py-2 text-center text-sm text-[#ff6b9d]">
             {error}
           </p>
         )}
       </div>
 
-      <div className="shrink-0 border-t border-white/[0.06] bg-[#1a2332] p-4 sm:p-5">
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-white/35">
-          Quick action
-        </p>
-        <div className="mb-3 flex flex-wrap gap-2">
-          {QUICK_CHIPS.map((chip) => (
-            <button
-              key={chip.label}
-              type="button"
-              onClick={() => handleSend(chip.value)}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/65 transition hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-200"
-            >
-              {chip.label}
-            </button>
-          ))}
-        </div>
+      {/* Footer input */}
+      <div className="shrink-0 border-t border-white/[0.06] bg-[#161B22] p-4">
+        {messages.length === 0 && (
+          <>
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-white/30">
+              Quick Action
+            </p>
+            <div className="mb-3 flex flex-wrap gap-2">
+              {QUICK_CHIPS.map((chip) => (
+                <button
+                  key={chip.label}
+                  type="button"
+                  onClick={() => handleSend(chip.value)}
+                  className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white/55 transition hover:border-[#FF006E]/30 hover:bg-[#FF006E]/10 hover:text-[#FF006E]"
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSend(input);
           }}
-          className="relative"
+          className="flex gap-2"
         >
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Tanya resep atau tips masak..."
-            className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-4 pr-[5.5rem] text-sm text-white placeholder:text-white/30 focus:border-rose-500/40 focus:outline-none focus:ring-1 focus:ring-rose-500/25"
+            placeholder="Tanya resep cireng atau otak-otak..."
+            className="min-w-0 flex-1 rounded-xl border border-white/[0.08] bg-[#0B0E14] px-4 py-3 text-sm text-white placeholder:text-white/25 focus:border-[#FF006E]/40 focus:outline-none focus:ring-1 focus:ring-[#FF006E]/20"
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className={`absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition ${
+            className={`flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl transition ${
               !input.trim() || isLoading
-                ? 'cursor-not-allowed bg-white/5 text-white/25'
-                : 'bg-white text-slate-900 hover:bg-rose-500 hover:text-white'
+                ? 'cursor-not-allowed bg-white/[0.06] text-white/20'
+                : 'bg-[#FF006E] text-white hover:bg-[#e60063]'
             }`}
+            aria-label="Kirim pesan"
           >
-            {isLoading ? <Loader2 className="animate-spin" size={14} /> : 'Kirim'}
-            {!isLoading && <Send size={13} />}
+            {isLoading ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
           </button>
         </form>
 
-        <div className="mt-3 flex items-center justify-between gap-2 text-[11px] text-white/30">
+        <div className="mt-3 flex items-center justify-between gap-2 text-[10px] text-white/25">
           <span>Powered by Llama 3.3 70B</span>
-          <span className="rounded border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 font-semibold uppercase tracking-wide text-amber-400/90">
-            Chef mode
+          <span className="rounded border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 font-bold uppercase tracking-wide text-amber-400/90">
+            Chef Mode
           </span>
         </div>
       </div>
