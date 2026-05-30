@@ -79,9 +79,9 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
     
     L.control.zoom({ position: 'bottomleft' }).addTo(newMap);
     
-    const newTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19
+    const newTileLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      attribution: '&copy; Google Maps',
+      maxZoom: 20
     }).addTo(newMap);
 
     setMap(newMap);
@@ -121,8 +121,8 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
     
     const newType = mapType === 'roadmap' ? 'satellite' : 'roadmap';
     const url = newType === 'roadmap' 
-      ? 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' 
-      : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+      ? 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}' 
+      : 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}';
     
     tileLayer.setUrl(url);
     setMapType(newType);
