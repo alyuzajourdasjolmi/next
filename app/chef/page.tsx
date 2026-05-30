@@ -255,43 +255,42 @@ function ChefContent() {
         </div>
       </nav>
 
-      <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        {/* MENGUBAH LAYOUT UTAMA MENJADI GRID SISTEM 12 KOLOM DI LAYAR DESKTOP */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8 items-start">
+      <main className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-12 lg:gap-6 items-start">
 
-          {/* SISI KIRI: HERO + PRODUK (Mengambil 7 Kolom dari 12) */}
-          <div className="flex flex-col gap-6 lg:col-span-7 xl:col-span-8 lg:gap-10">
+          {/* SISI KIRI: HERO + PRODUK */}
+          <div className="flex flex-col gap-5 lg:col-span-7 xl:col-span-8 lg:gap-6">
             <motion.section
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#121a2b] p-5 sm:p-7"
+              className="relative overflow-hidden rounded-xl border border-white/[0.06] bg-[#121a2b] px-5 py-5 sm:px-6 sm:py-6"
             >
               <div
-                className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-rose-500/10 blur-3xl"
+                className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-rose-500/10 blur-3xl"
                 aria-hidden
               />
-              <div className="relative max-w-2xl">
-                <span className="mb-3 inline-block rounded-md bg-rose-500/15 px-2.5 py-1 text-[11px] font-semibold text-rose-300">
-                  Fitur baru
+              <div className="relative">
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 px-3 py-1 text-[11px] font-semibold text-rose-300">
+                  ✦ Fitur baru
                 </span>
-                <h1 className="text-xl font-bold leading-snug sm:text-2xl lg:text-[1.75rem]">
+                <h1 className="text-lg font-bold leading-snug sm:text-xl lg:text-2xl">
                   Bingung mau masak apa hari ini?
                 </h1>
-                <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/55 sm:text-[15px]">
-                  <span className="font-medium text-white/85">Chef Virtual Hijrah</span> siap bantu
+                <p className="mt-1.5 text-sm leading-relaxed text-white/50">
+                  <span className="font-semibold text-white/80">Chef Virtual Hijrah</span> siap bantu
                   resep praktis, ide olahan frozen food, dan tips dapur.
                 </p>
-                <div className="mt-5 flex flex-wrap gap-2.5">
+                <div className="mt-4 flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={startChefChat}
-                    className="rounded-lg bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-600"
+                    className="rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-600 active:scale-95"
                   >
                     Mulai tanya chef
                   </button>
                   <Link
                     href="/#produk"
-                    className="rounded-lg border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/90 transition hover:bg-white/10"
+                    className="rounded-lg border border-white/[0.12] bg-white/5 px-4 py-2 text-sm font-medium text-white/75 transition hover:bg-white/10 hover:text-white"
                   >
                     Lihat bahan frozen
                   </Link>
@@ -300,10 +299,10 @@ function ChefContent() {
             </motion.section>
 
             <section>
-              <div className="mb-4 flex items-end justify-between gap-4 border-b border-white/[0.06] pb-4">
+              <div className="mb-3 flex items-center justify-between gap-4 border-b border-white/[0.06] pb-3">
                 <div>
-                  <h2 className="text-lg font-bold sm:text-xl">Bahan frozen terlaris</h2>
-                  <p className="mt-0.5 text-sm text-white/45">
+                  <h2 className="text-base font-bold sm:text-lg">Bahan frozen terlaris</h2>
+                  <p className="mt-0.5 text-xs text-white/40">
                     Pilih bahan, lalu tanya resep ke chef
                   </p>
                 </div>
@@ -341,31 +340,31 @@ function ChefContent() {
                         transition={{ delay: idx * 0.04 }}
                         className="group flex flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-[#131b2e] transition hover:border-rose-500/20"
                       >
-                        {/* DISERAGAMKAN TINGGI GAMBARNYA AGAR GRID SEJAJAR */}
-                        <div className="relative h-[180px] sm:h-[220px] w-full overflow-hidden bg-slate-800/50">
+                        {/* gambar produk - tinggi seragam */}
+                        <div className="relative h-[148px] sm:h-[170px] w-full overflow-hidden bg-slate-800/50">
                           <ProductImage src={getProductImage(p)} alt={displayName} />
                           <span className="absolute left-2 top-2 rounded-md bg-black/55 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white/90">
                             Frozen
                           </span>
                         </div>
 
-                        <div className="flex flex-1 flex-col gap-2 p-3.5 sm:p-4">
+                        <div className="flex flex-1 flex-col gap-1.5 p-3 sm:p-3.5">
                           <div className="flex items-start justify-between gap-2">
-                            <h3 className="line-clamp-2 text-sm font-semibold leading-snug sm:text-[15px] text-white/90">
+                            <h3 className="line-clamp-2 text-[13px] font-semibold leading-snug text-white/90">
                               {displayName}
                             </h3>
                             {weight && (
-                              <span className="shrink-0 rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-white/45">
+                              <span className="shrink-0 rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-white/40">
                                 {weight}
                               </span>
                             )}
                           </div>
 
-                          <p className="line-clamp-2 min-h-[2.25rem] text-xs leading-relaxed text-white/45">
+                          <p className="line-clamp-2 min-h-[2rem] text-[11px] leading-relaxed text-white/40">
                             {desc}
                           </p>
 
-                          <div className="mt-auto flex items-center justify-between gap-2 border-t border-white/[0.06] pt-3">
+                          <div className="mt-auto flex items-center justify-between gap-2 border-t border-white/[0.06] pt-2.5">
                             <p className="text-sm font-bold text-rose-400">
                               Rp {p.price.toLocaleString('id-ID')}
                             </p>
@@ -373,18 +372,18 @@ function ChefContent() {
                               <button
                                 type="button"
                                 onClick={() => askRecipe(p.name)}
-                                className="flex items-center gap-1 rounded-lg border border-rose-500/25 bg-rose-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-rose-300 transition hover:bg-rose-500/20 sm:px-3 sm:text-xs"
+                                className="flex items-center gap-1 rounded-lg border border-rose-500/25 bg-rose-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-rose-300 transition hover:bg-rose-500/20"
                               >
                                 Resep
-                                <Sparkles size={12} />
+                                <Sparkles size={11} />
                               </button>
                               <button
                                 type="button"
                                 onClick={() => addToCart(p)}
-                                className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-slate-900 transition hover:bg-rose-500 hover:text-white sm:h-9 sm:w-9"
+                                className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-slate-900 transition hover:bg-rose-500 hover:text-white"
                                 aria-label={`Tambah ${displayName}`}
                               >
-                                <ShoppingCart size={16} />
+                                <ShoppingCart size={15} />
                               </button>
                             </div>
                           </div>
@@ -396,12 +395,12 @@ function ChefContent() {
             </section>
           </div>
 
-          {/* SISI KANAN: CHAT AREA (Mengambil sisa 5 Kolom dari 12) */}
+          {/* SISI KANAN: CHAT AREA */}
           <aside
             id="chef-chat"
-            className="w-full flex flex-col lg:col-span-5 xl:col-span-4 lg:sticky lg:top-[5.25rem]"
+            className="w-full flex flex-col lg:col-span-5 xl:col-span-4 lg:sticky lg:top-[4.5rem]"
           >
-            <div className="h-[520px] lg:h-[calc(100vh-8rem)] min-h-[450px] flex flex-col">
+            <div className="h-[480px] lg:h-[calc(100vh-5.5rem)] min-h-[400px] flex flex-col">
               <ChefChatArea
                 initialMessage={initialChefMessage}
                 className="w-full h-full min-h-0 flex-1"
