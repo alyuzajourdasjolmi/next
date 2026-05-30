@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { MapPin, Search, Check, X, Navigation } from 'lucide-react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { MapPin, Search, Check, Navigation } from 'lucide-react';
+import Script from 'next/script';
 
 interface MapPickerProps {
   onConfirm: (address: string, lat: number, lng: number) => void;
@@ -11,176 +11,228 @@ interface MapPickerProps {
   initialLng?: number;
 }
 
-declare global {
-  interface Window {
-    google: any;
-  }
-}
-
 export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng }: MapPickerProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const [map, setMap] = useState<any>(null);
   const [marker, setMarker] = useState<any>(null);
   const [address, setAddress] = useState("Mencari alamat...");
   const [coords, setCoords] = useState({ lat: initialLat || -0.5940091, lng: initialLng || 100.2129566 });
-  const [isGmapsLoaded, setIsGmapsLoaded] = useState(false);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  useEffect(() => {
-    const checkGmaps = setInterval(() => {
-      if (window.google && window.google.maps) {
-        setIsGmapsLoaded(true);
-        clearInterval(checkGmaps);
-      }
-    }, 500);
-    return () => clearInterval(checkGmaps);
-  }, []);
-
-  useEffect(() => {
-    if (!isGmapsLoaded || !mapRef.current) return;
-
-    const newMap = new window.google.maps.Map(mapRef.current, {
-      center: coords,
-      zoom: 15,
-      disableDefaultUI: false,
-      mapTypeControl: false,
-    });
-
-    const newMarker = new window.google.maps.Marker({
-      position: coords,
-      map: newMap,
-      draggable: true,
-      animation: window.google.maps.Animation.DROP,
-    });
-
-    setMap(newMap);
-    setMarker(newMarker);
-
-    // Reverse geocode initial position
-    updateAddress(coords.lat, coords.lng);
-
-    // Handle marker drag end
-    newMarker.addListener('dragend', () => {
-      const pos = newMarker.getPosition();
-      const newCoords = { lat: pos.lat(), lng: pos.lng() };
-      setCoords(newCoords);
-      updateAddress(newCoords.lat, newCoords.lng);
-    });
-
-    // Handle map click
-    newMap.addListener('click', (e: any) => {
-      const newPos = e.latLng;
-      newMarker.setPosition(newPos);
-      const newCoords = { lat: newPos.lat(), lng: newPos.lng() };
-      setCoords(newCoords);
-      updateAddress(newCoords.lat, newCoords.lng);
-    });
-
-    // Setup Search Box
-    if (searchInputRef.current) {
-      const searchBox = new window.google.maps.places.SearchBox(searchInputRef.current);
-      newMap.controls[window.google.maps.ControlPosition.TOP_LEFT].push(searchInputRef.current);
-
-      searchBox.addListener('places_changed', () => {
-        const places = searchBox.getPlaces();
-        if (places.length === 0) return;
-
-        const place = places[0];
-        if (!place.geometry || !place.geometry.location) return;
-
-        const newPos = place.geometry.location;
-        newMap.setCenter(newPos);
-        newMarker.setPosition(newPos);
-        const newCoords = { lat: newPos.lat(), lng: newPos.lng() };
-        setCoords(newCoords);
-        updateAddress(newCoords.lat, newCoords.lng);
-      });
-    }
-
-  }, [isGmapsLoaded]);
-
-  const updateAddress = (lat: number, lng: number) => {
+  const updateAddress = async (lat: number, lng: number) => {
     setAddress("Mencari alamat...");
-    const geocoder = new window.google.maps.Geocoder();
-    geocoder.geocode({ location: { lat, lng } }, (results: any, status: string) => {
-      if (status === "OK" && results[0]) {
-        setAddress(results[0].formatted_address);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+      const data = await res.json();
+      if (data && data.display_name) {
+        setAddress(data.display_name);
       } else {
         setAddress(`Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
       }
-    });
+    } catch (err) {
+      setAddress(`Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+    }
   };
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    
+    setIsSearching(true);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`);
+      const data = await res.json();
+      setSearchResults(data);
+    } catch (err) {
+      console.error('Search failed:', err);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const selectSearchResult = (result: any) => {
+    const newCoords = { lat: parseFloat(result.lat), lng: parseFloat(result.lon) };
+    setCoords(newCoords);
+    setAddress(result.display_name);
+    setSearchResults([]);
+    setSearchQuery(result.name || result.display_name.split(',')[0]);
+    
+    if (map && marker) {
+      map.setView([newCoords.lat, newCoords.lng], 16);
+      marker.setLatLng([newCoords.lat, newCoords.lng]);
+    }
+  };
+
+  const initMap = useCallback(() => {
+    if (!mapRef.current || map || typeof window === 'undefined' || !(window as any).L) return;
+
+    const L = (window as any).L;
+    
+    const newMap = L.map(mapRef.current).setView([coords.lat, coords.lng], 15);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors, &copy; CARTO'
+    }).addTo(newMap);
+
+    const customIcon = L.divIcon({
+      className: 'custom-div-icon',
+      html: "<div style='background-color:#e11d48;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 3px 6px rgba(0,0,0,0.3);'></div>",
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
+    });
+
+    const newMarker = L.marker([coords.lat, coords.lng], { 
+      draggable: true,
+      icon: customIcon
+    }).addTo(newMap);
+
+    setMap(newMap);
+    setMarker(newMarker);
+    setIsMapLoaded(true);
+    updateAddress(coords.lat, coords.lng);
+
+    newMarker.on('dragend', (e: any) => {
+      const pos = e.target.getLatLng();
+      const newCoords = { lat: pos.lat, lng: pos.lng };
+      setCoords(newCoords);
+      updateAddress(newCoords.lat, newCoords.lng);
+    });
+
+    newMap.on('click', (e: any) => {
+      const newPos = e.latlng;
+      newMarker.setLatLng(newPos);
+      const newCoords = { lat: newPos.lat, lng: newPos.lng };
+      setCoords(newCoords);
+      updateAddress(newCoords.lat, newCoords.lng);
+    });
+
+    // Fix map sizing issues in modal
+    setTimeout(() => {
+      newMap.invalidateSize();
+    }, 100);
+  }, [coords.lat, coords.lng, map]);
+
+  useEffect(() => {
+    const checkLeaflet = setInterval(() => {
+      if ((window as any).L) {
+        initMap();
+        clearInterval(checkLeaflet);
+      }
+    }, 100);
+    return () => clearInterval(checkLeaflet);
+  }, [initMap]);
 
   const useCurrentLocation = () => {
     if (navigator.geolocation) {
+      setAddress("Mendapatkan lokasi saat ini...");
       navigator.geolocation.getCurrentPosition((pos) => {
         const newCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         setCoords(newCoords);
         if (map && marker) {
-          map.setCenter(newCoords);
-          marker.setPosition(newCoords);
+          map.setView([newCoords.lat, newCoords.lng], 16);
+          marker.setLatLng([newCoords.lat, newCoords.lng]);
           updateAddress(newCoords.lat, newCoords.lng);
         }
+      }, () => {
+        setAddress("Gagal mendapatkan lokasi. Pastikan izin GPS diberikan.");
       });
+    } else {
+       setAddress("Browser Anda tidak mendukung geolokasi.");
     }
   };
 
-  if (!isGmapsLoaded) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[400px] bg-gray-100 rounded-2xl">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-rose-500 mb-4"></div>
-        <p className="text-gray-500 text-sm">Memuat Peta Google...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      <div className="relative flex-1">
-        <input
-          ref={searchInputRef}
-          type="text"
-          placeholder="Cari lokasi atau jalan..."
-          className="absolute top-4 left-4 right-4 z-10 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm shadow-xl focus:outline-none focus:ring-2 focus:ring-rose-500/50"
-          style={{ width: 'calc(100% - 32px)', marginTop: '10px' }}
-        />
-        <div ref={mapRef} className="w-full h-[400px] rounded-2xl border border-gray-200" />
-        
-        <button 
-          onClick={useCurrentLocation}
-          className="absolute bottom-4 right-4 z-10 bg-white p-3 rounded-full shadow-xl hover:bg-gray-50 text-rose-500 transition-all border border-gray-100"
-          title="Gunakan Lokasi Saya"
-        >
-          <Navigation size={20} />
-        </button>
-      </div>
-
-      <div className="p-5 bg-white border-t border-gray-100 space-y-4">
-        <div className="flex items-start gap-3">
-          <div className="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center shrink-0">
-            <MapPin className="text-rose-500" size={18} />
+    <>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossOrigin="" />
+      <Script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" strategy="lazyOnload" />
+      
+      <div className="flex flex-col h-full overflow-hidden">
+        <div className="relative flex-1 min-h-[400px] bg-slate-50">
+          {/* Search Overlay */}
+          <div className="absolute top-4 left-4 right-4 z-[1000]">
+            <form onSubmit={handleSearch} className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari lokasi atau jalan..."
+                className="w-full bg-white border-none rounded-xl px-4 py-3.5 pr-12 text-sm shadow-[0_8px_30px_rgb(0,0,0,0.12)] focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all font-medium text-slate-700"
+              />
+              <button 
+                type="submit" 
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                disabled={isSearching}
+              >
+                {isSearching ? <div className="animate-spin h-4 w-4 border-2 border-rose-500 rounded-full border-t-transparent"></div> : <Search size={18} />}
+              </button>
+            </form>
+            
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+              <div className="mt-2 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 max-h-56 overflow-y-auto">
+                {searchResults.map((result, i) => (
+                  <button
+                    key={i}
+                    onClick={() => selectSearchResult(result)}
+                    className="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors focus:bg-slate-50 focus:outline-none"
+                  >
+                    <p className="font-semibold text-slate-800 truncate">{result.name || result.display_name.split(',')[0]}</p>
+                    <p className="text-[11px] text-slate-500 truncate mt-0.5">{result.display_name}</p>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="flex-1">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Alamat Terpilih</p>
-            <p className="text-sm text-gray-700 font-medium leading-relaxed line-clamp-2">{address}</p>
-          </div>
+          
+          {/* Map Container */}
+          <div ref={mapRef} className="w-full h-[400px] z-[10]" />
+          
+          {!isMapLoaded && (
+            <div className="absolute inset-0 z-[20] flex flex-col items-center justify-center bg-slate-50/80 backdrop-blur-sm">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-rose-500 mb-4"></div>
+              <p className="text-slate-500 text-sm font-medium">Memuat Peta...</p>
+            </div>
+          )}
+          
+          <button 
+            onClick={useCurrentLocation}
+            className="absolute bottom-6 right-4 z-[1000] bg-white p-3.5 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-slate-50 text-slate-700 hover:text-rose-500 transition-all border border-slate-100"
+            title="Gunakan Lokasi Saya"
+          >
+            <Navigation size={20} strokeWidth={2.5} />
+          </button>
         </div>
 
-        <div className="flex gap-3 pt-2">
-          <button 
-            onClick={onCancel}
-            className="flex-1 px-6 py-3 border border-gray-200 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all"
-          >
-            Batal
-          </button>
-          <button 
-            onClick={() => onConfirm(address, coords.lat, coords.lng)}
-            className="flex-1 px-6 py-3 bg-rose-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition-all flex items-center justify-center gap-2"
-          >
-            <Check size={18} /> Konfirmasi Lokasi
-          </button>
+        <div className="p-5 bg-white space-y-4 z-[20] border-t border-slate-100">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5 text-rose-500">
+              <MapPin size={20} />
+            </div>
+            <div className="flex-1">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Alamat Terpilih</p>
+              <p className="text-sm text-slate-700 font-medium leading-relaxed line-clamp-2">{address}</p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button 
+              onClick={onCancel}
+              className="flex-1 px-4 py-3.5 rounded-xl text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all focus:ring-2 focus:ring-slate-200 focus:outline-none"
+            >
+              Batal
+            </button>
+            <button 
+              onClick={() => onConfirm(address, coords.lat, coords.lng)}
+              className="flex-1 px-4 py-3.5 bg-rose-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-rose-500/25 hover:bg-rose-600 hover:shadow-rose-500/40 transition-all flex items-center justify-center gap-2 focus:ring-2 focus:ring-rose-400 focus:outline-none transform hover:-translate-y-0.5"
+            >
+              <Check size={18} /> Konfirmasi Lokasi
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
