@@ -533,13 +533,16 @@ export default function AddressManager({ userId, userPhone, onSelectAddress, mod
               style={{
                 width: '100%',
                 maxWidth: '600px',
+                maxHeight: '90vh',
                 background: 'white',
                 borderRadius: '24px',
                 overflow: 'hidden',
-                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+                display: 'flex',
+                flexDirection: 'column'
               }}
             >
-              <div style={{ padding: '20px 24px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ padding: '20px 24px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
                 <h4 style={{ margin: 0, fontWeight: 800, color: '#1e293b' }}>Pilih Lokasi Pengiriman</h4>
                 <button onClick={() => setShowMapPicker(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#64748b' }}>
                   <X size={20} />
