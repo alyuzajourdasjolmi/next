@@ -1,5 +1,41 @@
 /* Chef Virtual — layout & chat (uses global design tokens from style.css) */
 
+/* Navbar di halaman chef: background terang, jangan pakai teks putih transparan */
+.chef-page .navbar {
+  background: var(--glass-bg) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.chef-page .navbar .brand-text,
+.chef-page .navbar .nav-links a,
+.chef-page .navbar .theme-toggle,
+.chef-page .navbar .cart-btn {
+  color: var(--text-muted) !important;
+}
+
+.chef-page .navbar .brand-text span {
+  color: var(--primary) !important;
+}
+
+.chef-page .navbar .nav-links a:hover,
+.chef-page .navbar .nav-links a.active {
+  color: var(--primary-dark) !important;
+}
+
+.chef-page .navbar .theme-toggle,
+.chef-page .navbar .cart-btn,
+.chef-page .navbar .user-profile-trigger {
+  background: var(--bg-surface-soft) !important;
+  border-color: var(--border-main) !important;
+  color: var(--text-main) !important;
+}
+
+.chef-page .navbar .cart-btn svg {
+  stroke: var(--text-main) !important;
+}
+
 .chef-page {
   min-height: 100vh;
   background: var(--bg-main);

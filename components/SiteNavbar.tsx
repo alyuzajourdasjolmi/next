@@ -26,6 +26,8 @@ export default function SiteNavbar() {
   const [user, setUser] = useState<any>(null);
   const [cartCount, setCartCount] = useState(0);
 
+  const isSolidNav = isChefPage;
+
   useEffect(() => {
     const saved = localStorage.getItem('hijrahTokoTheme') || 'light';
     setTheme(saved);
@@ -46,6 +48,7 @@ export default function SiteNavbar() {
     window.addEventListener('storage', updateCart);
 
     const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
     window.addEventListener('scroll', onScroll);
 
     return () => {
@@ -72,7 +75,7 @@ export default function SiteNavbar() {
 
   return (
     <>
-      <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+      <nav className={`navbar ${scrolled || isSolidNav ? 'scrolled' : ''}`}>
         <div className="nav-container">
           <Link href="/" className="nav-logo">
             <img src="/assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" className="brand-logo" />
