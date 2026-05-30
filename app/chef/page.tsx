@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { supabase } from '../../lib/supabase';
 import { useSearchParams } from 'next/navigation';
 import ChefChatArea from '../../components/ChefChatArea';
+import './chef.css';
 
 type Product = {
   id: number;
@@ -48,30 +49,25 @@ function ProductImage({ src, alt }: { src?: string; alt: string }) {
 
   if (!imageSrc || failed) {
     return (
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-[#1e2433] to-[#141824] text-white/25">
+      <div className="chef-card-img-placeholder">
         <Package size={32} strokeWidth={1.5} />
       </div>
     );
   }
 
   return (
-    <img
-      src={imageSrc}
-      alt={alt}
-      className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-      onError={() => setFailed(true)}
-    />
+    <img src={imageSrc} alt={alt} onError={() => setFailed(true)} />
   );
 }
 
 function ProductCardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/[0.06] bg-[#161B22] animate-pulse">
-      <div className="h-[160px] bg-white/5" />
-      <div className="space-y-3 p-4">
-        <div className="h-4 w-2/3 rounded bg-white/5" />
-        <div className="h-3 w-full rounded bg-white/5" />
-        <div className="h-10 rounded-xl bg-white/5" />
+    <div className="chef-skeleton">
+      <div className="chef-skeleton-img" />
+      <div className="chef-skeleton-body">
+        <div className="chef-skeleton-line short" />
+        <div className="chef-skeleton-line" />
+        <div className="chef-skeleton-line" />
       </div>
     </div>
   );
@@ -186,54 +182,35 @@ function ChefContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0E14] text-white">
-      {/* Navbar */}
-      <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#0B0E14]/95 backdrop-blur-md">
-        <div className="mx-auto flex h-[60px] max-w-[1400px] items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-90">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FF006E]">
-              <ChefHat className="text-white" size={22} />
+    <div className="chef-page">
+      <header className="chef-nav">
+        <div className="chef-nav-inner">
+          <Link href="/" className="chef-brand">
+            <div className="chef-brand-icon">
+              <ChefHat color="#fff" size={22} />
             </div>
             <div>
-              <p className="text-[15px] font-bold leading-tight tracking-tight">Hijrah Toko</p>
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#FF006E]">
-                Chef Virtual
-              </p>
+              <div className="chef-brand-name">Hijrah Toko</div>
+              <div className="chef-brand-sub">Chef Virtual</div>
             </div>
           </Link>
 
-          <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              className="relative flex h-9 w-9 items-center justify-center rounded-lg text-white/60 transition hover:bg-white/5 hover:text-white"
-              aria-label="Keranjang"
-            >
+          <div className="chef-nav-actions">
+            <Link href="/" className="chef-nav-btn" aria-label="Keranjang">
               <ShoppingBag size={20} />
-              {cartCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#FF006E] px-1 text-[9px] font-bold">
-                  {cartCount}
-                </span>
-              )}
+              {cartCount > 0 && <span className="chef-cart-badge">{cartCount}</span>}
             </Link>
 
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-white/60 transition hover:bg-white/5 hover:text-white"
-              aria-label="Ganti tema"
-            >
+            <button type="button" onClick={toggleTheme} className="chef-nav-btn" aria-label="Ganti tema">
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
             {user ? (
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FF006E] text-sm font-bold">
+              <div className="chef-avatar">
                 {user.user_metadata?.full_name?.charAt(0).toUpperCase() || 'U'}
               </div>
             ) : (
-              <Link
-                href="/#login"
-                className="rounded-xl bg-[#FF006E] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#e60063]"
-              >
+              <Link href="/#login" className="chef-btn-login">
                 Masuk
               </Link>
             )}
@@ -241,48 +218,28 @@ function ChefContent() {
         </div>
       </header>
 
-      {/* Main — grid 8/4 seperti mockup */}
-      <main className="mx-auto max-w-[1400px] px-6 py-6">
-        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
-
-          {/* Kolom kiri — hero + produk */}
-          <div className="flex flex-col gap-6 lg:col-span-8">
-
-            {/* Hero */}
+      <main className="chef-main">
+        <div className="chef-layout">
+          <div className="chef-content">
             <motion.section
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-br from-[#2a1a4a] via-[#1a1f38] to-[#12182b] px-6 py-7 sm:px-8 sm:py-8"
+              className="chef-hero"
             >
-              <div
-                className="pointer-events-none absolute -right-10 top-0 h-56 w-56 rounded-full bg-[#FF006E]/10 blur-3xl"
-                aria-hidden
-              />
-              <div className="relative max-w-xl">
-                <span className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-[#FF006E]/40 bg-[#FF006E]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#FF006E]">
-                  ✨ Fitur AI Terbaru
-                </span>
-                <h1 className="text-2xl font-extrabold leading-tight tracking-tight sm:text-3xl">
-                  Bingung Mau Masak Apa Hari Ini?
-                </h1>
-                <p className="mt-3 text-sm leading-relaxed text-white/55 sm:text-[15px]">
-                  Tanya langsung ke{' '}
-                  <span className="font-semibold text-white/85">Chef Virtual Hijrah</span> untuk
-                  rekomendasi resep praktis, ide olahan frozen food, dan tips dapur.
+              <div className="chef-hero-glow" aria-hidden />
+              <div className="chef-hero-inner">
+                <span className="chef-badge">✨ Fitur AI Terbaru</span>
+                <h1 className="chef-hero-title">Bingung Mau Masak Apa Hari Ini?</h1>
+                <p className="chef-hero-desc">
+                  Tanya langsung ke <strong>Chef Virtual Hijrah</strong> untuk rekomendasi resep
+                  praktis, ide olahan frozen food, dan tips dapur.
                 </p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={startChefChat}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#FF006E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e60063]"
-                  >
+                <div className="chef-hero-actions">
+                  <button type="button" onClick={startChefChat} className="chef-btn-primary">
                     Mulai Tanya Chef
                     <ArrowRight size={16} />
                   </button>
-                  <Link
-                    href="/#produk"
-                    className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
-                  >
+                  <Link href="/#produk" className="chef-btn-secondary">
                     Lihat Bahan Frozen
                     <ArrowRight size={16} />
                   </Link>
@@ -290,27 +247,21 @@ function ChefContent() {
               </div>
             </motion.section>
 
-            {/* Produk */}
             <section>
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-bold sm:text-xl">Bahan Frozen Terlaris</h2>
-                <Link
-                  href="/#produk"
-                  className="flex items-center gap-1 text-sm font-semibold text-[#FF006E] hover:text-[#ff3388]"
-                >
+              <div className="chef-section-head">
+                <h2 className="chef-section-title">Bahan Frozen Terlaris</h2>
+                <Link href="/#produk" className="chef-section-link">
                   Semua Produk
                   <ArrowRight size={15} />
                 </Link>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="chef-product-grid">
                 {loadingProducts &&
                   Array.from({ length: 4 }).map((_, i) => <ProductCardSkeleton key={i} />)}
 
                 {!loadingProducts && products.length === 0 && (
-                  <p className="col-span-2 rounded-2xl border border-dashed border-white/10 py-12 text-center text-sm text-white/40">
-                    Belum ada produk frozen.
-                  </p>
+                  <p className="chef-empty">Belum ada produk frozen.</p>
                 )}
 
                 {!loadingProducts &&
@@ -325,45 +276,33 @@ function ChefContent() {
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className="group flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[#161B22] transition hover:border-[#FF006E]/25"
+                        className="chef-card"
                       >
-                        <div className="relative h-[160px] overflow-hidden bg-[#1e2433]">
+                        <div className="chef-card-img-wrap">
                           <ProductImage src={getProductImage(p)} alt={displayName} />
-                          <span className="absolute left-2.5 top-2.5 rounded-md bg-[#FF006E] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
-                            Best Seller
-                          </span>
+                          <span className="chef-card-tag">Best Seller</span>
                         </div>
 
-                        <div className="flex flex-1 flex-col gap-2 p-4">
-                          <div className="flex items-start justify-between gap-2">
-                            <h3 className="text-sm font-bold leading-snug text-white sm:text-[15px]">
-                              {displayName}
-                            </h3>
-                            {weight && (
-                              <span className="shrink-0 rounded-md bg-white/[0.06] px-2 py-0.5 text-[10px] font-medium text-white/45">
-                                {weight}
-                              </span>
-                            )}
+                        <div className="chef-card-body">
+                          <div className="chef-card-top">
+                            <h3 className="chef-card-name">{displayName}</h3>
+                            {weight && <span className="chef-card-weight">{weight}</span>}
                           </div>
 
-                          <p className="line-clamp-2 text-xs leading-relaxed text-white/45">
-                            {desc}
-                          </p>
+                          <p className="chef-card-desc">{desc}</p>
 
-                          <div className="mt-auto flex items-end justify-between gap-2 border-t border-white/[0.06] pt-3">
+                          <div className="chef-card-footer">
                             <div>
-                              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/35">
-                                Harga
-                              </p>
-                              <p className="text-base font-extrabold text-white">
+                              <div className="chef-card-price-label">Harga</div>
+                              <div className="chef-card-price">
                                 Rp {p.price.toLocaleString('id-ID')}
-                              </p>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="chef-card-actions">
                               <button
                                 type="button"
                                 onClick={() => askRecipe(p.name)}
-                                className="inline-flex items-center gap-1 rounded-xl bg-[#FF006E]/15 px-3 py-2 text-xs font-bold text-[#FF006E] transition hover:bg-[#FF006E]/25"
+                                className="chef-btn-resep"
                               >
                                 Resep
                                 <Sparkles size={12} />
@@ -371,7 +310,7 @@ function ChefContent() {
                               <button
                                 type="button"
                                 onClick={() => addToCart(p)}
-                                className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#0B0E14] transition hover:bg-[#FF006E] hover:text-white"
+                                className="chef-btn-cart"
                                 aria-label={`Tambah ${displayName}`}
                               >
                                 <ShoppingCart size={16} />
@@ -386,19 +325,11 @@ function ChefContent() {
             </section>
           </div>
 
-          {/* Kolom kanan — chat sidebar */}
-          <aside
-            id="chef-chat"
-            className="lg:col-span-4 lg:sticky lg:top-[76px]"
-          >
-            <div className="h-[520px] lg:h-[calc(100vh-108px)] lg:min-h-[600px]">
-              <ChefChatArea
-                initialMessage={initialChefMessage}
-                className="h-full"
-              />
+          <aside id="chef-chat" className="chef-sidebar">
+            <div className="chef-sidebar-inner">
+              <ChefChatArea initialMessage={initialChefMessage} />
             </div>
           </aside>
-
         </div>
       </main>
     </div>
@@ -407,13 +338,7 @@ function ChefContent() {
 
 export default function ChefPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#0B0E14] text-sm text-white/50">
-          Memuat...
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="chef-loading-page">Memuat...</div>}>
       <ChefContent />
     </Suspense>
   );
