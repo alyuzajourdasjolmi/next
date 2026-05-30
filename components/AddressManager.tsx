@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapPin, Plus, Edit2, Trash2, Check, X, Home, Briefcase, Building2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Plus, Edit2, Trash2, Check, X, Home, Briefcase, Building2, Map as MapIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import MapPicker from './MapPicker';
 
 interface Address {
   id: number;
@@ -28,6 +30,7 @@ interface AddressManagerProps {
 export default function AddressManager({ userId, userPhone, onSelectAddress, mode = 'manage' }: AddressManagerProps) {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [showMapPicker, setShowMapPicker] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [formData, setFormData] = useState({
@@ -508,6 +511,60 @@ export default function AddressManager({ userId, userPhone, onSelectAddress, mod
         )}
       </div>
 
+      <AnimatePresence>
+        {showMapPicker && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0,0,0,0.8)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              style={{
+                width: '100%',
+                maxWidth: '600px',
+                background: 'white',
+                borderRadius: '24px',
+                overflow: 'hidden',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+              }}
+            >
+              <div style={{ padding: '20px 24px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h4 style={{ margin: 0, fontWeight: 800, color: '#1e293b' }}>Pilih Lokasi Pengiriman</h4>
+                <button onClick={() => setShowMapPicker(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#64748b' }}>
+                  <X size={20} />
+                </button>
+              </div>
+              <MapPicker 
+                onConfirm={(address, lat, lng) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    full_address: address,
+                    latitude: lat.toString(),
+                    longitude: lng.toString(),
+                    maps_link: `https://www.google.com/maps?q=${lat},${lng}`
+                  }));
+                  setShowMapPicker(false);
+                }}
+                onCancel={() => setShowMapPicker(false)}
+                initialLat={formData.latitude ? parseFloat(formData.latitude) : undefined}
+                initialLng={formData.longitude ? parseFloat(formData.longitude) : undefined}
+              />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {showForm && (
         <form className="address-form" onSubmit={handleSubmit}>
           <h4 style={{ marginBottom: '1rem', fontSize: '1.1rem', fontWeight: '700' }}>
@@ -560,15 +617,26 @@ export default function AddressManager({ userId, userPhone, onSelectAddress, mod
               placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota"
               required
             />
-            <button
-              type="button"
-              className="btn-location"
-              onClick={handleUseLocation}
-              disabled={isLocating}
-            >
-              <MapPin size={16} />
-              {isLocating ? 'Mengambil Lokasi...' : 'Gunakan Lokasi Saya'}
-            </button>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn-location"
+                onClick={handleUseLocation}
+                disabled={isLocating}
+              >
+                <MapPin size={16} />
+                {isLocating ? 'Mengambil Lokasi...' : 'Gunakan Lokasi Saya'}
+              </button>
+              <button
+                type="button"
+                className="btn-location"
+                onClick={() => setShowMapPicker(true)}
+                style={{ background: 'var(--primary-light)', color: 'var(--primary)', borderColor: 'var(--primary)' }}
+              >
+                <MapIcon size={16} />
+                Pilih di Peta Google
+              </button>
+            </div>
           </div>
 
           <div className="form-group">

@@ -58,6 +58,20 @@ function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
   return earthRadiusKm * c;
 }
 
+// Tambahkan script Google Maps API
+const GOOGLE_MAPS_SCRIPT_ID = 'google-maps-script';
+const loadGoogleMaps = () => {
+  if (typeof window === 'undefined') return;
+  if (document.getElementById(GOOGLE_MAPS_SCRIPT_ID)) return;
+
+  const script = document.createElement('script');
+  script.id = GOOGLE_MAPS_SCRIPT_ID;
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+  script.async = true;
+  script.defer = true;
+  document.head.appendChild(script);
+};
+
 type Review = {
   id?: number | string;
   name: string;
@@ -209,6 +223,7 @@ export default function Home() {
 
     fetchData();
     checkSession();
+    loadGoogleMaps();
 
     // Listen for auth changes
     const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
