@@ -2,19 +2,12 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import {
-  ChefHat,
-  ShoppingCart,
-  Sparkles,
-  ShoppingBag,
-  ArrowRight,
-  Moon,
-  Sun,
-  Package,
-} from 'lucide-react';
+import { ChefHat, ShoppingCart, Sparkles, ArrowRight, Star, Package } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { supabase } from '../../lib/supabase';
 import { useSearchParams } from 'next/navigation';
+import SiteNavbar from '../../components/SiteNavbar';
 import ChefChatArea from '../../components/ChefChatArea';
 import './chef.css';
 
@@ -43,23 +36,6 @@ function formatProductName(name: string) {
     .join(' ');
 }
 
-function ProductImage({ src, alt }: { src?: string; alt: string }) {
-  const [failed, setFailed] = useState(false);
-  const imageSrc = src?.trim();
-
-  if (!imageSrc || failed) {
-    return (
-      <div className="chef-card-img-placeholder">
-        <Package size={32} strokeWidth={1.5} />
-      </div>
-    );
-  }
-
-  return (
-    <img src={imageSrc} alt={alt} onError={() => setFailed(true)} />
-  );
-}
-
 function ProductCardSkeleton() {
   return (
     <div className="chef-skeleton">
@@ -79,9 +55,6 @@ function ChefContent() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
-  const [user, setUser] = useState<any>(null);
-  const [theme, setTheme] = useState('dark');
-  const [cartCount, setCartCount] = useState(0);
   const [initialChefMessage, setInitialChefMessage] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -91,31 +64,7 @@ function ChefContent() {
   }, [recipeParam]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
     fetchProducts();
-
-    const savedTheme = localStorage.getItem('hijrahTokoTheme') || 'dark';
-    setTheme(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
-
-    const updateCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem('hijrahTokoCart_guest') || '[]');
-      setCartCount(cart.reduce((acc: number, item: any) => acc + item.qty, 0));
-    };
-    updateCartCount();
-    window.addEventListener('storage', updateCartCount);
-
-    return () => {
-      subscription.unsubscribe();
-      window.removeEventListener('storage', updateCartCount);
-    };
   }, []);
 
   const fetchProducts = async () => {
@@ -127,13 +76,6 @@ function ChefContent() {
       .limit(4);
     setProducts(data || []);
     setLoadingProducts(false);
-  };
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('hijrahTokoTheme', newTheme);
   };
 
   const scrollToChat = () => {
@@ -165,60 +107,31 @@ function ChefContent() {
       });
     }
     localStorage.setItem('hijrahTokoCart_guest', JSON.stringify(cart));
-    setCartCount(cart.reduce((acc: number, item: any) => acc + item.qty, 0));
     window.dispatchEvent(new Event('storage'));
   };
 
-  const getProductImage = (p: Product) => p.img || p.image_url;
+  const getProductImage = (p: Product) => p.img || p.image_url || '';
   const getProductDesc = (p: Product) => {
     const desc = (p.desc || p.description || '').trim();
     return desc || 'Produk frozen pilihan dari Toko Hijrah.';
   };
 
-  const extractWeight = (p: Product) => {
-    const text = getProductDesc(p);
-    const match = text.match(/\d+\s*(?:gr|g|kg|ml|l|pcs|butir)/i);
-    return match ? match[0] : null;
-  };
-
   return (
     <div className="chef-page">
-      <header className="chef-nav">
-        <div className="chef-nav-inner">
-          <Link href="/" className="chef-brand">
-            <div className="chef-brand-icon">
-              <ChefHat color="#fff" size={22} />
-            </div>
-            <div>
-              <div className="chef-brand-name">Hijrah Toko</div>
-              <div className="chef-brand-sub">Chef Virtual</div>
-            </div>
-          </Link>
-
-          <div className="chef-nav-actions">
-            <Link href="/" className="chef-nav-btn" aria-label="Keranjang">
-              <ShoppingBag size={20} />
-              {cartCount > 0 && <span className="chef-cart-badge">{cartCount}</span>}
-            </Link>
-
-            <button type="button" onClick={toggleTheme} className="chef-nav-btn" aria-label="Ganti tema">
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
-            {user ? (
-              <div className="chef-avatar">
-                {user.user_metadata?.full_name?.charAt(0).toUpperCase() || 'U'}
-              </div>
-            ) : (
-              <Link href="/#login" className="chef-btn-login">
-                Masuk
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
+      <SiteNavbar />
 
       <main className="chef-main">
+        <div className="section-header" style={{ textAlign: 'left', marginBottom: '0.5rem' }}>
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <ChefHat size={28} color="var(--primary)" />
+            Chef Virtual
+          </h2>
+          <p style={{ margin: '0.5rem 0 0', maxWidth: '100%' }}>
+            Asisten AI untuk resep masakan dan tips olahan frozen food Toko Hijrah.
+          </p>
+          <div className="underline" style={{ margin: '1rem 0 0' }} />
+        </div>
+
         <div className="chef-layout">
           <div className="chef-content">
             <motion.section
@@ -227,7 +140,7 @@ function ChefContent() {
               className="chef-hero"
             >
               <div className="chef-hero-glow" aria-hidden />
-              <div className="chef-hero-inner">
+              <div>
                 <span className="chef-badge">✨ Fitur AI Terbaru</span>
                 <h1 className="chef-hero-title">Bingung Mau Masak Apa Hari Ini?</h1>
                 <p className="chef-hero-desc">
@@ -235,13 +148,13 @@ function ChefContent() {
                   praktis, ide olahan frozen food, dan tips dapur.
                 </p>
                 <div className="chef-hero-actions">
-                  <button type="button" onClick={startChefChat} className="chef-btn-primary">
+                  <button type="button" onClick={startChefChat} className="btn-primary">
                     Mulai Tanya Chef
-                    <ArrowRight size={16} />
+                    <ArrowRight size={18} />
                   </button>
-                  <Link href="/#produk" className="chef-btn-secondary">
+                  <Link href="/#produk" className="btn-secondary">
                     Lihat Bahan Frozen
-                    <ArrowRight size={16} />
+                    <ArrowRight size={18} />
                   </Link>
                 </div>
               </div>
@@ -267,58 +180,75 @@ function ChefContent() {
                 {!loadingProducts &&
                   products.map((p, idx) => {
                     const displayName = formatProductName(p.name);
-                    const weight = extractWeight(p);
                     const desc = getProductDesc(p);
+                    const imgSrc = getProductImage(p);
 
                     return (
-                      <motion.article
+                      <motion.div
                         key={p.id}
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className="chef-card"
+                        className="product-card"
                       >
+                        <span className="card-badge badge-frozen">Frozen</span>
                         <div className="chef-card-img-wrap">
-                          <ProductImage src={getProductImage(p)} alt={displayName} />
-                          <span className="chef-card-tag">Best Seller</span>
+                          {imgSrc ? (
+                            <Image
+                              src={imgSrc}
+                              alt={displayName}
+                              fill
+                              sizes="(max-width: 768px) 50vw, 280px"
+                              className="card-img"
+                              style={{ objectFit: 'cover' }}
+                            />
+                          ) : (
+                            <div className="chef-card-img-placeholder">
+                              <Package size={32} />
+                            </div>
+                          )}
                         </div>
 
-                        <div className="chef-card-body">
-                          <div className="chef-card-top">
-                            <h3 className="chef-card-name">{displayName}</h3>
-                            {weight && <span className="chef-card-weight">{weight}</span>}
+                        <div className="card-body">
+                          <div className="card-title-wrap">
+                            <h3>{displayName}</h3>
                           </div>
-
-                          <p className="chef-card-desc">{desc}</p>
-
-                          <div className="chef-card-footer">
-                            <div>
-                              <div className="chef-card-price-label">Harga</div>
-                              <div className="chef-card-price">
-                                Rp {p.price.toLocaleString('id-ID')}
-                              </div>
+                          <div className="card-meta-row">
+                            <span className="sold-label">Frozen Food</span>
+                            <div style={{ display: 'flex', color: '#FACC15' }}>
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} size={12} fill="currentColor" />
+                              ))}
                             </div>
-                            <div className="chef-card-actions">
-                              <button
-                                type="button"
-                                onClick={() => askRecipe(p.name)}
-                                className="chef-btn-resep"
-                              >
-                                Resep
-                                <Sparkles size={12} />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => addToCart(p)}
-                                className="chef-btn-cart"
-                                aria-label={`Tambah ${displayName}`}
-                              >
-                                <ShoppingCart size={16} />
-                              </button>
-                            </div>
+                          </div>
+                          <p className="desc">{desc}</p>
+                        </div>
+
+                        <div className="card-footer">
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span className="price">Rp {p.price.toLocaleString('id-ID')}</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                              type="button"
+                              className="chef-btn-resep"
+                              onClick={() => askRecipe(p.name)}
+                            >
+                              Resep
+                              <Sparkles size={14} />
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-wa"
+                              onClick={() => addToCart(p)}
+                              style={{ minWidth: 'auto', padding: '0.75rem' }}
+                              aria-label={`Tambah ${displayName}`}
+                            >
+                              <ShoppingCart size={16} />
+                            </button>
                           </div>
                         </div>
-                      </motion.article>
+                      </motion.div>
                     );
                   })}
               </div>
