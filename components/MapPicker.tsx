@@ -79,9 +79,9 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
     
     L.control.zoom({ position: 'bottomleft' }).addTo(newMap);
     
-    const newTileLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-      attribution: '&copy; Google Maps',
-      maxZoom: 20
+    const newTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19
     }).addTo(newMap);
 
     setMap(newMap);
@@ -103,7 +103,7 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
 
     setTimeout(() => {
       newMap.invalidateSize();
-    }, 200);
+    }, 400); // Increased timeout to ensure container is fully rendered before recalculating
   }, [coords.lat, coords.lng, map]);
 
   useEffect(() => {
@@ -121,8 +121,8 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
     
     const newType = mapType === 'roadmap' ? 'satellite' : 'roadmap';
     const url = newType === 'roadmap' 
-      ? 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}' 
-      : 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}';
+      ? 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' 
+      : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
     
     tileLayer.setUrl(url);
     setMapType(newType);
@@ -196,8 +196,8 @@ export default function MapPicker({ onConfirm, onCancel, initialLat, initialLng 
           </div>
           
           {/* Map Container */}
-          <div className="relative w-full flex-1 z-[10]">
-            <div ref={mapRef} className="w-full h-full" />
+          <div className="relative w-full flex-1 z-[10] min-h-[300px]">
+            <div ref={mapRef} className="absolute inset-0" />
             
             {/* Center Fixed Marker */}
             {isMapLoaded && (
