@@ -10,9 +10,9 @@ interface ChefChatAreaProps {
 }
 
 const QUICK_CHIPS = [
-  { label: 'Resep nugget', value: 'Tolong berikan resep nugget yang praktis dan lezat' },
-  { label: 'Tips frozen food', value: 'Bagaimana cara menyimpan frozen food agar awet dan tetap segar?' },
-  { label: 'Saus kentang', value: 'Apa resep saus cocolan yang enak untuk kentang goreng?' },
+  { label: 'Tanya stok', value: 'Apakah nugget ayam premium dan buku tulis stoknya masih ada?' },
+  { label: 'Resep masakan', value: 'Tolong berikan resep olahan yang enak pakai sosis sapi' },
+  { label: 'Cara pesan', value: 'Bagaimana cara pesan dan apa saja metode pembayarannya?' },
 ];
 
 export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
@@ -70,7 +70,7 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
             <ChefHat color="#fff" size={22} />
           </div>
           <div>
-            <div className="chef-chat-title">Chef Virtual Hijrah</div>
+            <div className="chef-chat-title">Nura (AI Assistant)</div>
             <div className="chef-chat-status">
               <span className="chef-chat-dot" />
               <span className="chef-chat-status-text">Online & Siap Membantu</span>
@@ -90,8 +90,7 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
             </div>
             <h4>Halo, Sahabat Hijrah!</h4>
             <p>
-              Tanyakan resep atau tips masak frozen food. Klik tombol <span>Resep</span> di kartu
-              produk.
+              Tanyakan apa saja seputar produk, resep masak, stok, atau cara pesan di Toko Hijrah. Nura siap membantu!
             </p>
           </div>
         )}
@@ -167,7 +166,7 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Tanya resep cireng atau otak-otak..."
+            placeholder="Tanya produk, resep, atau cara pesan..."
             className="chef-chat-input"
           />
           <button
@@ -182,7 +181,7 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
 
         <div className="chef-chat-meta">
           <span>Powered by Llama 3.3 70B</span>
-          <span className="chef-chat-mode-badge">Chef Mode</span>
+          <span className="chef-chat-mode-badge">Nura Mode</span>
         </div>
       </div>
     </div>
