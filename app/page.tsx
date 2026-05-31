@@ -1615,14 +1615,20 @@ export default function Home() {
                     {isLocating ? '📍 Mencari...' : '📍 Lokasi Saat Ini'}
                   </button>
                 </div>
-                <textarea 
-                  required 
-                  placeholder="Masukkan alamat lengkap (No. Rumah, RT/RW, Patokan)" 
-                  rows={3} 
-                  value={orderInfo.customerAddress} 
-                  onChange={e => setOrderInfo({...orderInfo, customerAddress: e.target.value})}
-                  style={{ minHeight: '100px' }}
-                />
+                
+                {orderInfo.customerAddress ? (
+                  <div className="address-display-table" style={{ background: 'var(--bg-surface-soft)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem' }}>
+                      <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Alamat Terpilih / Terdeteksi</span>
+                      <span style={{ color: 'var(--text-main)', fontWeight: 600, lineHeight: 1.5 }}>{orderInfo.customerAddress}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ padding: '16px', textAlign: 'center', background: 'rgba(225, 29, 72, 0.05)', color: 'var(--primary)', borderRadius: '12px', marginBottom: '16px', border: '1px dashed rgba(225, 29, 72, 0.3)', fontSize: '0.9rem' }}>
+                    Silakan pilih <b>Alamat Tersimpan</b> atau gunakan <b>Lokasi Saat Ini</b> untuk menghitung ongkos kirim.
+                  </div>
+                )}
+
                 {shipInfo.status === 'ok' && (
                   <motion.div 
                     initial={{ scale: 0.95, opacity: 0 }} 
@@ -1631,12 +1637,9 @@ export default function Home() {
                   >
                     <h5><CheckCircle2 size={18} /> Ongkir Berhasil Dihitung</h5>
                     <p style={{ marginBottom: '0.5rem' }}>{shipInfo.detail}</p>
-                    <div style={{ fontSize: '0.8rem', opacity: 0.8, borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: '0.5rem', marginTop: '0.5rem' }}>
-                      <strong>📍 Alamat Terdeteksi:</strong> {orderInfo.customerAddress}
-                    </div>
                     {shipInfo.distanceKm && shipInfo.distanceKm > 30 && (
                       <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#B91C1C', fontWeight: 'bold' }}>
-                        ⚠️ Lokasi terdeteksi cukup jauh. Jika Anda menggunakan PC, lokasi mungkin kurang akurat. Anda dapat mengedit alamat secara manual di atas.
+                        ⚠️ Lokasi terdeteksi cukup jauh. Jika Anda menggunakan PC, lokasi mungkin kurang akurat. Pastikan memilih alamat tersimpan jika ada.
                       </div>
                     )}
                   </motion.div>
