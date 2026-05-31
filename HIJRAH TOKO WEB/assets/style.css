@@ -334,7 +334,7 @@ body.dark-mode .theme-icon {
   background:
     linear-gradient(rgba(0, 0, 0, 0.72),
       rgba(0, 0, 0, 0.72)),
-    url('images/hero.jpg');
+    url('images/hero.jpeg');
 
   background-size: cover;
   background-position: center;
