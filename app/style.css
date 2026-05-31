@@ -3090,3 +3090,88 @@ body.dark-mode .login-glass-card {
     box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
   }
 }
+
+/* Tutorial Modal Styles */
+.tutorial-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.tutorial-btn:hover {
+  background: white;
+  color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.navbar.scrolled .tutorial-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: transparent;
+}
+
+.navbar.scrolled .tutorial-btn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+body.dark-mode .navbar.scrolled .tutorial-btn {
+  background: rgba(225, 29, 72, 0.2);
+  color: white;
+}
+
+body.dark-mode .navbar.scrolled .tutorial-btn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.tutorial-step {
+  text-align: center;
+  width: 100%;
+}
+
+.tutorial-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+body.dark-mode .tutorial-icon {
+  background: rgba(225, 29, 72, 0.2);
+}
+
+.tutorial-step h4 {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  color: var(--text-main);
+}
+
+body.dark-mode .tutorial-step h4 {
+  color: var(--text-dark);
+}
+
+.tutorial-step p {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.tutorial-progress {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+

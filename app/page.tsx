@@ -24,7 +24,10 @@ import {
   AlertCircle,
   Bell,
   Mouse,
-  ChefHat
+  ChefHat,
+  HelpCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import AddressSelector from '../components/AddressSelector';
@@ -87,6 +90,8 @@ export default function Home() {
   const [isLocating, setIsLocating] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [showProfileManager, setShowProfileManager] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState(0);
   const isLocatingRef = useRef(false);
 
   const [orderInfo, setOrderInfo] = useState({
@@ -891,6 +896,11 @@ export default function Home() {
       <li><a href="#testimoni" className={activeSection === 'testimoni' ? 'active' : ''}>Testimoni</a></li>
       <li><a href="#inbox" className={activeSection === 'inbox' ? 'active' : ''}>Lacak</a></li>
       <li><a href="#kontak" className={activeSection === 'kontak' ? 'active' : ''}>Kontak</a></li>
+      <li className="nav-item-desktop-only">
+        <button className="tutorial-btn" onClick={(e) => { e.preventDefault(); setTutorialStep(0); setIsTutorialOpen(true); }}>
+          <HelpCircle size={16} /> <span style={{ marginLeft: '6px' }}>Cara Pesan</span>
+        </button>
+      </li>
     </ul>
 
     <div className="nav-right">
@@ -1722,6 +1732,106 @@ export default function Home() {
     </motion.div>
   </div>
 </section>
+
+{/* Tutorial Modal */}
+<AnimatePresence>
+  {isTutorialOpen && (
+    <motion.div 
+      className="modal-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setIsTutorialOpen(false)}
+      style={{ zIndex: 10000, position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+    >
+      <motion.div 
+        className="tutorial-modal"
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        onClick={e => e.stopPropagation()}
+        style={{ background: 'white', padding: '2rem', borderRadius: '24px', maxWidth: '500px', width: '100%', position: 'relative' }}
+      >
+        <button className="modal-close" onClick={() => setIsTutorialOpen(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer' }}><X size={24} /></button>
+        
+        <div className="tutorial-content">
+          <div className="tutorial-header" style={{ marginBottom: '1.5rem' }}>
+            <h3>Panduan Pemesanan</h3>
+            <div className="tutorial-progress">
+              Langkah {tutorialStep + 1} dari 5
+            </div>
+          </div>
+
+          <div className="tutorial-body">
+            <AnimatePresence mode="wait">
+              {tutorialStep === 0 && (
+                <motion.div key="step0" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
+                  <div className="tutorial-icon"><ShoppingCart size={40} style={{ color: 'var(--primary)' }} /></div>
+                  <h4>1. Pilih Produk</h4>
+                  <p>Pilih produk yang Anda butuhkan di bagian <b>Produk</b>, lalu klik tombol <b>Tambah ke Keranjang</b>. Pastikan Anda sudah login.</p>
+                </motion.div>
+              )}
+              {tutorialStep === 1 && (
+                <motion.div key="step1" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
+                  <div className="tutorial-icon"><Package size={40} style={{ color: 'var(--primary)' }} /></div>
+                  <h4>2. Cek Keranjang</h4>
+                  <p>Klik ikon keranjang di pojok kanan atas atau gulir ke bawah ke bagian <b>Checkout</b> untuk melihat pesanan Anda.</p>
+                </motion.div>
+              )}
+              {tutorialStep === 2 && (
+                <motion.div key="step2" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
+                  <div className="tutorial-icon"><MapPin size={40} style={{ color: 'var(--primary)' }} /></div>
+                  <h4>3. Detail Pengiriman</h4>
+                  <p>Pilih metode pengiriman: <b>Ambil di Kedai</b> atau <b>Diantarkan ke Alamat</b>. Jika diantar, atur lokasi Anda agar ongkos kirim otomatis terhitung.</p>
+                </motion.div>
+              )}
+              {tutorialStep === 3 && (
+                <motion.div key="step3" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
+                  <div className="tutorial-icon"><CheckCircle2 size={40} style={{ color: 'var(--primary)' }} /></div>
+                  <h4>4. Pilih Pembayaran</h4>
+                  <p>Pilih metode pembayaran (COD atau Transfer Bank). Periksa total pesanan Anda, lalu klik <b>Pesan Sekarang</b> untuk mengonfirmasi via WhatsApp Admin.</p>
+                </motion.div>
+              )}
+              {tutorialStep === 4 && (
+                <motion.div key="step4" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
+                  <div className="tutorial-icon"><Truck size={40} style={{ color: 'var(--primary)' }} /></div>
+                  <h4>5. Lacak Pesanan</h4>
+                  <p>Pantau pesanan Anda di menu <b>Lacak</b>. Notifikasi akan muncul saat pesanan Diproses, Dikirim, hingga Selesai.</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="tutorial-footer" style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between' }}>
+            <button 
+              className="btn-outline" 
+              onClick={() => setTutorialStep(prev => Math.max(0, prev - 1))}
+              disabled={tutorialStep === 0}
+              style={{ opacity: tutorialStep === 0 ? 0.5 : 1, cursor: tutorialStep === 0 ? 'not-allowed' : 'pointer' }}
+            >
+              <ChevronLeft size={20} /> Sebelumnya
+            </button>
+            {tutorialStep < 4 ? (
+              <button 
+                className="btn-primary" 
+                onClick={() => setTutorialStep(prev => Math.min(4, prev + 1))}
+              >
+                Selanjutnya <ChevronRight size={20} />
+              </button>
+            ) : (
+              <button 
+                className="btn-primary" 
+                onClick={() => { setIsTutorialOpen(false); setTutorialStep(0); }}
+              >
+                Selesai
+              </button>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
 
 {/*  Inbox & Tracking  */}
 <section className="section" id="inbox" style={{ background: 'var(--bg-surface-soft)' }}>
