@@ -7,6 +7,7 @@ import { chatWithChef, Message } from '../lib/groq';
 
 interface ChefChatAreaProps {
   initialMessage?: string;
+  allProducts?: any[];
 }
 
 const QUICK_CHIPS = [
@@ -15,13 +16,18 @@ const QUICK_CHIPS = [
   { label: 'Cara pesan', value: 'Bagaimana cara pesan dan apa saja metode pembayarannya?' },
 ];
 
-export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
+export default function ChefChatArea({ initialMessage, allProducts = [] }: ChefChatAreaProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastInitialRef = useRef<string | undefined>(undefined);
+
+  // Generate product context for AI
+  const productContext = allProducts.length > 0 
+    ? allProducts.map(p => `- Nama: ${p.name}, Harga: Rp ${p.price.toLocaleString('id-ID')}, Stok: ${p.stock || 0}, Kategori: ${p.category}`).join('\n')
+    : "";
 
   useEffect(() => {
     if (initialMessage && initialMessage !== lastInitialRef.current) {
@@ -45,7 +51,7 @@ export default function ChefChatArea({ initialMessage }: ChefChatAreaProps) {
     setError(null);
 
     try {
-      const reply = await chatWithChef(newMessages);
+      const reply = await chatWithChef(newMessages, productContext);
       setMessages([...newMessages, { role: 'assistant', content: reply }]);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan');

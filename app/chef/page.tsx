@@ -54,6 +54,7 @@ function ChefContent() {
   const recipeParam = searchParams.get('recipe');
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [initialChefMessage, setInitialChefMessage] = useState<string | undefined>(undefined);
 
@@ -69,12 +70,20 @@ function ChefContent() {
 
   const fetchProducts = async () => {
     setLoadingProducts(true);
-    const { data } = await supabase
+    // Fetch top 4 frozen for display
+    const { data: frozenData } = await supabase
       .from('products')
       .select('*')
       .eq('category', 'frozen')
       .limit(4);
-    setProducts(data || []);
+    setProducts(frozenData || []);
+
+    // Fetch ALL products for AI context
+    const { data: allData } = await supabase
+      .from('products')
+      .select('*');
+    setAllProducts(allData || []);
+    
     setLoadingProducts(false);
   };
 
@@ -257,7 +266,10 @@ function ChefContent() {
 
           <aside id="chef-chat" className="chef-sidebar">
             <div className="chef-sidebar-inner">
-              <ChefChatArea initialMessage={initialChefMessage} />
+              <ChefChatArea 
+                initialMessage={initialChefMessage} 
+                allProducts={allProducts}
+              />
             </div>
           </aside>
         </div>

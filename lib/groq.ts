@@ -32,22 +32,35 @@ Kamu memiliki pengetahuan mendalam tentang produk dan layanan kami:
 - Berikan sapaan yang ramah di awal dan akhir jawaban bila perlu.
 `;
 
-export async function chatWithChef(messages: Message[]) {
+export async function chatWithChef(messages: Message[], productContext?: string) {
   const apiKey = process.env.NEXT_PUBLIC_GROQ_API_KEY;
   
   if (!apiKey) {
     throw new Error("GROQ_API_KEY is not configured in .env.local");
   }
 
+  const dynamicSystemPrompt = `
+${SYSTEM_PROMPT}
+
+**DATA PRODUK REAL-TIME SAAT INI:**
+${productContext || 'Data produk tidak tersedia saat ini.'}
+
+**INSTRUKSI TAMBAHAN:**
+1. Jika Sahabat Hijrah bertanya tentang produk yang TIDAK ADA dalam daftar di atas, katakan dengan jujur bahwa produk tersebut tidak tersedia di Toko Hijrah.
+2. Jika stok produk tertulis 0, katakan bahwa stok produk tersebut sedang habis.
+3. Jangan memberikan informasi harga atau stok yang tidak sesuai dengan data di atas.
+4. Jika data produk tidak tersedia, beritahu user bahwa kamu sedang mengalami kesulitan mengakses katalog produk kami sebentar.
+`;
+
   const payload = {
     model: "llama-3.3-70b-versatile",
     messages: [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: dynamicSystemPrompt },
       ...messages
     ],
-    temperature: 0.6, // Sedikit lebih rendah agar lebih konsisten & akurat
+    temperature: 0.6,
     top_p: 0.9,
-    max_tokens: 2048, // Kapasitas lebih besar untuk resep detail
+    max_tokens: 2048,
     stream: false
   };
 
