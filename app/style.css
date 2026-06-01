@@ -555,6 +555,7 @@ p {
   align-items: center !important;
   justify-content: center !important;
   width: max-content !important;
+  color: #ffffff !important;
 }
 
 .mouse-icon {
