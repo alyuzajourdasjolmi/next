@@ -207,6 +207,7 @@ function ChefContent() {
                               src={imgSrc}
                               alt={displayName}
                               fill
+                              unoptimized={typeof imgSrc === 'string' && imgSrc.startsWith('/')}
                               sizes="(max-width: 768px) 50vw, 280px"
                               className="card-img"
                               style={{ objectFit: 'cover' }}

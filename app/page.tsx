@@ -1039,10 +1039,11 @@ export default function Home() {
 <section className="hero" id="home">
   <div className="hero-bg-image">
     <Image 
-      src="/assets/images/hero.jpeg" 
+      src="/assets/images/hero-banner-new.jpg" 
       alt="Hijrah Toko Storefront" 
       fill
       priority
+      unoptimized
       sizes="100vw"
       style={{ objectFit: 'cover' }}
     />
@@ -1259,6 +1260,7 @@ export default function Home() {
                   src={p.img} 
                   alt={p.name} 
                   fill
+                  unoptimized={typeof p.img === 'string' && p.img.startsWith('/')}
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                   className="card-img" 
                   style={{ objectFit: 'cover' }}
@@ -2126,6 +2128,7 @@ export default function Home() {
             src={selectedProduct.img} 
             alt={selectedProduct.name} 
             fill
+            unoptimized={typeof selectedProduct.img === 'string' && selectedProduct.img.startsWith('/')}
             sizes="(max-width: 768px) 100vw, 50vw"
             style={{ objectFit: 'cover' }} 
           />
