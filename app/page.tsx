@@ -3,17 +3,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { 
-  ShoppingCart, 
-  Search, 
-  Menu, 
-  X, 
-  ChevronDown, 
-  Moon, 
-  Sun, 
-  User as UserIcon, 
-  LogOut, 
-  MapPin, 
+import {
+  ShoppingCart,
+  Search,
+  Menu,
+  X,
+  ChevronDown,
+  Moon,
+  Sun,
+  User as UserIcon,
+  LogOut,
+  MapPin,
   Phone,
   MessageSquare,
   Package,
@@ -110,7 +110,7 @@ export default function Home() {
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; mode: 'login' | 'register' }>({ isOpen: false, mode: 'login' });
   const [authForm, setAuthForm] = useState({ email: '', password: '', name: '', phone: '', address: '' });
   const [authLoading, setAuthLoading] = useState(false);
-  
+
   // Refs for realtime listener to avoid stale closures
   const userIdRef = useRef<string | null>(null);
   const userOrdersRef = useRef(userOrders);
@@ -132,13 +132,13 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
-    
+
     // Fetch data from Supabase
     const fetchData = async () => {
       try {
         console.log('Fetching products from Supabase...');
         const { data: products, error: productsError } = await supabase.from('products').select('*').order('id', { ascending: true });
-        
+
         if (productsError) {
           console.error('Error fetching products:', productsError);
           // Fallback to hardcoded data if Supabase fails
@@ -168,7 +168,7 @@ export default function Home() {
           const { data: items, error: itemsError } = await supabase
             .from('order_items')
             .select('product_id, qty');
-          
+
           if (!itemsError && items) {
             const counts = items.reduce((acc: any, item: any) => {
               acc[item.product_id] = (acc[item.product_id] || 0) + item.qty;
@@ -177,7 +177,7 @@ export default function Home() {
             setSoldCounts(counts);
           }
         }
-        
+
         const { data: revs, error: revsError } = await supabase.from('reviews').select('*').order('id', { ascending: true });
         if (revsError) {
           console.error('Error fetching reviews:', revsError);
@@ -240,11 +240,11 @@ export default function Home() {
       }
     });
     setTheme(localStorage.getItem('hijrahTokoTheme') || 'light');
-    
+
     // Initial cart load (will be overridden by user-specific useEffect if logged in)
     const initialCart = localStorage.getItem('hijrahTokoCart_guest') || '[]';
     setCart(JSON.parse(initialCart));
-    
+
     const savedOrderInfo = JSON.parse(localStorage.getItem('hijrahTokoOrderInfo') || '{}');
     setOrderInfo(prev => {
       const merged = { ...prev, ...savedOrderInfo };
@@ -255,11 +255,11 @@ export default function Home() {
       return merged;
     });
     setInbox(JSON.parse(localStorage.getItem('hijrahTokoInbox') || '{"title":"","message":"","icon":"📨"}'));
-    
+
 
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-      const sections = ['home','produk','features','testimoni','checkout','lokasi','inbox','kontak'];
+      const sections = ['home', 'produk', 'features', 'testimoni', 'checkout', 'lokasi', 'inbox', 'kontak'];
       let current = '';
       sections.forEach(id => {
         const s = document.getElementById(id);
@@ -268,7 +268,7 @@ export default function Home() {
       setActiveSection(current);
     };
     window.addEventListener('scroll', handleScroll);
-    
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
     }, { threshold: 0.1 });
@@ -285,7 +285,7 @@ export default function Home() {
 
         if (currentUserId && (payload.new.user_id === currentUserId || isAlreadyInList)) {
           console.log('Match found! Updating UI for order:', payload.new.id);
-          
+
           setUserOrders(current => {
             const existingOrder = current.find(o => o.id === payload.new.id);
             if (existingOrder) {
@@ -293,7 +293,7 @@ export default function Home() {
             }
             return [payload.new, ...current];
           });
-          
+
           let title = '';
           let message = '';
           let icon = '📨';
@@ -332,10 +332,10 @@ export default function Home() {
           const newInbox = { title, message, icon };
           setInbox(newInbox);
           localStorage.setItem('hijrahTokoInbox', JSON.stringify(newInbox));
-          
+
           if (payload.new.status !== payload.old?.status) {
-             const inboxEl = document.getElementById('inbox');
-             if (inboxEl) inboxEl.scrollIntoView({ behavior: 'smooth' });
+            const inboxEl = document.getElementById('inbox');
+            if (inboxEl) inboxEl.scrollIntoView({ behavior: 'smooth' });
           }
         }
       })
@@ -561,7 +561,7 @@ export default function Home() {
     }
     const dist = Number(haversineDistanceKm(STORE_COORDINATES.lat, STORE_COORDINATES.lon, lat, lon).toFixed(2));
     if (dist > SHIPPING_MAX_KM) return { distanceKm: dist, shippingCost: null, discount: 0, finalCost: null, detail: 'Lokasi terlalu jauh, silakan hubungi admin untuk pengiriman khusus.', status: 'too-far' };
-    
+
     let cost, detail;
     if (dist <= SHIPPING_NEAR_MAX_KM) {
       cost = SHIPPING_NEAR_BASE;
@@ -601,13 +601,13 @@ export default function Home() {
     }
 
     setIsLocating(true);
-    
+
     // Gunakan getCurrentPosition langsung agar lebih cepat (tidak menunggu warmup)
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords;
       const link = `https://www.google.com/maps?q=${latitude},${longitude}`;
       let address = `Koordinat: ${latitude}, ${longitude}`;
-      
+
       try {
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`, {
           headers: {
@@ -615,24 +615,24 @@ export default function Home() {
             'User-Agent': 'HijrahTokoWeb/1.3'
           }
         });
-        
+
         if (res.ok) {
           const data = await res.json();
-          if(data.display_name) address = data.display_name;
+          if (data.display_name) address = data.display_name;
         }
       } catch (e) {
         console.error("Geocoding error:", e);
       }
 
       // Pastikan state diupdate secara sinkron
-      setOrderInfo(prev => ({ 
-        ...prev, 
-        customerLatitude: latitude.toString(), 
-        customerLongitude: longitude.toString(), 
-        customerMapsLink: link, 
-        customerAddress: address 
+      setOrderInfo(prev => ({
+        ...prev,
+        customerLatitude: latitude.toString(),
+        customerLongitude: longitude.toString(),
+        customerMapsLink: link,
+        customerAddress: address
       }));
-      
+
       setIsLocating(false);
       alert('Lokasi berhasil diperbarui!');
     }, (err) => {
@@ -642,10 +642,10 @@ export default function Home() {
       else if (err.code === 2) errorMsg = 'Lokasi tidak tersedia.';
       else if (err.code === 3) errorMsg = 'Waktu habis.';
       alert(errorMsg);
-    }, { 
-      enableHighAccuracy: true, 
-      timeout: 8000, 
-      maximumAge: 0 
+    }, {
+      enableHighAccuracy: true,
+      timeout: 8000,
+      maximumAge: 0
     });
   };
 
@@ -661,13 +661,13 @@ export default function Home() {
       alert('Ulasan tidak boleh kosong.');
       return;
     }
-    const newReview = { 
+    const newReview = {
       name: reviewDisplayName,
       text: reviewText,
-      rating: reviewForm.rating, 
+      rating: reviewForm.rating,
       date: new Date().toISOString().split('T')[0]
     };
-    
+
     try {
       const { data, error } = await supabase
         .from('reviews')
@@ -760,7 +760,7 @@ export default function Home() {
             .select('stock')
             .eq('id', item.id)
             .single();
-          
+
           if (product && typeof product.stock === 'number') {
             const newStock = Math.max(0, product.stock - item.qty);
             await supabase
@@ -780,7 +780,7 @@ export default function Home() {
     }
 
     const whatsappUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
-    
+
     const inboxData = {
       title: 'Pesanan sedang diproses',
       message: `Terima kasih, ${orderInfo.customerName}! Pesanan Anda telah kami simpan dan sedang diteruskan ke Admin via WhatsApp.`,
@@ -788,7 +788,7 @@ export default function Home() {
     };
     setInbox(inboxData);
     localStorage.setItem('hijrahTokoInbox', JSON.stringify(inboxData));
-    
+
     clearCart();
     window.open(whatsappUrl, '_blank');
     document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' });
@@ -812,7 +812,7 @@ export default function Home() {
         .select('*, order_items(*)')
         .eq('user_id', targetUserId)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       setUserOrders(data || []);
 
@@ -867,1373 +867,1384 @@ export default function Home() {
   return (
     <>
 
-{/*  Navbar  */}
-<nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="navbar">
-  <div className="nav-container">
-    <motion.a 
-      href="#" 
-      className="nav-logo"
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <img src="/assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" className="brand-logo" />
-      <span className="brand-text">Hijrah<span>Toko</span></span>
-    </motion.a>
-    
-    <ul className="nav-links">
-      <li><a href="#home" className={activeSection === 'home' ? 'active' : ''}>Home</a></li>
-      <li className="dropdown">
-        <a href="#produk" className="dropbtn">
-          Produk <ChevronDown className="chevron" size={16} />
-        </a>
-        <div className="dropdown-content">
-          <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>🧊 Frozen Food</a>
-          <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>📝 ATK</a>
-          <a href="#other" onClick={(e) => navToCategory(e, 'other')}>📦 Lainnya</a>
-        </div>
-      </li>
-      <li><a href="#testimoni" className={activeSection === 'testimoni' ? 'active' : ''}>Testimoni</a></li>
-      <li><a href="#inbox" className={activeSection === 'inbox' ? 'active' : ''}>Lacak</a></li>
-      <li><a href="#kontak" className={activeSection === 'kontak' ? 'active' : ''}>Kontak</a></li>
-      <li className="nav-item-desktop-only">
-        <button className="tutorial-btn" onClick={(e) => { e.preventDefault(); setTutorialStep(0); setIsTutorialOpen(true); }}>
-          <HelpCircle size={16} /> <span style={{ marginLeft: '6px' }}>Cara Pesan</span>
-        </button>
-      </li>
-    </ul>
+      {/*  Navbar  */}
+      <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="navbar">
+        <div className="nav-container">
+          <motion.a
+            href="#"
+            className="nav-logo"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <img src="/assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" className="brand-logo" />
+            <span className="brand-text">Hijrah<span>Toko</span></span>
+          </motion.a>
 
-    <div className="nav-right">
-      <div className="nav-actions">
-        {user ? (
-          <div className="user-dropdown">
-            <div className="user-profile-trigger">
-              <div className="user-avatar">
-                {user.user_metadata?.full_name?.charAt(0).toUpperCase() || <UserIcon size={18} />}
-              </div>
-              <span className="user-name-short">{user.user_metadata?.full_name?.split(' ')[0] || 'User'}</span>
-            </div>
-            <div className="user-menu-content">
-              <div className="user-menu-header">
-                <strong>{user.user_metadata?.full_name || 'Pelanggan'}</strong>
-                <p>{user.email}</p>
-              </div>
-              <div className="user-menu-divider"></div>
-              <a href="#inbox" onClick={() => document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' })}>
-                <Package size={16} /> Pesanan Saya
+          <ul className="nav-links">
+            <li><a href="#home" className={activeSection === 'home' ? 'active' : ''}>Home</a></li>
+            <li className="dropdown">
+              <a href="#produk" className="dropbtn">
+                Produk <ChevronDown className="chevron" size={16} />
               </a>
-              <button className="user-menu-item-btn" onClick={() => setShowProfileManager(true)}>
-                <MapPin size={16} /> Kelola Alamat
+              <div className="dropdown-content">
+                <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>🧊 Frozen Food</a>
+                <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>📝 ATK</a>
+                <a href="#other" onClick={(e) => navToCategory(e, 'other')}>📦 Lainnya</a>
+              </div>
+            </li>
+            <li><a href="#testimoni" className={activeSection === 'testimoni' ? 'active' : ''}>Testimoni</a></li>
+            <li><a href="#inbox" className={activeSection === 'inbox' ? 'active' : ''}>Lacak</a></li>
+            <li><a href="#kontak" className={activeSection === 'kontak' ? 'active' : ''}>Kontak</a></li>
+            <li className="nav-item-desktop-only">
+              <button className="tutorial-btn" onClick={(e) => { e.preventDefault(); setTutorialStep(0); setIsTutorialOpen(true); }}>
+                <HelpCircle size={16} /> <span style={{ marginLeft: '6px' }}>Cara Pesan</span>
               </button>
-              <a href="/admin">
-                <CheckCircle2 size={16} /> Dashboard Admin
-              </a>
-              <button className="user-menu-item-btn" onClick={subscribeToPush}>
-                <Bell size={16} /> Aktifkan Notifikasi
-              </button>
-              <div className="user-menu-divider"></div>
-              <button className="user-logout-btn" onClick={handleLogout}>
-                <LogOut size={16} /> Keluar
-              </button>
+            </li>
+          </ul>
+
+          <div className="nav-right">
+            <div className="nav-actions">
+              {user ? (
+                <div className="user-dropdown">
+                  <div className="user-profile-trigger">
+                    <div className="user-avatar">
+                      {user.user_metadata?.full_name?.charAt(0).toUpperCase() || <UserIcon size={18} />}
+                    </div>
+                    <span className="user-name-short">{user.user_metadata?.full_name?.split(' ')[0] || 'User'}</span>
+                  </div>
+                  <div className="user-menu-content">
+                    <div className="user-menu-header">
+                      <strong>{user.user_metadata?.full_name || 'Pelanggan'}</strong>
+                      <p>{user.email}</p>
+                    </div>
+                    <div className="user-menu-divider"></div>
+                    <a href="#inbox" onClick={() => document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' })}>
+                      <Package size={16} /> Pesanan Saya
+                    </a>
+                    <button className="user-menu-item-btn" onClick={() => setShowProfileManager(true)}>
+                      <MapPin size={16} /> Kelola Alamat
+                    </button>
+                    <a href="/admin">
+                      <CheckCircle2 size={16} /> Dashboard Admin
+                    </a>
+                    <button className="user-menu-item-btn" onClick={subscribeToPush}>
+                      <Bell size={16} /> Aktifkan Notifikasi
+                    </button>
+                    <div className="user-menu-divider"></div>
+                    <button className="user-logout-btn" onClick={handleLogout}>
+                      <LogOut size={16} /> Keluar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button className="btn-login-pill" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
+                  Masuk
+                </button>
+              )}
             </div>
+
+            <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+
+            <button className="cart-btn" onClick={() => document.getElementById('checkout')?.scrollIntoView({ behavior: 'smooth' })}>
+              <ShoppingCart size={20} />
+              <AnimatePresence>
+                {cartCount > 0 && (
+                  <motion.span
+                    className="cart-count"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                  >
+                    {cartCount}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
+
+            <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
+              <Menu size={24} />
+            </button>
           </div>
-        ) : (
-          <button className="btn-login-pill" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
-            Masuk
-          </button>
+        </div>
+      </nav>
+
+      {/*  Mobile Nav  */}
+      <AnimatePresence>
+        {mobileNavOpen && (
+          <motion.div
+            className="mobile-nav open"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+          >
+            <div className="mobile-nav-content">
+              <div className="mobile-nav-header">
+                <div className="mobile-nav-brand">
+                  <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" />
+                  <span>Hijrah Toko</span>
+                </div>
+                <button className="mobile-nav-close" onClick={() => setMobileNavOpen(false)}>
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="mobile-nav-scroll">
+                <ul className="mobile-nav-links">
+                  <li><a href="#home" onClick={() => setMobileNavOpen(false)}>🏠 Home</a></li>
+                  <li><a href="#produk" onClick={() => setMobileNavOpen(false)}>📦 Produk</a></li>
+                  <li><a href="#testimoni" onClick={() => setMobileNavOpen(false)}>⭐ Testimoni</a></li>
+                  <li><a href="#checkout" onClick={() => setMobileNavOpen(false)}>🛒 Checkout</a></li>
+                  <li><a href="#inbox" onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</a></li>
+                  <li><a href="#lokasi" onClick={() => setMobileNavOpen(false)}>📍 Lokasi</a></li>
+                  <li><a href="#kontak" onClick={() => setMobileNavOpen(false)}>📞 Kontak</a></li>
+                  {user && (
+                    <li style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+                      <a href="/admin" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>⚙️ Dashboard Admin</a>
+                    </li>
+                  )}
+                </ul>
+              </div>
+
+              <div className="mobile-nav-footer">
+                {user ? (
+                  <div className="mobile-user-info">
+                    <div className="user-details">
+                      <div className="user-avatar">
+                        {user.user_metadata?.full_name?.charAt(0).toUpperCase() || 'U'}
+                      </div>
+                      <div>
+                        <strong>{user.user_metadata?.full_name || 'User'}</strong>
+                        <p>{user.email}</p>
+                      </div>
+                    </div>
+                    <button className="mobile-logout-btn" onClick={handleLogout}>
+                      Keluar
+                    </button>
+                  </div>
+                ) : (
+                  <button className="mobile-auth-btn" onClick={() => { setAuthModal({ isOpen: true, mode: 'login' }); setMobileNavOpen(false); }}>
+                    Masuk / Daftar
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
         )}
+      </AnimatePresence>
+
+      <section className="hero" id="home">
+        <div className="hero-bg-image">
+          <Image
+            src="/assets/images/hero-banner-new.jpg"
+            alt="Hijrah Toko Storefront"
+            fill
+            priority
+            unoptimized
+            sizes="100vw"
+            style={{ objectFit: 'cover' }}
+          />
+          <div className="hero-dark-overlay"></div>
+          <div className="hero-gradient-blob top-left"></div>
+          <div className="hero-gradient-blob bottom-right"></div>
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="dot-grid top-right"></div>
+        <div className="dot-grid bottom-left"></div>
+
+        <div className="hero-container-new">
+          <motion.div
+            className="hero-content-new"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="hero-subtitle-new">
+              <span className="subtitle-line"></span>
+              <span className="subtitle-text">SATU PINTU SOLUSI ANDA</span>
+            </div>
+
+            <h1 className="hero-title-new">
+              HIJRAH<span>TOKO</span>
+            </h1>
+
+            <p className="hero-desc-new">
+              Menghadirkan kenyamanan belanja <strong>Frozen Food</strong> premium dan
+              kelengkapan <strong>ATK</strong> dalam satu genggaman modern.
+            </p>
+
+            <div className="hero-actions-new">
+              <motion.a
+                href="#produk"
+                className="btn-hero-primary"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Jelajahi Produk <ShoppingCart size={18} />
+              </motion.a>
+
+              <motion.a
+                href="https://wa.me/6285263965031"
+                className="btn-hero-outline"
+                whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <MessageSquare size={18} /> Hubungi Admin
+              </motion.a>
+
+              <Link
+                href="/chef"
+                className="btn-hero-outline"
+                style={{ background: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)', border: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+              >
+                <ChefHat size={18} /> Chef Virtual
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          className="hero-scroll-new"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 1 }}
+          style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 'max-content'
+          }}
+        >
+          <div className="mouse-icon">
+            <motion.div
+              className="mouse-wheel"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </div>
+          <span>SCROLL KEBAWAH</span>
+        </motion.div>
+      </section>
+
+      {/*  Stats  */}
+      <div className="stats-bar">
+        <div className="stats-container">
+          {[
+            { label: 'Produk Tersedia', value: '500+', icon: <Package size={24} /> },
+            { label: 'Pelanggan Puas', value: '1000+', icon: <UserIcon size={24} /> },
+            { label: 'Rating Toko', value: '⭐ 4.9', icon: <Star size={24} /> },
+            { label: 'Respon Cepat', value: '24 Jam', icon: <Clock size={24} /> },
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              className="stat-item"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <div className="stat-icon" style={{ color: 'var(--primary)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>
+                {item.icon}
+              </div>
+              <h3>{item.value}</h3>
+              <p>{item.label}</p>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
-      <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-      </button>
+      {/*  Products Section  */}
+      <section className="section" id="produk">
+        <div className="section-header">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            Katalog Produk
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            Pilihan terbaik untuk kebutuhan dapur premium dan peralatan kantor modern Anda.
+          </motion.p>
+          <div className="underline"></div>
+        </div>
 
-      <button className="cart-btn" onClick={() => document.getElementById('checkout')?.scrollIntoView({ behavior: 'smooth' })}>
-        <ShoppingCart size={20} />
-        <AnimatePresence>
-          {cartCount > 0 && (
-            <motion.span 
-              className="cart-count"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-            >
-              {cartCount}
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </button>
-
-      <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
-        <Menu size={24} />
-      </button>
-    </div>
-  </div>
-</nav>
-
-{/*  Mobile Nav  */}
-<AnimatePresence>
-  {mobileNavOpen && (
-    <motion.div 
-      className="mobile-nav open"
-      initial={{ x: '100%' }}
-      animate={{ x: 0 }}
-      exit={{ x: '100%' }}
-      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-    >
-      <div className="mobile-nav-content">
-        <div className="mobile-nav-header">
-          <div className="mobile-nav-brand">
-            <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" />
-            <span>Hijrah Toko</span>
+        <div className="section-search-bar" style={{ maxWidth: '600px', margin: '0 auto 2.5rem', position: 'relative' }}>
+          <div style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', display: 'flex' }}>
+            <Search size={20} />
           </div>
-          <button className="mobile-nav-close" onClick={() => setMobileNavOpen(false)}>
-            <X size={24} />
-          </button>
-        </div>
-
-        <div className="mobile-nav-scroll">
-          <ul className="mobile-nav-links">
-            <li><a href="#home" onClick={() => setMobileNavOpen(false)}>🏠 Home</a></li>
-            <li><a href="#produk" onClick={() => setMobileNavOpen(false)}>📦 Produk</a></li>
-            <li><a href="#testimoni" onClick={() => setMobileNavOpen(false)}>⭐ Testimoni</a></li>
-            <li><a href="#checkout" onClick={() => setMobileNavOpen(false)}>🛒 Checkout</a></li>
-            <li><a href="#inbox" onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</a></li>
-            <li><a href="#lokasi" onClick={() => setMobileNavOpen(false)}>📍 Lokasi</a></li>
-            <li><a href="#kontak" onClick={() => setMobileNavOpen(false)}>📞 Kontak</a></li>
-            {user && (
-              <li style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
-                <a href="/admin" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>⚙️ Dashboard Admin</a>
-              </li>
-            )}
-          </ul>
-        </div>
-
-        <div className="mobile-nav-footer">
-          {user ? (
-            <div className="mobile-user-info">
-              <div className="user-details">
-                <div className="user-avatar">
-                   {user.user_metadata?.full_name?.charAt(0).toUpperCase() || 'U'}
-                </div>
-                <div>
-                  <strong>{user.user_metadata?.full_name || 'User'}</strong>
-                  <p>{user.email}</p>
-                </div>
-              </div>
-              <button className="mobile-logout-btn" onClick={handleLogout}>
-                Keluar
-              </button>
-            </div>
-          ) : (
-            <button className="mobile-auth-btn" onClick={() => { setAuthModal({ isOpen: true, mode: 'login' }); setMobileNavOpen(false); }}>
-              Masuk / Daftar
+          <input
+            type="text"
+            placeholder="Cari camilan, sosis, buku, atau lainnya..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '1.1rem 3.5rem 1.1rem 3.25rem',
+              borderRadius: '50px',
+              border: '2px solid var(--border-main)',
+              background: 'var(--bg-surface)',
+              color: 'var(--text-main)',
+              fontSize: '1rem',
+              boxShadow: 'var(--shadow-sm)',
+              outline: 'none',
+              transition: 'all 0.3s ease'
+            }}
+            className="search-input-focus"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              style={{ position: 'absolute', right: '1.25rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)', display: 'flex' }}
+            >
+              <X size={20} />
             </button>
           )}
         </div>
-      </div>
-    </motion.div>
-  )}
-</AnimatePresence>
 
-<section className="hero" id="home">
-  <div className="hero-bg-image">
-    <Image 
-      src="/assets/images/hero-banner-new.jpg" 
-      alt="Hijrah Toko Storefront" 
-      fill
-      priority
-      unoptimized
-      sizes="100vw"
-      style={{ objectFit: 'cover' }}
-    />
-    <div className="hero-dark-overlay"></div>
-    <div className="hero-gradient-blob top-left"></div>
-    <div className="hero-gradient-blob bottom-right"></div>
-  </div>
-
-  {/* Decorative Elements */}
-  <div className="dot-grid top-right"></div>
-  <div className="dot-grid bottom-left"></div>
-
-  <div className="hero-container-new">
-    <motion.div 
-      className="hero-content-new"
-      initial={{ opacity: 0, x: -30 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-    >
-      <div className="hero-subtitle-new">
-        <span className="subtitle-line"></span>
-        <span className="subtitle-text">SATU PINTU SOLUSI ANDA</span>
-      </div>
-      
-      <h1 className="hero-title-new">
-        HIJRAH<span>TOKO</span>
-      </h1>
-      
-      <p className="hero-desc-new">
-        Menghadirkan kenyamanan belanja <strong>Frozen Food</strong> premium dan 
-        kelengkapan <strong>ATK</strong> dalam satu genggaman modern.
-      </p>
-      
-      <div className="hero-actions-new">
-        <motion.a 
-          href="#produk" 
-          className="btn-hero-primary"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Jelajahi Produk <ShoppingCart size={18} />
-        </motion.a>
-        
-        <motion.a 
-          href="https://wa.me/6285263965031" 
-          className="btn-hero-outline"
-          whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <MessageSquare size={18} /> Hubungi Admin
-        </motion.a>
-
-        <Link 
-          href="/chef" 
-          className="btn-hero-outline"
-          style={{ background: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)', border: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}
-        >
-          <ChefHat size={18} /> Chef Virtual
-        </Link>
-      </div>
-    </motion.div>
-  </div>
-
-  {/* Scroll Indicator */}
-  <motion.div 
-    className="hero-scroll-new"
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 1, duration: 1 }}
-  >
-    <div className="mouse-icon">
-      <motion.div 
-        className="mouse-wheel"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-      />
-    </div>
-    <span>SCROLL KEBAWAH</span>
-  </motion.div>
-</section>
-
-{/*  Stats  */}
-<div className="stats-bar">
-  <div className="stats-container">
-    {[
-      { label: 'Produk Tersedia', value: '500+', icon: <Package size={24} /> },
-      { label: 'Pelanggan Puas', value: '1000+', icon: <UserIcon size={24} /> },
-      { label: 'Rating Toko', value: '⭐ 4.9', icon: <Star size={24} /> },
-      { label: 'Respon Cepat', value: '24 Jam', icon: <Clock size={24} /> },
-    ].map((item, i) => (
-      <motion.div 
-        key={i}
-        className="stat-item"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: i * 0.1 }}
-      >
-        <div className="stat-icon" style={{ color: 'var(--primary)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'center' }}>
-          {item.icon}
-        </div>
-        <h3>{item.value}</h3>
-        <p>{item.label}</p>
-      </motion.div>
-    ))}
-  </div>
-</div>
-
-{/*  Products Section  */}
-<section className="section" id="produk">
-  <div className="section-header">
-    <motion.h2
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-    >
-      Katalog Produk
-    </motion.h2>
-    <motion.p
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: 0.1 }}
-    >
-      Pilihan terbaik untuk kebutuhan dapur premium dan peralatan kantor modern Anda.
-    </motion.p>
-    <div className="underline"></div>
-  </div>
-
-  <div className="section-search-bar" style={{ maxWidth: '600px', margin: '0 auto 2.5rem', position: 'relative' }}>
-    <div style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', display: 'flex' }}>
-      <Search size={20} />
-    </div>
-    <input 
-      type="text" 
-      placeholder="Cari camilan, sosis, buku, atau lainnya..." 
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      style={{
-        width: '100%',
-        padding: '1.1rem 3.5rem 1.1rem 3.25rem',
-        borderRadius: '50px',
-        border: '2px solid var(--border-main)',
-        background: 'var(--bg-surface)',
-        color: 'var(--text-main)',
-        fontSize: '1rem',
-        boxShadow: 'var(--shadow-sm)',
-        outline: 'none',
-        transition: 'all 0.3s ease'
-      }}
-      className="search-input-focus"
-    />
-    {searchTerm && (
-      <button 
-        onClick={() => setSearchTerm('')} 
-        style={{ position: 'absolute', right: '1.25rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)', display: 'flex' }}
-      >
-        <X size={20} />
-      </button>
-    )}
-  </div>
-
-  <div className="filter-tabs">
-    {[
-      { id: 'all', label: 'Semua', icon: '🏪' },
-      { id: 'frozen', label: 'Frozen Food', icon: '🧊' },
-      { id: 'atk', label: 'ATK', icon: '📝' },
-      { id: 'other', label: 'Lainnya', icon: '📦' },
-    ].map((tab) => (
-      <button 
-        key={tab.id}
-        className={`filter-btn ${activeTab === tab.id ? 'active' : ''}`} 
-        onClick={() => setActiveTab(tab.id)}
-      >
-        {tab.icon} {tab.label}
-      </button>
-    ))}
-  </div>
-
-  {loadingProducts ? (
-    <div className="loading-state">
-      <motion.div 
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-        style={{ width: 40, height: 40, border: '4px solid var(--primary-light)', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto' }}
-      />
-      <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>Memuat koleksi terbaik kami...</p>
-    </div>
-  ) : (
-    <div className="products-grid">
-      <AnimatePresence mode="popLayout">
-        {productsData
-          .filter((p: any) => {
-            const matchesTab = activeTab === 'all' || p.category === activeTab;
-            const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                                p.desc.toLowerCase().includes(searchTerm.toLowerCase());
-            return matchesTab && matchesSearch;
-          })
-          .map((p: any, i: number) => (
-            <motion.div 
-              layout
-              key={p.id} 
-              className="product-card"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3, delay: i * 0.05 }}
+        <div className="filter-tabs">
+          {[
+            { id: 'all', label: 'Semua', icon: '🏪' },
+            { id: 'frozen', label: 'Frozen Food', icon: '🧊' },
+            { id: 'atk', label: 'ATK', icon: '📝' },
+            { id: 'other', label: 'Lainnya', icon: '📦' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              className={`filter-btn ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
             >
-              <span className={`card-badge badge-${p.category}`}>
-                {p.category === 'frozen' ? 'Frozen' : p.category === 'atk' ? 'ATK' : 'Lainnya'}
-              </span>
-              <div className="card-img-wrap" onClick={() => setSelectedProduct(p)}>
-                <Image 
-                  src={p.img} 
-                  alt={p.name} 
-                  fill
-                  unoptimized={typeof p.img === 'string' && p.img.startsWith('/')}
-                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                  className="card-img" 
-                  style={{ objectFit: 'cover' }}
-                />
-                <div className="card-overlay">
-                  <Search size={24} color="white" />
-                  <span>Detail</span>
-                </div>
-              </div>
-              <div className="card-body">
-                <div className="card-title-wrap">
-                  <h3 onClick={() => setSelectedProduct(p)} style={{ cursor: 'pointer' }}>{p.name}</h3>
-                </div>
-                <div className="card-meta-row">
-                   <span className="sold-label">Terjual {soldCounts[p.id] || 0}+</span>
-                   <div style={{ display: 'flex', color: '#FACC15' }}>
-                     {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="currentColor" />)}
-                   </div>
-                </div>
-                <p className="desc">{p.desc.length > 70 ? p.desc.substring(0, 70) + '...' : p.desc}</p>
-              </div>
-              <div className="card-footer">
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span className="price">Rp {p.price.toLocaleString('id-ID')}</span>
-                  <span style={{ fontSize: '0.7rem', color: (p.stock || 0) <= 5 ? '#ef4444' : '#64748b' }}>
-                    Stok: {p.stock || 0}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  {p.category === 'frozen' && (
-                    <Link 
-                      href={`/chef?recipe=${encodeURIComponent(p.name)}`}
-                      className="btn-wa" 
-                      style={{ background: 'var(--bg-surface-soft)', color: 'var(--text-main)', border: '1px solid var(--border-main)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      title="Tanya Resep"
-                    >
-                      <ChefHat size={16} />
-                    </Link>
-                  )}
-                  <button 
-                    type="button" 
-                    className="btn-wa" 
-                    onClick={() => addToCart(p.id)}
-                    disabled={(p.stock || 0) <= 0}
-                    style={{ opacity: (p.stock || 0) <= 0 ? 0.5 : 1, cursor: (p.stock || 0) <= 0 ? 'not-allowed' : 'pointer' }}
+              {tab.icon} {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {loadingProducts ? (
+          <div className="loading-state">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+              style={{ width: 40, height: 40, border: '4px solid var(--primary-light)', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto' }}
+            />
+            <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>Memuat koleksi terbaik kami...</p>
+          </div>
+        ) : (
+          <div className="products-grid">
+            <AnimatePresence mode="popLayout">
+              {productsData
+                .filter((p: any) => {
+                  const matchesTab = activeTab === 'all' || p.category === activeTab;
+                  const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    p.desc.toLowerCase().includes(searchTerm.toLowerCase());
+                  return matchesTab && matchesSearch;
+                })
+                .map((p: any, i: number) => (
+                  <motion.div
+                    layout
+                    key={p.id}
+                    className="product-card"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3, delay: i * 0.05 }}
                   >
-                    <ShoppingCart size={16} />
-                    {(p.stock || 0) <= 0 ? 'Habis' : 'Tambah'}
+                    <span className={`card-badge badge-${p.category}`}>
+                      {p.category === 'frozen' ? 'Frozen' : p.category === 'atk' ? 'ATK' : 'Lainnya'}
+                    </span>
+                    <div className="card-img-wrap" onClick={() => setSelectedProduct(p)}>
+                      <Image
+                        src={p.img}
+                        alt={p.name}
+                        fill
+                        unoptimized={typeof p.img === 'string' && p.img.startsWith('/')}
+                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                        className="card-img"
+                        style={{ objectFit: 'cover' }}
+                      />
+                      <div className="card-overlay">
+                        <Search size={24} color="white" />
+                        <span>Detail</span>
+                      </div>
+                    </div>
+                    <div className="card-body">
+                      <div className="card-title-wrap">
+                        <h3 onClick={() => setSelectedProduct(p)} style={{ cursor: 'pointer' }}>{p.name}</h3>
+                      </div>
+                      <div className="card-meta-row">
+                        <span className="sold-label">Terjual {soldCounts[p.id] || 0}+</span>
+                        <div style={{ display: 'flex', color: '#FACC15' }}>
+                          {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="currentColor" />)}
+                        </div>
+                      </div>
+                      <p className="desc">{p.desc.length > 70 ? p.desc.substring(0, 70) + '...' : p.desc}</p>
+                    </div>
+                    <div className="card-footer">
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span className="price">Rp {p.price.toLocaleString('id-ID')}</span>
+                        <span style={{ fontSize: '0.7rem', color: (p.stock || 0) <= 5 ? '#ef4444' : '#64748b' }}>
+                          Stok: {p.stock || 0}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        {p.category === 'frozen' && (
+                          <Link
+                            href={`/chef?recipe=${encodeURIComponent(p.name)}`}
+                            className="btn-wa"
+                            style={{ background: 'var(--bg-surface-soft)', color: 'var(--text-main)', border: '1px solid var(--border-main)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            title="Tanya Resep"
+                          >
+                            <ChefHat size={16} />
+                          </Link>
+                        )}
+                        <button
+                          type="button"
+                          className="btn-wa"
+                          onClick={() => addToCart(p.id)}
+                          disabled={(p.stock || 0) <= 0}
+                          style={{ opacity: (p.stock || 0) <= 0 ? 0.5 : 1, cursor: (p.stock || 0) <= 0 ? 'not-allowed' : 'pointer' }}
+                        >
+                          <ShoppingCart size={16} />
+                          {(p.stock || 0) <= 0 ? 'Habis' : 'Tambah'}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+            </AnimatePresence>
+          </div>
+        )}
+      </section>
+
+      {/*  Features  */}
+      <section className="section features-section" id="features">
+        <div className="section-header">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            Kenapa Memilih Kami?
+          </motion.h2>
+          <div className="underline"></div>
+        </div>
+        <div className="features-grid">
+          {[
+            { title: "Kualitas Terjamin", desc: "Produk frozen food higienis dan ATK bermerek berkualitas tinggi.", icon: <CheckCircle2 size={32} /> },
+            { title: "Harga Bersahabat", desc: "Penawaran harga terbaik untuk eceran maupun kebutuhan kantor.", icon: <Star size={32} /> },
+            { title: "Pengiriman Cepat", desc: "Layanan antar cepat ke alamat Anda untuk wilayah sekitarnya.", icon: <Truck size={32} /> },
+            { title: "Respon Kilat", desc: "Admin siaga membantu pesanan Anda melalui WhatsApp 24 jam.", icon: <MessageSquare size={32} /> }
+          ].map((f, i) => (
+            <motion.div
+              key={i}
+              className="feature-card"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <div className="feature-icon">{f.icon}</div>
+              <h3>{f.title}</h3>
+              <p>{f.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/*  Testimonials  */}
+      <section className="section" id="testimoni" style={{ background: 'var(--bg-main)' }}>
+        <div className="section-header">
+          <h2>Apa Kata Mereka?</h2>
+          <p>Kepuasan pelanggan adalah prioritas utama Hijrah Toko.</p>
+          <div className="underline"></div>
+        </div>
+        <div className="testimoni-grid">
+          <div className="testimoni-list">
+            {reviews.length === 0 && (
+              <div className="testimoni-card">
+                <p>Belum ada ulasan. Jadilah yang pertama memberikan testimoni.</p>
+              </div>
+            )}
+            {reviews.map((rev, i) => (
+              <motion.div
+                key={rev.id ?? `${rev.name}-${rev.date}-${i}`}
+                className="testimoni-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.06 }}
+              >
+                <div style={{ display: 'flex', color: '#FACC15', marginBottom: '0.75rem', gap: '0.25rem' }}>
+                  {[...Array(rev.rating || 0)].map((_, j) => <Star key={j} size={16} fill="currentColor" />)}
+                </div>
+                <p style={{ fontStyle: 'italic', marginBottom: '1.25rem' }}>
+                  &ldquo;{rev.text}&rdquo;
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div className="user-avatar" style={{ width: '40px', height: '40px' }}>
+                    {(rev.name || 'P').charAt(0)}
+                  </div>
+                  <div>
+                    <strong style={{ display: 'block' }}>{rev.name || 'Pelanggan'}</strong>
+                    <small style={{ color: 'var(--text-light)' }}>{rev.date}</small>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            className="testimoni-form-card"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h3>Tulis Ulasan Anda</h3>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+              Ulasan hanya bisa dikirim oleh pengguna yang sudah login.
+            </p>
+
+            {!user ? (
+              <div style={{ textAlign: 'center', padding: '1.5rem 0 0.5rem' }}>
+                <AlertCircle size={40} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
+                <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+                  Silakan login terlebih dahulu untuk mengirim ulasan.
+                </p>
+                <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
+                  Login Untuk Ulasan
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={submitReview} className="order-form">
+                <div className="form-group">
+                  <label>Nama Pengguna</label>
+                  <input type="text" value={reviewDisplayName} disabled />
+                </div>
+
+                <div className="form-group">
+                  <label>Rating</label>
+                  <div className="star-rating-input" role="radiogroup" aria-label="Rating ulasan">
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className={`star ${reviewForm.rating >= value ? 'active' : ''}`}
+                        onClick={() => setReviewForm((prev) => ({ ...prev, rating: value }))}
+                        aria-label={`Beri rating ${value}`}
+                        style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', display: 'flex' }}
+                      >
+                        <Star size={30} fill={reviewForm.rating >= value ? 'currentColor' : 'none'} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Ulasan</label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Bagikan pengalaman belanja Anda di Hijrah Toko..."
+                    value={reviewForm.text}
+                    onChange={(e) => setReviewForm((prev) => ({ ...prev, text: e.target.value }))}
+                  />
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                  Kirim Ulasan
+                </button>
+              </form>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      {/*  Checkout  */}
+      <section className="section checkout-section" id="checkout">
+        <div className="section-header">
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>Selesaikan Pesanan</motion.h2>
+          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
+            Lengkapi detail pesanan Anda untuk konfirmasi instan via WhatsApp.
+          </motion.p>
+          <div className="underline"></div>
+        </div>
+
+        <div className="checkout-grid">
+          <motion.div
+            className="checkout-card"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="checkout-card-head">
+              <h3><ShoppingCart size={20} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} /> Keranjang Belanja</h3>
+              {cart.length > 0 && <button className="btn-secondary btn-small" onClick={clearCart}>Bersihkan</button>}
+            </div>
+
+            {cart.length === 0 ? (
+              <div className="empty-cart" style={{ border: '2px dashed var(--border-main)', padding: '4rem 2rem' }}>
+                <Package size={48} strokeWidth={1} style={{ marginBottom: '1rem', color: 'var(--text-light)' }} />
+                <p>Wah, keranjangmu masih kosong!</p>
+                <a href="#produk" className="btn-primary btn-small" style={{ marginTop: '1rem' }}>Mulai Belanja</a>
+              </div>
+            ) : (
+              <div className="cart-items">
+                <AnimatePresence>
+                  {cart.map((item: any) => (
+                    <motion.div
+                      key={item.id}
+                      className="cart-item"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <h4>{item.name}</h4>
+                        <p style={{ color: 'var(--primary)', fontWeight: '700' }}>Rp {(item.price * item.qty).toLocaleString('id-ID')}</p>
+                      </div>
+                      <div className="cart-item-actions">
+                        <button type="button" className="qty-btn" onClick={() => changeQuantity(item.id, -1)} aria-label={`Kurangi ${item.name}`}>
+                          -
+                        </button>
+                        <span className="qty-value">{item.qty}</span>
+                        <button type="button" className="qty-btn" onClick={() => changeQuantity(item.id, 1)} aria-label={`Tambah ${item.name}`}>
+                          +
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                <div className="cart-summary" style={{ marginTop: '2rem', padding: '1.5rem', background: 'var(--bg-surface-soft)', borderRadius: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Subtotal</span>
+                    <strong>Rp {subtotal.toLocaleString('id-ID')}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Ongkir ({orderInfo.deliveryMethod})</span>
+                    <strong>{shipInfo.finalCost ? `Rp ${shipInfo.finalCost.toLocaleString('id-ID')}` : 'Rp 0'}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', paddingTop: '1rem', borderTop: '2px dashed var(--border-main)' }}>
+                    <span style={{ fontWeight: '700' }}>Total Pembayaran</span>
+                    <strong style={{ fontSize: '1.5rem', color: 'var(--primary)' }}>Rp {grandTotal.toLocaleString('id-ID')}</strong>
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+
+          <motion.div
+            className="checkout-card"
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+          >
+            <h3><UserIcon size={20} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} /> Data Pengiriman</h3>
+
+            {!user ? (
+              <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+                <AlertCircle size={48} style={{ color: 'var(--primary)', marginBottom: '1.5rem' }} />
+                <h4 style={{ marginBottom: '1rem' }}>Login Diperlukan</h4>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Silakan login terlebih dahulu untuk melanjutkan proses pemesanan.</p>
+                <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>Masuk Sekarang</button>
+              </div>
+            ) : (
+              <form onSubmit={submitOrder} className="order-form" style={{ marginTop: '1.5rem' }}>
+                <div className="form-group">
+                  <label>Nama Penerima</label>
+                  <input
+                    type="text"
+                    required
+                    value={orderInfo.customerName || user?.user_metadata?.full_name || ''}
+                    readOnly
+                    style={{
+                      background: 'var(--bg-surface-soft)',
+                      cursor: 'not-allowed',
+                      opacity: 0.8,
+                      border: '1px solid var(--border-main)',
+                      fontWeight: '600'
+                    }}
+                    title="Nama diambil dari profil akun dan tidak dapat diubah"
+                  />
+                  <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
+                    * Nama otomatis diambil dari data pendaftaran akun Anda.
+                  </small>
+                </div>
+
+                <div className="form-group">
+                  <label>Metode Pengambilan</label>
+                  <div className="option-grid">
+                    <label className={`option-card ${orderInfo.deliveryMethod === 'pickup' ? 'active' : ''}`}>
+                      <input type="radio" name="deliveryMethod" value="pickup" checked={orderInfo.deliveryMethod === 'pickup'} onChange={e => setOrderInfo({ ...orderInfo, deliveryMethod: e.target.value })} />
+                      <div className="option-icon-wrap">
+                        <Package size={24} />
+                      </div>
+                      <div className="option-content">
+                        <strong>Ambil di Kedai</strong>
+                        <small>Gratis biaya pengiriman</small>
+                      </div>
+                    </label>
+                    <label className={`option-card ${orderInfo.deliveryMethod === 'delivery' ? 'active' : ''}`}>
+                      <input type="radio" name="deliveryMethod" value="delivery" checked={orderInfo.deliveryMethod === 'delivery'} onChange={e => setOrderInfo({ ...orderInfo, deliveryMethod: e.target.value })} />
+                      <div className="option-icon-wrap">
+                        <Truck size={24} />
+                      </div>
+                      <div className="option-content">
+                        <strong>Kirim ke Alamat</strong>
+                        <small>Otomatis hitung ongkir</small>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <AnimatePresence mode="wait">
+                  {orderInfo.deliveryMethod === 'delivery' ? (
+                    <motion.div
+                      key="delivery"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="form-group"
+                    >
+                      <label>Alamat Pengiriman</label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+                        <button type="button" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', fontSize: '0.85rem' }} onClick={() => setIsAddressModalOpen(true)}>
+                          <MapPin size={16} /> Alamat Tersimpan
+                        </button>
+                        <button type="button" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', fontSize: '0.85rem' }} onClick={useCurrentLocation} disabled={isLocating}>
+                          {isLocating ? '📍 Mencari...' : '📍 Lokasi Saat Ini'}
+                        </button>
+                      </div>
+
+                      {orderInfo.customerAddress ? (
+                        <div className="address-display-table" style={{ background: 'var(--bg-surface-soft)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem' }}>
+                            <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Alamat Terpilih / Terdeteksi</span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 600, lineHeight: 1.5 }}>{orderInfo.customerAddress}</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ padding: '16px', textAlign: 'center', background: 'rgba(225, 29, 72, 0.05)', color: 'var(--primary)', borderRadius: '12px', marginBottom: '16px', border: '1px dashed rgba(225, 29, 72, 0.3)', fontSize: '0.9rem' }}>
+                          Silakan pilih <b>Alamat Tersimpan</b> atau gunakan <b>Lokasi Saat Ini</b> untuk menghitung ongkos kirim.
+                        </div>
+                      )}
+
+                      {shipInfo.status === 'ok' && (
+                        <motion.div
+                          initial={{ scale: 0.95, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="shipping-info-alert"
+                        >
+                          <h5><CheckCircle2 size={18} /> Ongkir Berhasil Dihitung</h5>
+                          <p style={{ marginBottom: '0.5rem' }}>{shipInfo.detail}</p>
+                          {shipInfo.distanceKm && shipInfo.distanceKm > 30 && (
+                            <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#B91C1C', fontWeight: 'bold' }}>
+                              ⚠️ Lokasi terdeteksi cukup jauh. Jika Anda menggunakan PC, lokasi mungkin kurang akurat. Pastikan memilih alamat tersimpan jika ada.
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="pickup"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="form-group"
+                    >
+                      <label>Rencana Tanggal Pengambilan</label>
+                      <input type="date" required value={orderInfo.pickupDate} onChange={e => setOrderInfo({ ...orderInfo, pickupDate: e.target.value })} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="form-group">
+                  <label>Metode Pembayaran</label>
+                  <select value={orderInfo.paymentMethod} onChange={e => setOrderInfo({ ...orderInfo, paymentMethod: e.target.value })}>
+                    <option value="COD">Tunai / COD (Bayar di Tempat)</option>
+                    <option value="Mandiri">Transfer Bank Mandiri</option>
+                    <option value="BSI">Transfer Bank BSI</option>
+                  </select>
+                </div>
+
+                <AnimatePresence>
+                  {orderInfo.paymentMethod !== 'COD' && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="shipping-info-alert"
+                      style={{ background: 'var(--bg-surface-soft)', borderLeft: '4px solid var(--primary)' }}
+                    >
+                      <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--primary)', marginBottom: '0.75rem', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <AlertCircle size={18} /> Tutorial Pembayaran
+                      </h4>
+                      <p style={{
+                        fontSize: '0.95rem',
+                        lineHeight: '1.6',
+                        whiteSpace: 'pre-line',
+                        color: 'var(--text-main)',
+                        fontWeight: '500'
+                      }}>
+                        {PAYMENT_INFO[orderInfo.paymentMethod as keyof typeof PAYMENT_INFO]}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Ringkasan Pesanan (Table) */}
+                <div className="order-summary-table" style={{
+                  marginTop: '2rem',
+                  marginBottom: '2rem',
+                  padding: '1.5rem',
+                  background: 'var(--bg-surface-soft)',
+                  borderRadius: '20px',
+                  border: '1px solid var(--border-main)'
+                }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Package size={18} color="var(--primary)" /> Ringkasan Pesanan
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Nama Penerima</span>
+                      <span style={{ fontWeight: '600' }}>{orderInfo.customerName || '-'}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Metode</span>
+                      <span style={{ fontWeight: '600' }}>{orderInfo.deliveryMethod === 'pickup' ? 'Ambil di Kedai' : 'Kirim ke Alamat'}</span>
+                    </div>
+                    {orderInfo.deliveryMethod === 'delivery' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-main)' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Alamat Pengiriman:</span>
+                        <span style={{ fontWeight: '500', fontSize: '0.85rem', lineHeight: '1.4' }}>{orderInfo.customerAddress || 'Belum diisi'}</span>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border-main)' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Total Pembayaran</span>
+                      <span style={{ fontWeight: '800', color: 'var(--primary)', fontSize: '1.1rem' }}>Rp {grandTotal.toLocaleString('id-ID')}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" className="btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '1.25rem' }}>
+                  <MessageSquare size={20} /> Konfirmasi Pesanan via WhatsApp
+                </button>
+              </form>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Tutorial Modal */}
+      <AnimatePresence>
+        {isTutorialOpen && (
+          <motion.div
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsTutorialOpen(false)}
+            style={{ zIndex: 10000, position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+          >
+            <motion.div
+              className="tutorial-modal"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: 'white', padding: '2rem', borderRadius: '24px', maxWidth: '500px', width: '100%', position: 'relative' }}
+            >
+              <button className="modal-close" onClick={() => setIsTutorialOpen(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer' }}><X size={24} /></button>
+
+              <div className="tutorial-content">
+                <div className="tutorial-header" style={{ marginBottom: '1.5rem' }}>
+                  <h3>Panduan Pemesanan</h3>
+                  <div className="tutorial-progress">
+                    Langkah {tutorialStep + 1} dari 5
+                  </div>
+                </div>
+
+                <div className="tutorial-body">
+                  <AnimatePresence mode="wait">
+                    {tutorialStep === 0 && (
+                      <motion.div key="step0" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
+                        <div className="tutorial-icon"><ShoppingCart size={40} style={{ color: 'var(--primary)' }} /></div>
+                        <h4>1. Pilih Produk</h4>
+                        <p>Pilih produk yang Anda butuhkan di bagian <b>Produk</b>, lalu klik tombol <b>Tambah ke Keranjang</b>. Pastikan Anda sudah login.</p>
+                      </motion.div>
+                    )}
+                    {tutorialStep === 1 && (
+                      <motion.div key="step1" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
+                        <div className="tutorial-icon"><Package size={40} style={{ color: 'var(--primary)' }} /></div>
+                        <h4>2. Cek Keranjang</h4>
+                        <p>Klik ikon keranjang di pojok kanan atas atau gulir ke bawah ke bagian <b>Checkout</b> untuk melihat pesanan Anda.</p>
+                      </motion.div>
+                    )}
+                    {tutorialStep === 2 && (
+                      <motion.div key="step2" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
+                        <div className="tutorial-icon"><MapPin size={40} style={{ color: 'var(--primary)' }} /></div>
+                        <h4>3. Detail Pengiriman</h4>
+                        <p>Pilih metode pengiriman: <b>Ambil di Kedai</b> atau <b>Diantarkan ke Alamat</b>. Jika diantar, atur lokasi Anda agar ongkos kirim otomatis terhitung.</p>
+                      </motion.div>
+                    )}
+                    {tutorialStep === 3 && (
+                      <motion.div key="step3" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
+                        <div className="tutorial-icon"><CheckCircle2 size={40} style={{ color: 'var(--primary)' }} /></div>
+                        <h4>4. Pilih Pembayaran</h4>
+                        <p>Pilih metode pembayaran (COD atau Transfer Bank). Periksa total pesanan Anda, lalu klik <b>Pesan Sekarang</b> untuk mengonfirmasi via WhatsApp Admin.</p>
+                      </motion.div>
+                    )}
+                    {tutorialStep === 4 && (
+                      <motion.div key="step4" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
+                        <div className="tutorial-icon"><Truck size={40} style={{ color: 'var(--primary)' }} /></div>
+                        <h4>5. Lacak Pesanan</h4>
+                        <p>Pantau pesanan Anda di menu <b>Lacak</b>. Notifikasi akan muncul saat pesanan Diproses, Dikirim, hingga Selesai.</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <div className="tutorial-footer" style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between' }}>
+                  <button
+                    className="btn-outline"
+                    onClick={() => setTutorialStep(prev => Math.max(0, prev - 1))}
+                    disabled={tutorialStep === 0}
+                    style={{ opacity: tutorialStep === 0 ? 0.5 : 1, cursor: tutorialStep === 0 ? 'not-allowed' : 'pointer' }}
+                  >
+                    <ChevronLeft size={20} /> Sebelumnya
                   </button>
+                  {tutorialStep < 4 ? (
+                    <button
+                      className="btn-primary"
+                      onClick={() => setTutorialStep(prev => Math.min(4, prev + 1))}
+                    >
+                      Selanjutnya <ChevronRight size={20} />
+                    </button>
+                  ) : (
+                    <button
+                      className="btn-primary"
+                      onClick={() => { setIsTutorialOpen(false); setTutorialStep(0); }}
+                    >
+                      Selesai
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>
-          ))}
+          </motion.div>
+        )}
       </AnimatePresence>
-    </div>
-  )}
-</section>
 
-{/*  Features  */}
-<section className="section features-section" id="features">
-  <div className="section-header">
-    <motion.h2
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-    >
-      Kenapa Memilih Kami?
-    </motion.h2>
-    <div className="underline"></div>
-  </div>
-  <div className="features-grid">
-    {[
-      { title: "Kualitas Terjamin", desc: "Produk frozen food higienis dan ATK bermerek berkualitas tinggi.", icon: <CheckCircle2 size={32} /> },
-      { title: "Harga Bersahabat", desc: "Penawaran harga terbaik untuk eceran maupun kebutuhan kantor.", icon: <Star size={32} /> },
-      { title: "Pengiriman Cepat", desc: "Layanan antar cepat ke alamat Anda untuk wilayah sekitarnya.", icon: <Truck size={32} /> },
-      { title: "Respon Kilat", desc: "Admin siaga membantu pesanan Anda melalui WhatsApp 24 jam.", icon: <MessageSquare size={32} /> }
-    ].map((f, i) => (
-      <motion.div 
-        key={i} 
-        className="feature-card"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: i * 0.1 }}
-      >
-        <div className="feature-icon">{f.icon}</div>
-        <h3>{f.title}</h3>
-        <p>{f.desc}</p>
-      </motion.div>
-    ))}
-  </div>
-</section>
-
-{/*  Testimonials  */}
-<section className="section" id="testimoni" style={{ background: 'var(--bg-main)' }}>
-  <div className="section-header">
-    <h2>Apa Kata Mereka?</h2>
-    <p>Kepuasan pelanggan adalah prioritas utama Hijrah Toko.</p>
-    <div className="underline"></div>
-  </div>
-  <div className="testimoni-grid">
-    <div className="testimoni-list">
-      {reviews.length === 0 && (
-        <div className="testimoni-card">
-          <p>Belum ada ulasan. Jadilah yang pertama memberikan testimoni.</p>
+      {/*  Inbox & Tracking  */}
+      <section className="section" id="inbox" style={{ background: 'var(--bg-surface-soft)' }}>
+        <div className="section-header">
+          <h2>Lacak Pesanan</h2>
+          <p>Pantau status pesanan Anda secara realtime di sini.</p>
+          <div className="underline"></div>
         </div>
-      )}
-      {reviews.map((rev, i) => (
-        <motion.div
-          key={rev.id ?? `${rev.name}-${rev.date}-${i}`}
-          className="testimoni-card"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: i * 0.06 }}
-        >
-          <div style={{ display: 'flex', color: '#FACC15', marginBottom: '0.75rem', gap: '0.25rem' }}>
-            {[...Array(rev.rating || 0)].map((_, j) => <Star key={j} size={16} fill="currentColor" />)}
-          </div>
-          <p style={{ fontStyle: 'italic', marginBottom: '1.25rem' }}>
-            &ldquo;{rev.text}&rdquo;
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div className="user-avatar" style={{ width: '40px', height: '40px' }}>
-              {(rev.name || 'P').charAt(0)}
+
+        <div className="nav-container tracking-shell">
+          <motion.div
+            className="inbox-card active tracking-card"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="tracking-header">
+              <div className="inbox-icon tracking-main-icon">
+                {inbox.icon === '📨' ? <Clock size={24} /> : <CheckCircle2 size={24} />}
+              </div>
+              <div className="tracking-header-copy">
+                <h3>{inbox.title || 'Pesanan Anda'}</h3>
+                <p>{inbox.message || 'Status terbaru pesanan Anda akan muncul di sini.'}</p>
+              </div>
             </div>
-            <div>
-              <strong style={{ display: 'block' }}>{rev.name || 'Pelanggan'}</strong>
-              <small style={{ color: 'var(--text-light)' }}>{rev.date}</small>
-            </div>
-          </div>
-        </motion.div>
-      ))}
-    </div>
 
-    <motion.div
-      className="testimoni-form-card"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-    >
-      <h3>Tulis Ulasan Anda</h3>
-      <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
-        Ulasan hanya bisa dikirim oleh pengguna yang sudah login.
-      </p>
-
-      {!user ? (
-        <div style={{ textAlign: 'center', padding: '1.5rem 0 0.5rem' }}>
-          <AlertCircle size={40} style={{ color: 'var(--primary)', marginBottom: '1rem' }} />
-          <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
-            Silakan login terlebih dahulu untuk mengirim ulasan.
-          </p>
-          <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
-            Login Untuk Ulasan
-          </button>
-        </div>
-      ) : (
-        <form onSubmit={submitReview} className="order-form">
-          <div className="form-group">
-            <label>Nama Pengguna</label>
-            <input type="text" value={reviewDisplayName} disabled />
-          </div>
-
-          <div className="form-group">
-            <label>Rating</label>
-            <div className="star-rating-input" role="radiogroup" aria-label="Rating ulasan">
-              {[1, 2, 3, 4, 5].map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  className={`star ${reviewForm.rating >= value ? 'active' : ''}`}
-                  onClick={() => setReviewForm((prev) => ({ ...prev, rating: value }))}
-                  aria-label={`Beri rating ${value}`}
-                  style={{ background: 'none', border: 'none', padding: 0, color: 'inherit', display: 'flex' }}
-                >
-                  <Star size={30} fill={reviewForm.rating >= value ? 'currentColor' : 'none'} />
+            {!user && (
+              <div className="tracking-login-required">
+                <p>Silakan login untuk melihat status pesanan sesuai akun Anda.</p>
+                <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
+                  Login Sekarang
                 </button>
-              ))}
+              </div>
+            )}
+
+            {user && visibleUserOrders.length > 0 && (
+              <div className="order-history">
+                <h4 className="tracking-section-title">Riwayat Pesanan Anda</h4>
+                <div className="tracking-order-list">
+                  {visibleUserOrders.slice(0, 3).map((order) => (
+                    <div key={order.id} className="tracking-order-row">
+                      <div className="tracking-order-meta">
+                        <div className="tracking-order-head">
+                          <strong>Order #{order.id.toString().slice(-6).toUpperCase()}</strong>
+                          <span className={`tracking-status-badge status-${order.status}`}>
+                            {order.status.toUpperCase()}
+                          </span>
+                        </div>
+                        <span className="tracking-order-subtitle">
+                          {new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} • Rp {order.grand_total.toLocaleString('id-ID')}
+                        </span>
+                      </div>
+                      <button className="btn-primary btn-small tracking-help-btn" onClick={() => window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya ingin bertanya status pesanan saya #${order.id}`)}`, '_blank')}>
+                        Bantuan
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {user && visibleUserOrders.length === 0 && (
+              <div className="tracking-empty-state">
+                <h4>Pesanan tidak tersedia</h4>
+                <p>Akun ini belum memiliki pesanan aktif atau seluruh pesanan telah dibatalkan.</p>
+              </div>
+            )}
+
+            <div className="tracking-search-box">
+              <p>Data ditampilkan khusus untuk akun yang sedang login:</p>
+              <div className="tracking-search-row">
+                <input
+                  type="text"
+                  value={user?.email || 'Silakan login'}
+                  className="tracking-input"
+                  disabled
+                />
+                <button className="btn-primary tracking-search-btn" onClick={() => fetchUserOrders(user?.id)} disabled={!user || isTracking}>
+                  {isTracking ? 'Memuat...' : 'Muat Ulang'}
+                </button>
+              </div>
             </div>
-          </div>
-
-          <div className="form-group">
-            <label>Ulasan</label>
-            <textarea
-              required
-              rows={4}
-              placeholder="Bagikan pengalaman belanja Anda di Hijrah Toko..."
-              value={reviewForm.text}
-              onChange={(e) => setReviewForm((prev) => ({ ...prev, text: e.target.value }))}
-            />
-          </div>
-
-          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-            Kirim Ulasan
-          </button>
-        </form>
-      )}
-    </motion.div>
-  </div>
-</section>
-
-{/*  Checkout  */}
-<section className="section checkout-section" id="checkout">
-  <div className="section-header">
-    <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>Selesaikan Pesanan</motion.h2>
-    <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
-      Lengkapi detail pesanan Anda untuk konfirmasi instan via WhatsApp.
-    </motion.p>
-    <div className="underline"></div>
-  </div>
-
-  <div className="checkout-grid">
-    <motion.div 
-      className="checkout-card"
-      initial={{ opacity: 0, x: -30 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-    >
-      <div className="checkout-card-head">
-        <h3><ShoppingCart size={20} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} /> Keranjang Belanja</h3>
-        {cart.length > 0 && <button className="btn-secondary btn-small" onClick={clearCart}>Bersihkan</button>}
-      </div>
-      
-      {cart.length === 0 ? (
-        <div className="empty-cart" style={{ border: '2px dashed var(--border-main)', padding: '4rem 2rem' }}>
-          <Package size={48} strokeWidth={1} style={{ marginBottom: '1rem', color: 'var(--text-light)' }} />
-          <p>Wah, keranjangmu masih kosong!</p>
-          <a href="#produk" className="btn-primary btn-small" style={{ marginTop: '1rem' }}>Mulai Belanja</a>
+          </motion.div>
         </div>
-      ) : (
-        <div className="cart-items">
-          <AnimatePresence>
-            {cart.map((item: any) => (
-              <motion.div 
-                key={item.id} 
-                className="cart-item"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-              >
-                <div style={{ flex: 1 }}>
-                  <h4>{item.name}</h4>
-                  <p style={{ color: 'var(--primary)', fontWeight: '700' }}>Rp {(item.price * item.qty).toLocaleString('id-ID')}</p>
+      </section>
+
+      {/*  Location Section  */}
+      <section className="section" id="lokasi">
+        <div className="section-header">
+          <h2>Lokasi Toko</h2>
+          <p>Kami berlokasi strategis di Padang Pariaman, siap melayani Anda.</p>
+          <div className="underline"></div>
+        </div>
+        <div className="nav-container">
+          <div className="location-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', overflow: 'hidden', padding: 0 }}>
+            <div style={{ padding: '3rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+                <div className="inbox-icon" style={{ background: 'var(--bg-surface-soft)', color: 'var(--primary)' }}><MapPin size={24} /></div>
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: '800' }}>Padang Pariaman</h3>
+                  <p style={{ color: 'var(--text-muted)' }}>Sumatera Barat, Indonesia</p>
                 </div>
-                <div className="cart-item-actions">
-                  <button type="button" className="qty-btn" onClick={() => changeQuantity(item.id, -1)} aria-label={`Kurangi ${item.name}`}>
-                    -
-                  </button>
-                  <span className="qty-value">{item.qty}</span>
-                  <button type="button" className="qty-btn" onClick={() => changeQuantity(item.id, 1)} aria-label={`Tambah ${item.name}`}>
-                    +
-                  </button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                <div>
+                  <h4 style={{ fontSize: '0.9rem', textTransform: 'uppercase', color: 'var(--text-light)', marginBottom: '0.5rem' }}>Alamat</h4>
+                  <p style={{ fontWeight: '600' }}>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik.</p>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          <div className="cart-summary" style={{ marginTop: '2rem', padding: '1.5rem', background: 'var(--bg-surface-soft)', borderRadius: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Subtotal</span>
-              <strong>Rp {subtotal.toLocaleString('id-ID')}</strong>
+                <div>
+                  <h4 style={{ fontSize: '0.9rem', textTransform: 'uppercase', color: 'var(--text-light)', marginBottom: '0.5rem' }}>Jam Buka</h4>
+                  <p style={{ fontWeight: '600' }}>Senin - Minggu: 08:00 - 21:00 WIB</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <a
+                  href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5940091,100.2129566,17z/data=!3m1!4b1!4m6!3m5!1s0x2fd4e1d5048135eb:0xdc1dba685f9fa4f4!8m2!3d-0.5940091!4d100.2129566!16s%2Fg%2F11sddqc7n9"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary"
+                  style={{ flex: 1, justifyContent: 'center' }}
+                >
+                  <MapPin size={18} /> Buka di Google Maps
+                </a>
+                <button
+                  onClick={() => {
+                    const iframe = document.querySelector('iframe[title="Map Hijrah Toko"]') as HTMLIFrameElement;
+                    if (iframe) {
+                      iframe.src = iframe.src;
+                    }
+                  }}
+                  className="btn-secondary"
+                  style={{ padding: '1rem', minWidth: '50px' }}
+                  title="Pusatkan Peta"
+                >
+                  <MapPin size={18} />
+                </button>
+              </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>Ongkir ({orderInfo.deliveryMethod})</span>
-              <strong>{shipInfo.finalCost ? `Rp ${shipInfo.finalCost.toLocaleString('id-ID')}` : 'Rp 0'}</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', paddingTop: '1rem', borderTop: '2px dashed var(--border-main)' }}>
-              <span style={{ fontWeight: '700' }}>Total Pembayaran</span>
-              <strong style={{ fontSize: '1.5rem', color: 'var(--primary)' }}>Rp {grandTotal.toLocaleString('id-ID')}</strong>
+            <div style={{ minHeight: '400px', position: 'relative' }}>
+              <iframe
+                title="Map Hijrah Toko"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.2882195026853!2d100.21038167425103!3d-0.5940091352848971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4e1d5048135eb%3A0xdc1dba685f9fa4f4!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714578000000!5m2!1sid!2sid"
+                width="100%" height="100%" style={{ border: 0, borderRadius: '18px' }} allowFullScreen loading="lazy"
+              ></iframe>
             </div>
           </div>
         </div>
-      )}
-    </motion.div>
+      </section>
 
-    <motion.div 
-      className="checkout-card"
-      initial={{ opacity: 0, x: 30 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-    >
-      <h3><UserIcon size={20} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} /> Data Pengiriman</h3>
-      
-      {!user ? (
-        <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-          <AlertCircle size={48} style={{ color: 'var(--primary)', marginBottom: '1.5rem' }} />
-          <h4 style={{ marginBottom: '1rem' }}>Login Diperlukan</h4>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Silakan login terlebih dahulu untuk melanjutkan proses pemesanan.</p>
-          <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>Masuk Sekarang</button>
-        </div>
-      ) : (
-        <form onSubmit={submitOrder} className="order-form" style={{ marginTop: '1.5rem' }}>
-          <div className="form-group">
-            <label>Nama Penerima</label>
-            <input 
-              type="text" 
-              required 
-              value={orderInfo.customerName || user?.user_metadata?.full_name || ''} 
-              readOnly
-              style={{ 
-                background: 'var(--bg-surface-soft)', 
-                cursor: 'not-allowed', 
-                opacity: 0.8,
-                border: '1px solid var(--border-main)',
-                fontWeight: '600'
-              }}
-              title="Nama diambil dari profil akun dan tidak dapat diubah"
-            />
-            <small style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>
-              * Nama otomatis diambil dari data pendaftaran akun Anda.
-            </small>
-          </div>
-          
-          <div className="form-group">
-            <label>Metode Pengambilan</label>
-            <div className="option-grid">
-              <label className={`option-card ${orderInfo.deliveryMethod === 'pickup' ? 'active' : ''}`}>
-                <input type="radio" name="deliveryMethod" value="pickup" checked={orderInfo.deliveryMethod === 'pickup'} onChange={e => setOrderInfo({...orderInfo, deliveryMethod: e.target.value})} />
-                <div className="option-icon-wrap">
-                  <Package size={24} />
-                </div>
-                <div className="option-content">
-                  <strong>Ambil di Kedai</strong>
-                  <small>Gratis biaya pengiriman</small>
-                </div>
-              </label>
-              <label className={`option-card ${orderInfo.deliveryMethod === 'delivery' ? 'active' : ''}`}>
-                <input type="radio" name="deliveryMethod" value="delivery" checked={orderInfo.deliveryMethod === 'delivery'} onChange={e => setOrderInfo({...orderInfo, deliveryMethod: e.target.value})} />
-                <div className="option-icon-wrap">
-                  <Truck size={24} />
-                </div>
-                <div className="option-content">
-                  <strong>Kirim ke Alamat</strong>
-                  <small>Otomatis hitung ongkir</small>
-                </div>
-              </label>
+      {/*  Footer  */}
+      <footer className="footer" id="kontak" style={{ background: 'var(--accent)', color: 'var(--bg-main)', padding: '6rem 2rem 3rem' }}>
+        <div className="nav-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '4rem' }}>
+          <div className="footer-col">
+            <div className="nav-logo" style={{ marginBottom: '1.5rem' }}>
+              <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" className="brand-logo" />
+              <span className="brand-text" style={{ color: 'var(--bg-main)' }}>Hijrah<span>Toko</span></span>
             </div>
+            <p style={{ color: 'var(--text-light)', lineHeight: '1.8' }}>
+              Hijrah Toko adalah pusat penyedia frozen food premium dan alat tulis kantor terlengkap. Kami berkomitmen memberikan kualitas terbaik dan layanan cepat untuk Anda.
+            </p>
           </div>
 
-          <AnimatePresence mode="wait">
-            {orderInfo.deliveryMethod === 'delivery' ? (
-              <motion.div 
-                key="delivery"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="form-group"
-              >
-                <label>Alamat Pengiriman</label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
-                  <button type="button" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', fontSize: '0.85rem' }} onClick={() => setIsAddressModalOpen(true)}>
-                    <MapPin size={16} /> Alamat Tersimpan
-                  </button>
-                  <button type="button" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.75rem', fontSize: '0.85rem' }} onClick={useCurrentLocation} disabled={isLocating}>
-                    {isLocating ? '📍 Mencari...' : '📍 Lokasi Saat Ini'}
-                  </button>
+          <div className="footer-col">
+            <h4 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '2rem' }}>Tautan Cepat</h4>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <li><a href="#home" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Beranda</a></li>
+              <li><a href="#produk" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Katalog Produk</a></li>
+              <li><a href="#testimoni" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Testimoni</a></li>
+              <li><a href="#lokasi" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Lokasi Kami</a></li>
+            </ul>
+          </div>
+
+          <div className="footer-col">
+            <h4 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '2rem' }}>Hubungi Kami</h4>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <li style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)' }}>
+                <Phone size={20} className="text-primary" />
+                <span>+62 852-6396-5031</span>
+              </li>
+              <li style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)' }}>
+                <MessageSquare size={20} className="text-primary" />
+                <span>hijrahtoko@gmail.com</span>
+              </li>
+              <li style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)' }}>
+                <MapPin size={20} className="text-primary" />
+                <span>Padang Pariaman, Sumatera Barat</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div style={{ maxWidth: '1280px', margin: '4rem auto 0', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', color: 'var(--text-light)', fontSize: '0.9rem' }}>
+          <p>&copy; {new Date().getFullYear()} Hijrah Toko. Seluruh hak cipta dilindungi. Built with ❤️ for your home and office.</p>
+        </div>
+      </footer>
+
+      {/*  Modals  */}
+      <AnimatePresence>
+        {authModal.isOpen && (
+          <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+            <motion.div
+              className="checkout-card"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              style={{ maxWidth: '480px', width: '100%', padding: '3rem', position: 'relative' }}
+            >
+              <button onClick={() => setAuthModal({ ...authModal, isOpen: false })} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)' }}>
+                <X size={24} />
+              </button>
+
+              <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+                <div style={{ width: '64px', height: '64px', background: 'var(--primary-light)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: 'var(--primary)' }}>
+                  <UserIcon size={32} />
                 </div>
-                
-                {orderInfo.customerAddress ? (
-                  <div className="address-display-table" style={{ background: 'var(--bg-surface-soft)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem' }}>
-                      <span style={{ color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Alamat Terpilih / Terdeteksi</span>
-                      <span style={{ color: 'var(--text-main)', fontWeight: 600, lineHeight: 1.5 }}>{orderInfo.customerAddress}</span>
+                <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '0.5rem' }}>{authModal.mode === 'login' ? 'Masuk' : 'Buat Akun'}</h2>
+                <p style={{ color: 'var(--text-muted)' }}>{authModal.mode === 'login' ? 'Senang melihat Anda kembali!' : 'Mulai pengalaman belanjamu sekarang.'}</p>
+              </div>
+
+              <form onSubmit={handleAuth} className="order-form">
+                {authModal.mode === 'register' && (
+                  <>
+                    <div className="form-group">
+                      <label>Nama Lengkap</label>
+                      <input type="text" required value={authForm.name} onChange={e => setAuthForm({ ...authForm, name: e.target.value })} placeholder="Nama Anda" />
+                    </div>
+                    <div className="form-group">
+                      <label>Nomor WhatsApp</label>
+                      <input
+                        type="tel"
+                        required
+                        value={authForm.phone}
+                        onChange={e => setAuthForm({ ...authForm, phone: e.target.value })}
+                        placeholder="Contoh: 08123456789"
+                        pattern="[0-9]{10,13}"
+                        title="Masukkan nomor WA yang valid (10-13 digit)"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Alamat Lengkap</label>
+                      <textarea
+                        required
+                        rows={3}
+                        value={authForm.address}
+                        onChange={e => setAuthForm({ ...authForm, address: e.target.value })}
+                        placeholder="Jl. Contoh No. 1, RT/RW, Kelurahan, Kecamatan..."
+                        style={{ resize: 'none' }}
+                      />
+                    </div>
+                  </>
+                )}
+                <div className="form-group">
+                  <label>Email</label>
+                  <input type="email" required value={authForm.email} onChange={e => setAuthForm({ ...authForm, email: e.target.value })} placeholder="email@contoh.com" />
+                </div>
+                <div className="form-group">
+                  <label>Password</label>
+                  <input type="password" required value={authForm.password} onChange={e => setAuthForm({ ...authForm, password: e.target.value })} placeholder="••••••••" />
+                </div>
+                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '1.1rem' }} disabled={authLoading}>
+                  {authLoading ? 'Memproses...' : (authModal.mode === 'login' ? 'Masuk' : 'Daftar Sekarang')}
+                </button>
+              </form>
+
+              <div style={{ textAlign: 'center', marginTop: '2rem', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+                {authModal.mode === 'login' ? (
+                  <p>Belum punya akun? <button onClick={() => setAuthModal({ ...authModal, mode: 'register' })} style={{ color: 'var(--primary)', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', padding: 0, marginLeft: '0.5rem' }}>Daftar di sini</button></p>
+                ) : (
+                  <p>Sudah punya akun? <button onClick={() => setAuthModal({ ...authModal, mode: 'login' })} style={{ color: 'var(--primary)', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', padding: 0, marginLeft: '0.5rem' }}>Login di sini</button></p>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Product Detail Modal */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+            <motion.div
+              className="product-card modal-grid"
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+            >
+              <div className="modal-img-container">
+                <Image
+                  src={selectedProduct.img}
+                  alt={selectedProduct.name}
+                  fill
+                  unoptimized={typeof selectedProduct.img === 'string' && selectedProduct.img.startsWith('/')}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  style={{ objectFit: 'cover' }}
+                />
+                <button onClick={() => setSelectedProduct(null)} style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', background: 'white', border: 'none', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)', cursor: 'pointer' }}>
+                  <X size={20} color="#0f172a" />
+                </button>
+              </div>
+              <div className="modal-body-padding">
+                <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                  <span className={`card-badge badge-${selectedProduct.category}`} style={{ position: 'static' }}>{selectedProduct.category}</span>
+                  <span className="sold-label" style={{ background: 'var(--bg-surface-soft)', padding: '0.4rem 0.8rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.75rem' }}>⭐ 4.9 Rating</span>
+                </div>
+                <h2 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.03em' }}>{selectedProduct.name}</h2>
+                <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', lineHeight: '1.8', marginBottom: '2.5rem' }}>{selectedProduct.desc}</p>
+
+                <div style={{ marginTop: 'auto' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                    <div>
+                      <span style={{ fontSize: '0.9rem', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem' }}>Harga Spesial</span>
+                      <strong style={{ fontSize: '2rem', color: 'var(--primary)', fontWeight: '800' }}>Rp {selectedProduct.price.toLocaleString('id-ID')}</strong>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '0.9rem', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem' }}>Status Stok</span>
+                      <strong style={{
+                        color: (selectedProduct.stock || 0) > 0 ? '#059669' : '#ef4444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        justifyContent: 'flex-end'
+                      }}>
+                        {(selectedProduct.stock || 0) > 0 ? (
+                          <><CheckCircle2 size={16} /> {selectedProduct.stock} Tersisa</>
+                        ) : (
+                          <>Stok Habis</>
+                        )}
+                      </strong>
                     </div>
                   </div>
-                ) : (
-                  <div style={{ padding: '16px', textAlign: 'center', background: 'rgba(225, 29, 72, 0.05)', color: 'var(--primary)', borderRadius: '12px', marginBottom: '16px', border: '1px dashed rgba(225, 29, 72, 0.3)', fontSize: '0.9rem' }}>
-                    Silakan pilih <b>Alamat Tersimpan</b> atau gunakan <b>Lokasi Saat Ini</b> untuk menghitung ongkos kirim.
+                  <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button
+                      className="btn-primary"
+                      style={{
+                        flex: 2,
+                        justifyContent: 'center',
+                        padding: '1.25rem',
+                        opacity: (selectedProduct.stock || 0) > 0 ? 1 : 0.6,
+                        cursor: (selectedProduct.stock || 0) > 0 ? 'pointer' : 'not-allowed'
+                      }}
+                      onClick={() => { if ((selectedProduct.stock || 0) > 0) { addToCart(selectedProduct.id); setSelectedProduct(null); } }}
+                      disabled={(selectedProduct.stock || 0) <= 0}
+                    >
+                      <ShoppingCart size={20} /> {(selectedProduct.stock || 0) > 0 ? 'Tambah ke Keranjang' : 'Stok Habis'}
+                    </button>
+                    <button className="btn-secondary" style={{ flex: 1, justifyContent: 'center' }} onClick={() => window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya tertarik dengan ${selectedProduct.name}`)}`, '_blank')}>
+                      <MessageSquare size={20} /> Chat
+                    </button>
                   </div>
-                )}
-
-                {shipInfo.status === 'ok' && (
-                  <motion.div 
-                    initial={{ scale: 0.95, opacity: 0 }} 
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="shipping-info-alert"
-                  >
-                    <h5><CheckCircle2 size={18} /> Ongkir Berhasil Dihitung</h5>
-                    <p style={{ marginBottom: '0.5rem' }}>{shipInfo.detail}</p>
-                    {shipInfo.distanceKm && shipInfo.distanceKm > 30 && (
-                      <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#B91C1C', fontWeight: 'bold' }}>
-                        ⚠️ Lokasi terdeteksi cukup jauh. Jika Anda menggunakan PC, lokasi mungkin kurang akurat. Pastikan memilih alamat tersimpan jika ada.
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </motion.div>
-            ) : (
-              <motion.div 
-                key="pickup"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="form-group"
-              >
-                <label>Rencana Tanggal Pengambilan</label>
-                <input type="date" required value={orderInfo.pickupDate} onChange={e => setOrderInfo({...orderInfo, pickupDate: e.target.value})} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="form-group">
-            <label>Metode Pembayaran</label>
-            <select value={orderInfo.paymentMethod} onChange={e => setOrderInfo({...orderInfo, paymentMethod: e.target.value})}>
-              <option value="COD">Tunai / COD (Bayar di Tempat)</option>
-              <option value="Mandiri">Transfer Bank Mandiri</option>
-              <option value="BSI">Transfer Bank BSI</option>
-            </select>
-          </div>
-
-          <AnimatePresence>
-            {orderInfo.paymentMethod !== 'COD' && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="shipping-info-alert"
-                style={{ background: 'var(--bg-surface-soft)', borderLeft: '4px solid var(--primary)' }}
-              >
-                <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--primary)', marginBottom: '0.75rem', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <AlertCircle size={18} /> Tutorial Pembayaran
-                </h4>
-                <p style={{ 
-                  fontSize: '0.95rem', 
-                  lineHeight: '1.6', 
-                  whiteSpace: 'pre-line',
-                  color: 'var(--text-main)',
-                  fontWeight: '500'
-                }}>
-                  {PAYMENT_INFO[orderInfo.paymentMethod as keyof typeof PAYMENT_INFO]}
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Ringkasan Pesanan (Table) */}
-          <div className="order-summary-table" style={{ 
-            marginTop: '2rem', 
-            marginBottom: '2rem', 
-            padding: '1.5rem', 
-            background: 'var(--bg-surface-soft)', 
-            borderRadius: '20px',
-            border: '1px solid var(--border-main)'
-          }}>
-            <h4 style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Package size={18} color="var(--primary)" /> Ringkasan Pesanan
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.9rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Nama Penerima</span>
-                <span style={{ fontWeight: '600' }}>{orderInfo.customerName || '-'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Metode</span>
-                <span style={{ fontWeight: '600' }}>{orderInfo.deliveryMethod === 'pickup' ? 'Ambil di Kedai' : 'Kirim ke Alamat'}</span>
-              </div>
-              {orderInfo.deliveryMethod === 'delivery' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', paddingTop: '0.5rem', borderTop: '1px solid var(--border-main)' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Alamat Pengiriman:</span>
-                  <span style={{ fontWeight: '500', fontSize: '0.85rem', lineHeight: '1.4' }}>{orderInfo.customerAddress || 'Belum diisi'}</span>
                 </div>
-              )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid var(--border-main)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Total Pembayaran</span>
-                <span style={{ fontWeight: '800', color: 'var(--primary)', fontSize: '1.1rem' }}>Rp {grandTotal.toLocaleString('id-ID')}</span>
               </div>
-            </div>
+            </motion.div>
           </div>
+        )}
+      </AnimatePresence>
 
-          <button type="submit" className="btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '1.25rem' }}>
-            <MessageSquare size={20} /> Konfirmasi Pesanan via WhatsApp
-          </button>
-        </form>
+      {/*  Address Selector Modal  */}
+      {isAddressModalOpen && user && (
+        <AddressSelector
+          userPhone={user.user_metadata?.phone || ''}
+          onSelect={(address) => {
+            setOrderInfo(prev => ({
+              ...prev,
+              customerAddress: address.full_address,
+              customerLatitude: address.latitude?.toString() || '',
+              customerLongitude: address.longitude?.toString() || '',
+              customerMapsLink: address.maps_link || `https://www.google.com/maps?q=${address.latitude},${address.longitude}`
+            }));
+          }}
+          onClose={() => setIsAddressModalOpen(false)}
+          onAddNew={() => {
+            setIsAddressModalOpen(false);
+            setShowProfileManager(true);
+          }}
+        />
       )}
-    </motion.div>
-  </div>
-</section>
 
-{/* Tutorial Modal */}
-<AnimatePresence>
-  {isTutorialOpen && (
-    <motion.div 
-      className="modal-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={() => setIsTutorialOpen(false)}
-      style={{ zIndex: 10000, position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
-    >
-      <motion.div 
-        className="tutorial-modal"
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        onClick={e => e.stopPropagation()}
-        style={{ background: 'white', padding: '2rem', borderRadius: '24px', maxWidth: '500px', width: '100%', position: 'relative' }}
-      >
-        <button className="modal-close" onClick={() => setIsTutorialOpen(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer' }}><X size={24} /></button>
-        
-        <div className="tutorial-content">
-          <div className="tutorial-header" style={{ marginBottom: '1.5rem' }}>
-            <h3>Panduan Pemesanan</h3>
-            <div className="tutorial-progress">
-              Langkah {tutorialStep + 1} dari 5
-            </div>
-          </div>
-
-          <div className="tutorial-body">
-            <AnimatePresence mode="wait">
-              {tutorialStep === 0 && (
-                <motion.div key="step0" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
-                  <div className="tutorial-icon"><ShoppingCart size={40} style={{ color: 'var(--primary)' }} /></div>
-                  <h4>1. Pilih Produk</h4>
-                  <p>Pilih produk yang Anda butuhkan di bagian <b>Produk</b>, lalu klik tombol <b>Tambah ke Keranjang</b>. Pastikan Anda sudah login.</p>
-                </motion.div>
-              )}
-              {tutorialStep === 1 && (
-                <motion.div key="step1" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
-                  <div className="tutorial-icon"><Package size={40} style={{ color: 'var(--primary)' }} /></div>
-                  <h4>2. Cek Keranjang</h4>
-                  <p>Klik ikon keranjang di pojok kanan atas atau gulir ke bawah ke bagian <b>Checkout</b> untuk melihat pesanan Anda.</p>
-                </motion.div>
-              )}
-              {tutorialStep === 2 && (
-                <motion.div key="step2" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
-                  <div className="tutorial-icon"><MapPin size={40} style={{ color: 'var(--primary)' }} /></div>
-                  <h4>3. Detail Pengiriman</h4>
-                  <p>Pilih metode pengiriman: <b>Ambil di Kedai</b> atau <b>Diantarkan ke Alamat</b>. Jika diantar, atur lokasi Anda agar ongkos kirim otomatis terhitung.</p>
-                </motion.div>
-              )}
-              {tutorialStep === 3 && (
-                <motion.div key="step3" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
-                  <div className="tutorial-icon"><CheckCircle2 size={40} style={{ color: 'var(--primary)' }} /></div>
-                  <h4>4. Pilih Pembayaran</h4>
-                  <p>Pilih metode pembayaran (COD atau Transfer Bank). Periksa total pesanan Anda, lalu klik <b>Pesan Sekarang</b> untuk mengonfirmasi via WhatsApp Admin.</p>
-                </motion.div>
-              )}
-              {tutorialStep === 4 && (
-                <motion.div key="step4" initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -30, opacity: 0 }} transition={{ duration: 0.3 }} className="tutorial-step">
-                  <div className="tutorial-icon"><Truck size={40} style={{ color: 'var(--primary)' }} /></div>
-                  <h4>5. Lacak Pesanan</h4>
-                  <p>Pantau pesanan Anda di menu <b>Lacak</b>. Notifikasi akan muncul saat pesanan Diproses, Dikirim, hingga Selesai.</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <div className="tutorial-footer" style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between' }}>
-            <button 
-              className="btn-outline" 
-              onClick={() => setTutorialStep(prev => Math.max(0, prev - 1))}
-              disabled={tutorialStep === 0}
-              style={{ opacity: tutorialStep === 0 ? 0.5 : 1, cursor: tutorialStep === 0 ? 'not-allowed' : 'pointer' }}
-            >
-              <ChevronLeft size={20} /> Sebelumnya
+      {/*  Profile / Address Manager Modal  */}
+      {showProfileManager && user && (
+        <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <motion.div
+            className="checkout-card"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            style={{ maxWidth: '800px', width: '100%', padding: '2rem', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}
+          >
+            <button onClick={() => setShowProfileManager(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer' }}>
+              <X size={24} />
             </button>
-            {tutorialStep < 4 ? (
-              <button 
-                className="btn-primary" 
-                onClick={() => setTutorialStep(prev => Math.min(4, prev + 1))}
-              >
-                Selanjutnya <ChevronRight size={20} />
-              </button>
-            ) : (
-              <button 
-                className="btn-primary" 
-                onClick={() => { setIsTutorialOpen(false); setTutorialStep(0); }}
-              >
-                Selesai
-              </button>
-            )}
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
-
-{/*  Inbox & Tracking  */}
-<section className="section" id="inbox" style={{ background: 'var(--bg-surface-soft)' }}>
-  <div className="section-header">
-    <h2>Lacak Pesanan</h2>
-    <p>Pantau status pesanan Anda secara realtime di sini.</p>
-    <div className="underline"></div>
-  </div>
-  
-  <div className="nav-container tracking-shell">
-    <motion.div 
-      className="inbox-card active tracking-card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-    >
-      <div className="tracking-header">
-        <div className="inbox-icon tracking-main-icon">
-          {inbox.icon === '📨' ? <Clock size={24} /> : <CheckCircle2 size={24} />}
-        </div>
-        <div className="tracking-header-copy">
-          <h3>{inbox.title || 'Pesanan Anda'}</h3>
-          <p>{inbox.message || 'Status terbaru pesanan Anda akan muncul di sini.'}</p>
-        </div>
-      </div>
-
-      {!user && (
-        <div className="tracking-login-required">
-          <p>Silakan login untuk melihat status pesanan sesuai akun Anda.</p>
-          <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
-            Login Sekarang
-          </button>
+            <AddressManager
+              userId={user.id}
+              userPhone={user.user_metadata?.phone || user.phone || ''}
+            />
+          </motion.div>
         </div>
       )}
-
-      {user && visibleUserOrders.length > 0 && (
-        <div className="order-history">
-          <h4 className="tracking-section-title">Riwayat Pesanan Anda</h4>
-          <div className="tracking-order-list">
-            {visibleUserOrders.slice(0, 3).map((order) => (
-              <div key={order.id} className="tracking-order-row">
-                <div className="tracking-order-meta">
-                  <div className="tracking-order-head">
-                    <strong>Order #{order.id.toString().slice(-6).toUpperCase()}</strong>
-                    <span className={`tracking-status-badge status-${order.status}`}>
-                      {order.status.toUpperCase()}
-                    </span>
-                  </div>
-                  <span className="tracking-order-subtitle">
-                    {new Date(order.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} • Rp {order.grand_total.toLocaleString('id-ID')}
-                  </span>
-                </div>
-                <button className="btn-primary btn-small tracking-help-btn" onClick={() => window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya ingin bertanya status pesanan saya #${order.id}`)}`, '_blank')}>
-                   Bantuan
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {user && visibleUserOrders.length === 0 && (
-        <div className="tracking-empty-state">
-          <h4>Pesanan tidak tersedia</h4>
-          <p>Akun ini belum memiliki pesanan aktif atau seluruh pesanan telah dibatalkan.</p>
-        </div>
-      )}
-
-      <div className="tracking-search-box">
-        <p>Data ditampilkan khusus untuk akun yang sedang login:</p>
-        <div className="tracking-search-row">
-          <input 
-            type="text" 
-            value={user?.email || 'Silakan login'}
-            className="tracking-input"
-            disabled
-          />
-          <button className="btn-primary tracking-search-btn" onClick={() => fetchUserOrders(user?.id)} disabled={!user || isTracking}>
-            {isTracking ? 'Memuat...' : 'Muat Ulang'}
-          </button>
-        </div>
-      </div>
-    </motion.div>
-  </div>
-</section>
-
-{/*  Location Section  */}
-<section className="section" id="lokasi">
-  <div className="section-header">
-    <h2>Lokasi Toko</h2>
-    <p>Kami berlokasi strategis di Padang Pariaman, siap melayani Anda.</p>
-    <div className="underline"></div>
-  </div>
-  <div className="nav-container">
-    <div className="location-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', overflow: 'hidden', padding: 0 }}>
-       <div style={{ padding: '3rem' }}>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-            <div className="inbox-icon" style={{ background: 'var(--bg-surface-soft)', color: 'var(--primary)' }}><MapPin size={24} /></div>
-            <div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '800' }}>Padang Pariaman</h3>
-              <p style={{ color: 'var(--text-muted)' }}>Sumatera Barat, Indonesia</p>
-            </div>
-         </div>
-         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2.5rem' }}>
-            <div>
-              <h4 style={{ fontSize: '0.9rem', textTransform: 'uppercase', color: 'var(--text-light)', marginBottom: '0.5rem' }}>Alamat</h4>
-              <p style={{ fontWeight: '600' }}>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik.</p>
-            </div>
-            <div>
-              <h4 style={{ fontSize: '0.9rem', textTransform: 'uppercase', color: 'var(--text-light)', marginBottom: '0.5rem' }}>Jam Buka</h4>
-              <p style={{ fontWeight: '600' }}>Senin - Minggu: 08:00 - 21:00 WIB</p>
-            </div>
-         </div>
-         <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <a 
-              href="https://www.google.com/maps/place/Hijrah+TOKO/@-0.5940091,100.2129566,17z/data=!3m1!4b1!4m6!3m5!1s0x2fd4e1d5048135eb:0xdc1dba685f9fa4f4!8m2!3d-0.5940091!4d100.2129566!16s%2Fg%2F11sddqc7n9" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="btn-primary" 
-              style={{ flex: 1, justifyContent: 'center' }}
-            >
-              <MapPin size={18} /> Buka di Google Maps
-            </a>
-            <button 
-              onClick={() => {
-                const iframe = document.querySelector('iframe[title="Map Hijrah Toko"]') as HTMLIFrameElement;
-                if (iframe) {
-                  iframe.src = iframe.src;
-                }
-              }}
-              className="btn-secondary"
-              style={{ padding: '1rem', minWidth: '50px' }}
-              title="Pusatkan Peta"
-            >
-              <MapPin size={18} />
-            </button>
-         </div>
-       </div>
-       <div style={{ minHeight: '400px', position: 'relative' }}>
-         <iframe 
-          title="Map Hijrah Toko"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.2882195026853!2d100.21038167425103!3d-0.5940091352848971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4e1d5048135eb%3A0xdc1dba685f9fa4f4!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714578000000!5m2!1sid!2sid" 
-          width="100%" height="100%" style={{ border: 0, borderRadius: '18px' }} allowFullScreen loading="lazy"
-         ></iframe>
-       </div>
-    </div>
-  </div>
-</section>
-
-{/*  Footer  */}
-<footer className="footer" id="kontak" style={{ background: 'var(--accent)', color: 'var(--bg-main)', padding: '6rem 2rem 3rem' }}>
-  <div className="nav-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '4rem' }}>
-    <div className="footer-col">
-      <div className="nav-logo" style={{ marginBottom: '1.5rem' }}>
-        <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" className="brand-logo" />
-        <span className="brand-text" style={{ color: 'var(--bg-main)' }}>Hijrah<span>Toko</span></span>
-      </div>
-      <p style={{ color: 'var(--text-light)', lineHeight: '1.8' }}>
-        Hijrah Toko adalah pusat penyedia frozen food premium dan alat tulis kantor terlengkap. Kami berkomitmen memberikan kualitas terbaik dan layanan cepat untuk Anda.
-      </p>
-    </div>
-    
-    <div className="footer-col">
-      <h4 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '2rem' }}>Tautan Cepat</h4>
-      <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <li><a href="#home" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Beranda</a></li>
-        <li><a href="#produk" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Katalog Produk</a></li>
-        <li><a href="#testimoni" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Testimoni</a></li>
-        <li><a href="#lokasi" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Lokasi Kami</a></li>
-      </ul>
-    </div>
-    
-    <div className="footer-col">
-      <h4 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '2rem' }}>Hubungi Kami</h4>
-      <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        <li style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)' }}>
-          <Phone size={20} className="text-primary" />
-          <span>+62 852-6396-5031</span>
-        </li>
-        <li style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)' }}>
-          <MessageSquare size={20} className="text-primary" />
-          <span>hijrahtoko@gmail.com</span>
-        </li>
-        <li style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)' }}>
-          <MapPin size={20} className="text-primary" />
-          <span>Padang Pariaman, Sumatera Barat</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-  
-  <div style={{ maxWidth: '1280px', margin: '4rem auto 0', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', color: 'var(--text-light)', fontSize: '0.9rem' }}>
-    <p>&copy; {new Date().getFullYear()} Hijrah Toko. Seluruh hak cipta dilindungi. Built with ❤️ for your home and office.</p>
-  </div>
-</footer>
-
-{/*  Modals  */}
-<AnimatePresence>
-  {authModal.isOpen && (
-    <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <motion.div 
-        className="checkout-card"
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        style={{ maxWidth: '480px', width: '100%', padding: '3rem', position: 'relative' }}
-      >
-        <button onClick={() => setAuthModal({ ...authModal, isOpen: false })} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)' }}>
-          <X size={24} />
-        </button>
-        
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <div style={{ width: '64px', height: '64px', background: 'var(--primary-light)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: 'var(--primary)' }}>
-            <UserIcon size={32} />
-          </div>
-          <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '0.5rem' }}>{authModal.mode === 'login' ? 'Masuk' : 'Buat Akun'}</h2>
-          <p style={{ color: 'var(--text-muted)' }}>{authModal.mode === 'login' ? 'Senang melihat Anda kembali!' : 'Mulai pengalaman belanjamu sekarang.'}</p>
-        </div>
-
-        <form onSubmit={handleAuth} className="order-form">
-          {authModal.mode === 'register' && (
-            <>
-            <div className="form-group">
-              <label>Nama Lengkap</label>
-              <input type="text" required value={authForm.name} onChange={e => setAuthForm({...authForm, name: e.target.value})} placeholder="Nama Anda" />
-            </div>
-            <div className="form-group">
-              <label>Nomor WhatsApp</label>
-              <input 
-                type="tel" 
-                required 
-                value={authForm.phone} 
-                onChange={e => setAuthForm({...authForm, phone: e.target.value})} 
-                placeholder="Contoh: 08123456789"
-                pattern="[0-9]{10,13}"
-                title="Masukkan nomor WA yang valid (10-13 digit)"
-              />
-            </div>
-            <div className="form-group">
-              <label>Alamat Lengkap</label>
-              <textarea 
-                required 
-                rows={3}
-                value={authForm.address} 
-                onChange={e => setAuthForm({...authForm, address: e.target.value})} 
-                placeholder="Jl. Contoh No. 1, RT/RW, Kelurahan, Kecamatan..."
-                style={{ resize: 'none' }}
-              />
-            </div>
-            </>
-          )}
-          <div className="form-group">
-            <label>Email</label>
-            <input type="email" required value={authForm.email} onChange={e => setAuthForm({...authForm, email: e.target.value})} placeholder="email@contoh.com" />
-          </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input type="password" required value={authForm.password} onChange={e => setAuthForm({...authForm, password: e.target.value})} placeholder="••••••••" />
-          </div>
-          <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '1.1rem' }} disabled={authLoading}>
-            {authLoading ? 'Memproses...' : (authModal.mode === 'login' ? 'Masuk' : 'Daftar Sekarang')}
-          </button>
-        </form>
-        
-        <div style={{ textAlign: 'center', marginTop: '2rem', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-          {authModal.mode === 'login' ? (
-            <p>Belum punya akun? <button onClick={() => setAuthModal({...authModal, mode: 'register'})} style={{ color: 'var(--primary)', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', padding: 0, marginLeft: '0.5rem' }}>Daftar di sini</button></p>
-          ) : (
-            <p>Sudah punya akun? <button onClick={() => setAuthModal({...authModal, mode: 'login'})} style={{ color: 'var(--primary)', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', padding: 0, marginLeft: '0.5rem' }}>Login di sini</button></p>
-          )}
-        </div>
-      </motion.div>
-    </div>
-  )}
-</AnimatePresence>
-
-{/* Product Detail Modal */}
-<AnimatePresence>
-  {selectedProduct && (
-    <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <motion.div 
-        className="product-card modal-grid"
-        initial={{ opacity: 0, scale: 0.9, y: 30 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 30 }}
-      >
-        <div className="modal-img-container">
-          <Image 
-            src={selectedProduct.img} 
-            alt={selectedProduct.name} 
-            fill
-            unoptimized={typeof selectedProduct.img === 'string' && selectedProduct.img.startsWith('/')}
-            sizes="(max-width: 768px) 100vw, 50vw"
-            style={{ objectFit: 'cover' }} 
-          />
-          <button onClick={() => setSelectedProduct(null)} style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', background: 'white', border: 'none', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)', cursor: 'pointer' }}>
-            <X size={20} color="#0f172a" />
-          </button>
-        </div>
-        <div className="modal-body-padding">
-          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
-            <span className={`card-badge badge-${selectedProduct.category}`} style={{ position: 'static' }}>{selectedProduct.category}</span>
-            <span className="sold-label" style={{ background: 'var(--bg-surface-soft)', padding: '0.4rem 0.8rem', borderRadius: '8px', fontWeight: '700', fontSize: '0.75rem' }}>⭐ 4.9 Rating</span>
-          </div>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '1rem', letterSpacing: '-0.03em' }}>{selectedProduct.name}</h2>
-          <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', lineHeight: '1.8', marginBottom: '2.5rem' }}>{selectedProduct.desc}</p>
-          
-          <div style={{ marginTop: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-               <div>
-                  <span style={{ fontSize: '0.9rem', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem' }}>Harga Spesial</span>
-                  <strong style={{ fontSize: '2rem', color: 'var(--primary)', fontWeight: '800' }}>Rp {selectedProduct.price.toLocaleString('id-ID')}</strong>
-               </div>
-                <div style={{ textAlign: 'right' }}>
-                   <span style={{ fontSize: '0.9rem', color: 'var(--text-light)', display: 'block', marginBottom: '0.25rem' }}>Status Stok</span>
-                   <strong style={{ 
-                     color: (selectedProduct.stock || 0) > 0 ? '#059669' : '#ef4444', 
-                     display: 'flex', 
-                     alignItems: 'center', 
-                     gap: '0.5rem',
-                     justifyContent: 'flex-end' 
-                   }}>
-                     {(selectedProduct.stock || 0) > 0 ? (
-                       <><CheckCircle2 size={16} /> {selectedProduct.stock} Tersisa</>
-                     ) : (
-                       <>Stok Habis</>
-                     )}
-                   </strong>
-                </div>
-            </div>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button 
-                className="btn-primary" 
-                style={{ 
-                  flex: 2, 
-                  justifyContent: 'center', 
-                  padding: '1.25rem',
-                  opacity: (selectedProduct.stock || 0) > 0 ? 1 : 0.6,
-                  cursor: (selectedProduct.stock || 0) > 0 ? 'pointer' : 'not-allowed'
-                }} 
-                onClick={() => { if((selectedProduct.stock || 0) > 0) { addToCart(selectedProduct.id); setSelectedProduct(null); } }}
-                disabled={(selectedProduct.stock || 0) <= 0}
-              >
-                <ShoppingCart size={20} /> {(selectedProduct.stock || 0) > 0 ? 'Tambah ke Keranjang' : 'Stok Habis'}
-              </button>
-              <button className="btn-secondary" style={{ flex: 1, justifyContent: 'center' }} onClick={() => window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Halo Admin, saya tertarik dengan ${selectedProduct.name}`)}`, '_blank')}>
-                <MessageSquare size={20} /> Chat
-              </button>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  )}
-</AnimatePresence>
-
-{/*  Address Selector Modal  */}
-{isAddressModalOpen && user && (
-  <AddressSelector
-    userPhone={user.user_metadata?.phone || ''}
-    onSelect={(address) => {
-      setOrderInfo(prev => ({
-        ...prev,
-        customerAddress: address.full_address,
-        customerLatitude: address.latitude?.toString() || '',
-        customerLongitude: address.longitude?.toString() || '',
-        customerMapsLink: address.maps_link || `https://www.google.com/maps?q=${address.latitude},${address.longitude}`
-      }));
-    }}
-    onClose={() => setIsAddressModalOpen(false)}
-    onAddNew={() => {
-      setIsAddressModalOpen(false);
-      setShowProfileManager(true);
-    }}
-  />
-)}
-
-{/*  Profile / Address Manager Modal  */}
-{showProfileManager && user && (
-  <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-    <motion.div 
-      className="checkout-card"
-      initial={{ opacity: 0, scale: 0.95, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      style={{ maxWidth: '800px', width: '100%', padding: '2rem', maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}
-    >
-      <button onClick={() => setShowProfileManager(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer' }}>
-        <X size={24} />
-      </button>
-      <AddressManager 
-        userId={user.id} 
-        userPhone={user.user_metadata?.phone || user.phone || ''} 
-      />
-    </motion.div>
-  </div>
-)}
-</>
+    </>
   );
 }
 
