@@ -69,24 +69,19 @@ body {
   background: var(--bg-main);
   overflow-x: hidden;
   transition: background var(--transition-fast), color var(--transition-fast);
-  line-height: 1.5;
+  line-height: 1.6; /* Slightly increased for better readability */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-html {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-main);
+  line-height: 1.2;
+  letter-spacing: -0.02em; /* Subtle letter spacing for headings */
 }
 
-* {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-*::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
+p {
+  line-height: 1.7;
 }
 
 /* Navbar */
@@ -126,7 +121,7 @@ html {
   background: white;
   border-radius: 10px;
   padding: 4px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm); /* Consistent shadow */
 }
 .brand-text { 
   color: var(--text-main); 
@@ -176,15 +171,17 @@ html {
   gap: 6px; 
   cursor: pointer;
 }
-.chevron { transition: transform 0.4s; color: var(--gray); }
+.chevron { transition: transform 0.4s; color: var(--text-muted); } /* Changed color to text-muted */
 .dropdown:hover .chevron { transform: rotate(180deg); color: var(--primary); }
 .dropdown-content {
   display: none; position: absolute; top: calc(100% + 10px); left: 50%;
   transform: translateX(-50%);
-  background-color: var(--surface); min-width: 200px;
-  box-shadow: var(--shadow-strong); border-radius: 16px;
+  background-color: var(--bg-surface); /* Changed to bg-surface */
+  min-width: 200px;
+  box-shadow: var(--shadow-lg); /* Stronger shadow for dropdown */
+  border-radius: 16px;
   padding: 0.75rem; z-index: 1000;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-main); /* Consistent border */
   backdrop-filter: blur(20px);
 }
 .dropdown-content::before {
@@ -193,12 +190,13 @@ html {
   top: -6px; left: 50%;
   transform: translateX(-50%) rotate(45deg);
   width: 12px; height: 12px;
-  background: var(--surface);
-  border-left: 1px solid var(--border);
-  border-top: 1px solid var(--border);
+  background: var(--bg-surface); /* Changed to bg-surface */
+  border-left: 1px solid var(--border-main); /* Consistent border */
+  border-top: 1px solid var(--border-main); /* Consistent border */
 }
 .dropdown-content a {
-  color: var(--dark) !important; padding: 12px 16px; text-decoration: none;
+  color: var(--text-main) !important; /* Changed to text-main */
+  padding: 12px 16px; text-decoration: none;
   display: flex !important; align-items: center; gap: 10px;
   font-size: 0.9rem; transition: all 0.3s;
   border-radius: 10px;
@@ -254,13 +252,14 @@ html {
 }
 .mobile-toggle {
   display: none; width: 42px; height: 42px;
-  background: var(--surface-soft); border: 1px solid var(--border);
+  background: var(--bg-surface-soft); /* Changed to bg-surface-soft */
+  border: 1px solid var(--border-main); /* Changed to border-main */
   border-radius: 12px; cursor: pointer;
   flex-direction: column; align-items: center; justify-content: center;
   gap: 4px;
 }
 .mobile-toggle span {
-  display: block; width: 20px; height: 2px; background: var(--dark);
+  display: block; width: 20px; height: 2px; background: var(--text-main); /* Changed to text-main */
   transition: all 0.3s; border-radius: 2px;
 }
 
@@ -537,9 +536,10 @@ html {
 
 /* Stats */
 .stats-bar {
-  background: var(--bg-surface); 
+  background: linear-gradient(135deg, var(--bg-surface-soft) 0%, var(--bg-main) 100%); /* Subtle gradient */
   padding: 3rem 2rem;
   border-bottom: 1px solid var(--border-main);
+  box-shadow: var(--shadow-md); /* Added shadow for depth */
 }
 .stats-container {
   max-width: 1280px; 
@@ -635,6 +635,7 @@ html {
   display: flex;
   flex-direction: column;
   height: 100%;
+  box-shadow: var(--shadow-sm); /* Added consistent shadow */
 }
 .product-card:hover {
   transform: translateY(-8px);
@@ -654,10 +655,11 @@ html {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   backdrop-filter: blur(4px);
+  background: rgba(225, 29, 72, 0.8); /* Unified badge background */
 }
-.badge-frozen { background: rgba(225, 29, 72, 0.9); }
-.badge-atk { background: rgba(15, 23, 42, 0.9); }
-.badge-other { background: rgba(100, 116, 139, 0.9); }
+.badge-frozen { background: rgba(225, 29, 72, 0.8); } /* Keep for specific overrides if needed */
+.badge-atk { background: rgba(15, 23, 42, 0.8); } /* Keep for specific overrides if needed */
+.badge-other { background: rgba(100, 116, 139, 0.8); } /* Keep for specific overrides if needed */
 
 .card-img-wrap { 
   overflow: hidden; 
@@ -720,6 +722,7 @@ html {
   background: var(--bg-surface-soft);
   padding: 0.2rem 0.6rem;
   border-radius: 6px;
+  box-shadow: var(--shadow-sm); /* Added shadow for consistency */
 }
 
 .card-footer {
