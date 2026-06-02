@@ -1895,16 +1895,16 @@ export default function Home() {
           <div className="underline"></div>
         </div>
         <div className="nav-container">
-          <div className="location-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', overflow: 'hidden', padding: 0 }}>
-            <div style={{ padding: '3rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-                <div className="inbox-icon" style={{ background: 'var(--bg-surface-soft)', color: 'var(--primary)' }}><MapPin size={24} /></div>
+          <div className="location-card">
+            <div className="location-details">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div className="inbox-icon" style={{ background: 'var(--bg-surface-soft)', color: 'var(--primary)', flexShrink: 0 }}><MapPin size={24} /></div>
                 <div>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: '800' }}>Padang Pariaman</h3>
                   <p style={{ color: 'var(--text-muted)' }}>Sumatera Barat, Indonesia</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2.5rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div>
                   <h4 style={{ fontSize: '0.9rem', textTransform: 'uppercase', color: 'var(--text-light)', marginBottom: '0.5rem' }}>Alamat</h4>
                   <p style={{ fontWeight: '600' }}>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik.</p>
@@ -1939,11 +1939,12 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <div style={{ minHeight: '400px', position: 'relative' }}>
+            <div className="location-map-side">
               <iframe
                 title="Map Hijrah Toko"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.2882195026853!2d100.21038167425103!3d-0.5940091352848971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4e1d5048135eb%3A0xdc1dba685f9fa4f4!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714578000000!5m2!1sid!2sid"
-                width="100%" height="100%" style={{ border: 0, borderRadius: '18px' }} allowFullScreen loading="lazy"
+                allowFullScreen
+                loading="lazy"
               ></iframe>
             </div>
           </div>

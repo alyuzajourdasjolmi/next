@@ -1578,30 +1578,6 @@ body.dark-mode .btn-wa {
   background: var(--surface);
 }
 
-.location-card {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 1.5rem;
-  align-items: stretch;
-}
-
-.location-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.map-embed iframe {
-  width: 100%;
-  min-height: 360px;
-  border: 0;
-  border-radius: 18px;
-  filter: saturate(0.98) contrast(1.02);
-}
-
 /* Inbox */
 .inbox-section {
   background: var(--section-tint-alt);
@@ -2888,6 +2864,8 @@ body.dark-mode .nav-links a.active {
 
 /* Location Section */
 .location-card {
+  max-width: 1200px;
+  margin: 0 auto;
   background: var(--surface);
   border-radius: 32px;
   padding: 0;
