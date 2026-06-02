@@ -993,16 +993,14 @@ export default function Home() {
         <div className="hero-bg-image">
           <Image
             src="/assets/images/hero-banner-new.jpg"
-            alt="Hijrah Toko Storefront"
+            alt="Toko Hijrah TOKO - Frozen Food & ATK"
             fill
             priority
             unoptimized
             sizes="100vw"
-            style={{ objectFit: 'cover' }}
+            style={{ objectFit: 'cover', objectPosition: 'center' }}
           />
-          <div className="hero-dark-overlay"></div>
-          <div className="hero-gradient-blob top-left"></div>
-          <div className="hero-gradient-blob bottom-right"></div>
+          <div className="hero-dark-overlay" style={{ background: 'linear-gradient(to right, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.6) 100%)' }}></div>
         </div>
 
         {/* Decorative Elements */}
