@@ -2120,81 +2120,8 @@ export default function Home() {
 
       <style jsx>{`
         /* ============================================
-           STORE PAGE — Premium Design Overrides
+           STORE PAGE — Scoped Style Tweaks
            ============================================ */
-
-        /* ── Navbar ── */
-        .navbar {
-          background: rgba(255,255,255,0.78) !important;
-          backdrop-filter: blur(18px) saturate(180%) !important;
-          -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
-          border-bottom: 1px solid rgba(226,232,240,0.4) !important;
-          box-shadow: none !important;
-        }
-        body.dark-mode .navbar {
-          background: rgba(15,23,42,0.82) !important;
-          border-bottom: 1px solid rgba(255,255,255,0.05) !important;
-        }
-        .navbar.scrolled {
-          box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
-        }
-
-        .nav-container {
-          max-width: 1200px !important;
-          padding: 0 1.5rem !important;
-        }
-        .brand-text { font-weight: 800 !important; letter-spacing: -0.03em !important; }
-
-        .dropdown-content {
-          border: 1px solid rgba(226,232,240,0.5) !important;
-          box-shadow: 0 12px 40px -8px rgba(0,0,0,0.08) !important;
-          border-radius: 14px !important;
-          padding: 0.5rem !important;
-          backdrop-filter: blur(12px) !important;
-          background: rgba(255,255,255,0.92) !important;
-        }
-        body.dark-mode .dropdown-content {
-          background: rgba(15,23,42,0.92) !important;
-          border-color: rgba(255,255,255,0.06) !important;
-          box-shadow: 0 12px 40px -8px rgba(0,0,0,0.4) !important;
-        }
-        .dropdown-content a, .dropdown-content button {
-          border-radius: 10px !important;
-          padding: 0.55rem 0.85rem !important;
-        }
-
-        .user-menu-content {
-          border: 1px solid rgba(226,232,240,0.5) !important;
-          box-shadow: 0 12px 40px -8px rgba(0,0,0,0.08) !important;
-          border-radius: 16px !important;
-          padding: 0.5rem !important;
-          backdrop-filter: blur(12px) !important;
-          background: rgba(255,255,255,0.92) !important;
-        }
-        body.dark-mode .user-menu-content {
-          background: rgba(15,23,42,0.92) !important;
-          border-color: rgba(255,255,255,0.06) !important;
-        }
-        .user-menu-header {
-          padding: 0.75rem 0.75rem 0.5rem !important;
-        }
-
-        .btn-login-pill {
-          border-radius: 999px !important;
-          padding: 0.45rem 1.1rem !important;
-          font-weight: 600 !important;
-          font-size: 0.82rem !important;
-          background: var(--primary) !important;
-          color: #fff !important;
-          border: none !important;
-          transition: all 0.2s !important;
-        }
-        .btn-login-pill:hover { opacity: 0.9; transform: translateY(-1px); }
-
-        .mobile-toggle {
-          width: 38px !important; height: 38px !important;
-          border-radius: 10px !important;
-        }
 
         /* ── Hero ── */
         .hero {
