@@ -1835,7 +1835,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/*  Inbox & Tracking  */}
-      <section className="section" id="inbox" style={{ background: 'var(--bg-surface-soft)', paddingBottom: '8rem', position: 'relative', zIndex: 1 }}>
+      <section className="section" id="inbox" style={{ background: 'var(--bg-surface-soft)' }}>
         <div className="section-header">
           <h2>Lacak Pesanan</h2>
           <p>Pantau status pesanan Anda secara realtime di sini.</p>
