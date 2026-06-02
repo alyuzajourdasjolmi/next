@@ -1888,37 +1888,23 @@ export default function Home() {
       </section>
 
       {/*  Location Section  */}
-      <section className="section" id="lokasi" style={{ marginTop: '4rem', position: 'relative', zIndex: 1 }}>
+      <section className="section location-section" id="lokasi">
         <div className="section-header">
           <h2>Lokasi Toko</h2>
           <p>Kami berlokasi strategis di Padang Pariaman, siap melayani Anda.</p>
           <div className="underline"></div>
         </div>
         <div className="nav-container">
-          <div style={{ 
-            maxWidth: '1200px', 
-            margin: '0 auto', 
-            background: 'var(--bg-surface)', 
-            borderRadius: '32px', 
-            overflow: 'clip',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
-            border: '1px solid var(--border-main)',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 0,
-            minHeight: '500px',
-            position: 'relative',
-            contain: 'paint'
-          } as React.CSSProperties}>
-            <div style={{ padding: '3rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2rem', position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div className="location-card-wrapper">
+            <div className="location-info-side">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
                 <div className="inbox-icon" style={{ background: 'var(--bg-surface-soft)', color: 'var(--primary)', flexShrink: 0 }}><MapPin size={24} /></div>
                 <div>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: '800', margin: 0 }}>Padang Pariaman</h3>
                   <p style={{ color: 'var(--text-muted)', margin: 0 }}>Sumatera Barat, Indonesia</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2.5rem' }}>
                 <div>
                   <h4 style={{ fontSize: '0.9rem', textTransform: 'uppercase', color: 'var(--text-light)', marginBottom: '0.5rem' }}>Alamat</h4>
                   <p style={{ fontWeight: '600', margin: 0 }}>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik.</p>
@@ -1953,11 +1939,13 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <div style={{ position: 'relative', overflow: 'clip', width: '100%', height: '100%', minHeight: '500px' }}>
+            <div className="location-map-side">
               <iframe
                 title="Map Hijrah Toko"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.2882195026853!2d100.21038167425103!3d-0.5940091352848971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4e1d5048135eb%3A0xdc1dba685f9fa4f4!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714578000000!5m2!1sid!2sid"
-                style={{ width: '100%', height: '100%', border: 'none', display: 'block', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+                width="100%"
+                height="500"
+                style={{ border: 0, display: 'block' }}
                 allowFullScreen
                 loading="lazy"
               ></iframe>
@@ -1967,7 +1955,7 @@ export default function Home() {
       </section>
 
       {/*  Footer  */}
-      <footer className="footer" id="kontak" style={{ background: 'var(--accent)', color: 'var(--bg-main)', padding: '6rem 2rem 3rem' }}>
+      <footer className="footer" id="kontak" style={{ background: 'var(--accent)', color: 'var(--bg-main)', padding: '6rem 2rem 3rem', position: 'relative', zIndex: 1 }}>
         <div className="nav-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '4rem' }}>
           <div className="footer-col">
             <div className="nav-logo" style={{ marginBottom: '1.5rem' }}>

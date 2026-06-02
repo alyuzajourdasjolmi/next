@@ -2866,51 +2866,41 @@ body.dark-mode .nav-links a.active {
 }
 
 /* Location Section */
-.location-card {
+.location-section {
+  margin-top: 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.location-card-wrapper {
   max-width: 1200px;
   margin: 0 auto;
-  background: var(--surface);
+  background: var(--bg-surface);
   border-radius: 32px;
-  padding: 0;
-  box-shadow: var(--shadow-strong);
-  border: 1px solid var(--border);
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
   overflow: hidden;
-  isolation: isolate;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-main);
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  align-items: stretch;
-  min-height: 480px;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
 }
 
-.location-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
-}
-
-.location-details {
-  padding: 3.5rem;
+.location-info-side {
+  padding: 3rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 2rem;
-  background: var(--surface);
-  position: relative;
-  z-index: 2;
 }
 
 .location-map-side {
   overflow: hidden;
-  min-height: 480px;
-  display: flex;
-  flex-direction: column;
+  min-height: 500px;
+  max-height: 500px;
 }
 
 .location-map-side iframe {
-  flex: 1;
   width: 100%;
-  min-height: 480px;
+  height: 500px;
   border: none;
   display: block;
 }
@@ -3024,12 +3014,21 @@ body.dark-mode .nav-links a.active {
 }
 
 @media (max-width: 1024px) {
-  .location-card {
+  .location-card-wrapper {
     grid-template-columns: 1fr;
   }
 
-  .location-details {
+  .location-info-side {
     padding: 2.5rem;
+  }
+
+  .location-map-side {
+    min-height: 400px;
+    max-height: 400px;
+  }
+
+  .location-map-side iframe {
+    height: 400px;
   }
 }
 
