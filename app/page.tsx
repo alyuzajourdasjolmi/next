@@ -107,9 +107,6 @@ export default function Home() {
   });
 
   const [user, setUser] = useState<any>(null);
-  const [authModal, setAuthModal] = useState<{ isOpen: boolean; mode: 'login' | 'register' }>({ isOpen: false, mode: 'login' });
-  const [authForm, setAuthForm] = useState({ email: '', password: '', name: '', phone: '', address: '' });
-  const [authLoading, setAuthLoading] = useState(false);
 
   // Refs for realtime listener to avoid stale closures
   const userIdRef = useRef<string | null>(null);
@@ -348,56 +345,6 @@ export default function Home() {
     };
   }, []);
 
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAuthLoading(true);
-    try {
-      if (authModal.mode === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: authForm.email,
-          password: authForm.password,
-        });
-        if (error) throw error;
-        setAuthModal({ ...authModal, isOpen: false });
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email: authForm.email,
-          password: authForm.password,
-          options: {
-            data: {
-              full_name: authForm.name,
-              phone: authForm.phone,
-              address: authForm.address
-            }
-          }
-        });
-        if (error) throw error;
-
-        // Save initial address to user_addresses table
-        if (authForm.address) {
-          const { data: userData } = await supabase.auth.getUser();
-          if (userData?.user) {
-            await supabase.from('user_addresses').insert([{
-              user_phone: authForm.phone,
-              label: 'Utama',
-              recipient_name: authForm.name,
-              recipient_phone: authForm.phone,
-              full_address: authForm.address,
-              is_primary: true
-            }]);
-          }
-        }
-
-        alert('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi (jika diaktifkan) atau langsung login.');
-        setAuthModal({ ...authModal, mode: 'login', isOpen: true });
-      }
-    } catch (error: any) {
-      alert('Authentication failed: ' + error.message);
-    } finally {
-      setAuthLoading(false);
-    }
-  };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -513,7 +460,7 @@ export default function Home() {
 
   const addToCart = (id: number) => {
     if (!user) {
-      setAuthModal({ isOpen: true, mode: 'login' });
+      window.location.href = '/auth';
       return;
     }
     const product = productsData.find(p => p.id === id);
@@ -653,7 +600,7 @@ export default function Home() {
     e.preventDefault();
     if (!user) {
       alert('Anda harus login untuk memberikan ulasan.');
-      setAuthModal({ isOpen: true, mode: 'login' });
+      window.location.href = '/auth';
       return;
     }
     const reviewText = reviewForm.text.trim();
@@ -690,7 +637,7 @@ export default function Home() {
   const submitOrder = async (e: any) => {
     e.preventDefault();
     if (!user) {
-      setAuthModal({ isOpen: true, mode: 'login' });
+      window.location.href = '/auth';
       alert('Silakan login terlebih dahulu untuk melakukan pemesanan.');
       return;
     }
@@ -1026,9 +973,9 @@ export default function Home() {
                     </button>
                   </div>
                 ) : (
-                  <button className="mobile-auth-btn" onClick={() => { setAuthModal({ isOpen: true, mode: 'login' }); setMobileNavOpen(false); }}>
+                  <Link href="/auth" className="mobile-auth-btn" onClick={() => setMobileNavOpen(false)}>
                     Masuk / Daftar
-                  </button>
+                  </Link>
                 )}
               </div>
             </div>
@@ -1424,9 +1371,9 @@ export default function Home() {
                 <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
                   Silakan login terlebih dahulu untuk mengirim ulasan.
                 </p>
-                <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
+                <Link href="/auth" className="btn-primary">
                   Login Untuk Ulasan
-                </button>
+                </Link>
               </div>
             ) : (
               <form onSubmit={submitReview} className="order-form">
@@ -1559,7 +1506,7 @@ export default function Home() {
                 <AlertCircle size={48} style={{ color: 'var(--primary)', marginBottom: '1.5rem' }} />
                 <h4 style={{ marginBottom: '1rem' }}>Login Diperlukan</h4>
                 <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Silakan login terlebih dahulu untuk melanjutkan proses pemesanan.</p>
-                <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>Masuk Sekarang</button>
+                <Link href="/auth" className="btn-primary">Masuk Sekarang</Link>
               </div>
             ) : (
               <form onSubmit={submitOrder} className="order-form" style={{ marginTop: '1.5rem' }}>
@@ -1877,9 +1824,9 @@ export default function Home() {
             {!user && (
               <div className="tracking-login-required">
                 <p>Silakan login untuk melihat status pesanan sesuai akun Anda.</p>
-                <button className="btn-primary" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
+                <Link href="/auth" className="btn-primary">
                   Login Sekarang
-                </button>
+                </Link>
               </div>
             )}
 
@@ -2043,86 +1990,6 @@ export default function Home() {
           <p>&copy; {new Date().getFullYear()} Hijrah Toko. Seluruh hak cipta dilindungi. Built with ❤️ for your home and office.</p>
         </div>
       </footer>
-
-      {/*  Modals  */}
-      <AnimatePresence>
-        {authModal.isOpen && (
-          <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-            <motion.div
-              className="checkout-card"
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              style={{ maxWidth: '480px', width: '100%', padding: '3rem', position: 'relative' }}
-            >
-              <button onClick={() => setAuthModal({ ...authModal, isOpen: false })} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)' }}>
-                <X size={24} />
-              </button>
-
-              <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                <div style={{ width: '64px', height: '64px', background: 'var(--primary-light)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: 'var(--primary)' }}>
-                  <UserIcon size={32} />
-                </div>
-                <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '0.5rem' }}>{authModal.mode === 'login' ? 'Masuk' : 'Buat Akun'}</h2>
-                <p style={{ color: 'var(--text-muted)' }}>{authModal.mode === 'login' ? 'Senang melihat Anda kembali!' : 'Mulai pengalaman belanjamu sekarang.'}</p>
-              </div>
-
-              <form onSubmit={handleAuth} className="order-form">
-                {authModal.mode === 'register' && (
-                  <>
-                    <div className="form-group">
-                      <label>Nama Lengkap</label>
-                      <input type="text" required value={authForm.name} onChange={e => setAuthForm({ ...authForm, name: e.target.value })} placeholder="Nama Anda" />
-                    </div>
-                    <div className="form-group">
-                      <label>Nomor WhatsApp</label>
-                      <input
-                        type="tel"
-                        required
-                        value={authForm.phone}
-                        onChange={e => setAuthForm({ ...authForm, phone: e.target.value })}
-                        placeholder="Contoh: 08123456789"
-                        pattern="[0-9]{10,13}"
-                        title="Masukkan nomor WA yang valid (10-13 digit)"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Alamat Lengkap</label>
-                      <textarea
-                        required
-                        rows={3}
-                        value={authForm.address}
-                        onChange={e => setAuthForm({ ...authForm, address: e.target.value })}
-                        placeholder="Jl. Contoh No. 1, RT/RW, Kelurahan, Kecamatan..."
-                        style={{ resize: 'none' }}
-                      />
-                    </div>
-                  </>
-                )}
-                <div className="form-group">
-                  <label>Email</label>
-                  <input type="email" required value={authForm.email} onChange={e => setAuthForm({ ...authForm, email: e.target.value })} placeholder="email@contoh.com" />
-                </div>
-                <div className="form-group">
-                  <label>Password</label>
-                  <input type="password" required value={authForm.password} onChange={e => setAuthForm({ ...authForm, password: e.target.value })} placeholder="••••••••" />
-                </div>
-                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '1.1rem' }} disabled={authLoading}>
-                  {authLoading ? 'Memproses...' : (authModal.mode === 'login' ? 'Masuk' : 'Daftar Sekarang')}
-                </button>
-              </form>
-
-              <div style={{ textAlign: 'center', marginTop: '2rem', color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-                {authModal.mode === 'login' ? (
-                  <p>Belum punya akun? <button onClick={() => setAuthModal({ ...authModal, mode: 'register' })} style={{ color: 'var(--primary)', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', padding: 0, marginLeft: '0.5rem' }}>Daftar di sini</button></p>
-                ) : (
-                  <p>Sudah punya akun? <button onClick={() => setAuthModal({ ...authModal, mode: 'login' })} style={{ color: 'var(--primary)', fontWeight: '700', border: 'none', background: 'none', cursor: 'pointer', padding: 0, marginLeft: '0.5rem' }}>Login di sini</button></p>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* Product Detail Modal */}
       <AnimatePresence>
