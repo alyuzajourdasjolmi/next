@@ -95,6 +95,7 @@ export default function Home() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [heroSlide, setHeroSlide] = useState(0);
+  const [heroPaused, setHeroPaused] = useState(false);
   const isLocatingRef = useRef(false);
 
   const [orderInfo, setOrderInfo] = useState({
@@ -251,7 +252,10 @@ export default function Home() {
 
     // Hero auto-slide every 5 seconds
     const heroTimer = setInterval(() => {
-      setHeroSlide(prev => (prev + 1) % 2);
+      setHeroPaused(paused => {
+        if (!paused) setHeroSlide(prev => (prev + 1) % 2);
+        return paused;
+      });
     }, 5000);
 
     // Initial cart load (will be overridden by user-specific useEffect if logged in)
@@ -1029,7 +1033,10 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <section className="hero" id="home">
+      <section className="hero" id="home"
+        onMouseEnter={() => setHeroPaused(true)}
+        onMouseLeave={() => setHeroPaused(false)}
+      >
         <AnimatePresence mode="wait">
 
           {/* ── SLIDE 1: Foto Toko ── */}
@@ -1140,17 +1147,6 @@ export default function Home() {
               style={{ opacity: heroSlide === i ? 1 : 0.4, width: heroSlide === i ? '28px' : '10px' }} />
           ))}
         </div>
-
-        {/* Scroll Indicator */}
-        <motion.div className="hero-scroll-new" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1, duration: 1 }}
-          style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', width: 'max-content' }}
-        >
-          <div className="mouse-icon">
-            <motion.div className="mouse-wheel" animate={{ y: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }} />
-          </div>
-          <span>SCROLL KEBAWAH</span>
-        </motion.div>
       </section>
 
       {/*  Stats  */}
