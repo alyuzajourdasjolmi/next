@@ -119,10 +119,10 @@ export default function AuthPage() {
   };
 
   const inputClasses =
-    'w-full px-4 py-3.5 bg-[var(--bg-surface-soft)] border-2 border-[var(--border-main)] rounded-xl text-[var(--text-main)] text-base font-medium font-sans transition-all duration-200 placeholder:text-[var(--text-light)] focus:border-[var(--primary)] focus:bg-[var(--bg-surface)] focus:shadow-[0_0_0_4px_rgba(225,29,72,0.08)] focus:outline-none';
+    'auth-input';
 
   const labelClasses =
-    'block text-[0.7rem] font-extrabold uppercase tracking-[0.12em] text-[var(--text-light)] mb-2';
+    'auth-label';
 
   return (
     <div className="auth-page">
@@ -325,7 +325,7 @@ export default function AuthPage() {
                         value={form.address}
                         onChange={e => updateForm('address', e.target.value)}
                         placeholder="Jl. Contoh No. 1, RT/RW, Kelurahan, Kecamatan..."
-                        className={`${inputClasses} resize-none`}
+                        className={inputClasses}
                       />
                     </div>
                   </motion.div>
@@ -360,7 +360,7 @@ export default function AuthPage() {
                     onChange={e => updateForm('password', e.target.value)}
                     placeholder="Masukkan password"
                     minLength={6}
-                    className={`${inputClasses} pr-[3.25rem]`}
+                    className={`${inputClasses} has-toggle`}
                   />
                   <button
                     type="button"
