@@ -1085,7 +1085,7 @@ export default function Home() {
               transition={{ duration: 0.8 }}
             >
               <div className="hero-bg-image" style={{ left: '48%', width: '52%' }}>
-                <Image src="/assets/images/hero-banner-new.jpg" alt="Frozen Food" fill unoptimized sizes="52vw"
+                <Image src="/assets/images/hero-aplikasi.jpeg" alt="Frozen Food" fill unoptimized sizes="52vw"
                   style={{ objectFit: 'cover', objectPosition: 'left center' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #111 0%, rgba(17,17,17,0.6) 35%, transparent 100%)' }}></div>
               </div>
