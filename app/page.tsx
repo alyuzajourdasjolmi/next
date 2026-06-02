@@ -505,20 +505,26 @@ export default function Home() {
   const clearCart = () => setCart([]);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) {
-      alert('Aplikasi sudah terinstall atau browser tidak support install.');
-      return;
+    if (deferredPrompt) {
+      // Masih ada prompt — langsung install
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('PWA installed');
+      }
+      setDeferredPrompt(null);
+      setShowInstallPrompt(false);
+    } else {
+      // Prompt tidak tersedia — tampilkan panduan manual
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+      if (isIOS || isSafari) {
+        alert('📱 Install di iOS/Safari:\n\n1. Tap tombol Share (kotak + panah)\n2. Scroll bawah → "Add to Home Screen"\n3. Tap "Add"');
+      } else {
+        alert('💻 Install di Chrome/Edge:\n\n1. Klik ikon  ⊕  atau menu (⋮) di address bar\n2. Pilih "Install Hijrah Toko"\n3. Klik "Install"\n\nATAU jika sudah terinstall:\nBuka chrome://apps → klik kanan Hijrah Toko → Remove → kembali ke web ini');
+      }
     }
-    
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      console.log('User accepted PWA install');
-    }
-    
-    setDeferredPrompt(null);
-    setShowInstallPrompt(false);
   };
 
   const getCartSubtotal = () => cart.reduce((sum: number, item: any) => sum + (item.price * item.qty), 0);
@@ -2149,38 +2155,36 @@ export default function Home() {
       )}
 
       {/* PWA Install Button */}
-      {showInstallPrompt && (
-        <motion.button
-          className="pwa-install-button"
-          onClick={handleInstallClick}
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 100 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          style={{
-            position: 'fixed',
-            bottom: '2rem',
-            right: '2rem',
-            background: 'var(--primary)',
-            color: '#ffffff',
-            padding: '1rem 1.5rem',
-            borderRadius: '50px',
-            border: 'none',
-            fontSize: '1rem',
-            fontWeight: '700',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            boxShadow: '0 8px 24px rgba(220, 38, 38, 0.3)',
-            cursor: 'pointer',
-            zIndex: 1000
-          }}
-        >
-          <Package size={20} />
-          <span>Install App</span>
-        </motion.button>
-      )}
+      <motion.button
+        className="pwa-install-button"
+        onClick={handleInstallClick}
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        title="Install Hijrah Toko sebagai aplikasi"
+        style={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+          background: 'var(--primary)',
+          color: '#ffffff',
+          padding: '1rem 1.5rem',
+          borderRadius: '50px',
+          border: 'none',
+          fontSize: '1rem',
+          fontWeight: '700',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          boxShadow: '0 8px 24px rgba(220, 38, 38, 0.35)',
+          cursor: 'pointer',
+          zIndex: 1000
+        }}
+      >
+        <Package size={20} />
+        <span>Install App</span>
+      </motion.button>
 
       <style jsx>{`
         /* ============================================
