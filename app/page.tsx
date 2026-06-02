@@ -92,6 +92,8 @@ export default function Home() {
   const [showProfileManager, setShowProfileManager] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const isLocatingRef = useRef(false);
 
   const [orderInfo, setOrderInfo] = useState({
@@ -237,6 +239,15 @@ export default function Home() {
       }
     });
     setTheme(localStorage.getItem('hijrahTokoTheme') || 'light');
+
+    // PWA Install Prompt Detection
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallPrompt(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     // Initial cart load (will be overridden by user-specific useEffect if logged in)
     const initialCart = localStorage.getItem('hijrahTokoCart_guest') || '[]';
@@ -492,6 +503,23 @@ export default function Home() {
   };
 
   const clearCart = () => setCart([]);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) {
+      alert('Aplikasi sudah terinstall atau browser tidak support install.');
+      return;
+    }
+    
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      console.log('User accepted PWA install');
+    }
+    
+    setDeferredPrompt(null);
+    setShowInstallPrompt(false);
+  };
 
   const getCartSubtotal = () => cart.reduce((sum: number, item: any) => sum + (item.price * item.qty), 0);
   const cartCount = cart.reduce((sum: number, item: any) => sum + item.qty, 0);
@@ -2118,6 +2146,40 @@ export default function Home() {
             />
           </motion.div>
         </div>
+      )}
+
+      {/* PWA Install Button */}
+      {showInstallPrompt && (
+        <motion.button
+          className="pwa-install-button"
+          onClick={handleInstallClick}
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 100 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          style={{
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+            background: 'var(--primary)',
+            color: '#ffffff',
+            padding: '1rem 1.5rem',
+            borderRadius: '50px',
+            border: 'none',
+            fontSize: '1rem',
+            fontWeight: '700',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            boxShadow: '0 8px 24px rgba(220, 38, 38, 0.3)',
+            cursor: 'pointer',
+            zIndex: 1000
+          }}
+        >
+          <Package size={20} />
+          <span>Install App</span>
+        </motion.button>
       )}
 
       <style jsx>{`

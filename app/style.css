@@ -5359,3 +5359,29 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   .prof-fld-actions { flex-direction: column; }
   .prof-order { padding: 0.7rem 0.85rem; }
 }
+
+
+/* PWA Install Button */
+.pwa-install-button {
+  animation: pulse-install 2s ease-in-out infinite;
+}
+
+@keyframes pulse-install {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba(220, 38, 38, 0.4);
+  }
+}
+
+@media (max-width: 640px) {
+  .pwa-install-button {
+    bottom: 5rem !important;
+    right: 1rem !important;
+    font-size: 0.9rem !important;
+    padding: 0.85rem 1.25rem !important;
+  }
+}
