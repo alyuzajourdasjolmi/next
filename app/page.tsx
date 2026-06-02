@@ -2209,24 +2209,43 @@ export default function Home() {
         }
 
         /* ── Product Cards ── */
-        .card-body {
-          padding: 0.85rem 0.85rem 0.75rem !important;
+        .product-card {
+          border-radius: 16px !important;
+          border: 1px solid var(--border-main) !important;
+          background: var(--bg-surface) !important;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+          transition: all 0.3s ease !important;
+          overflow: hidden !important;
         }
-        .card-body h3 {
-          font-size: 0.9rem !important;
+        .product-card:hover {
+          box-shadow: 0 8px 30px -8px rgba(0,0,0,0.08) !important;
+          transform: translateY(-3px) !important;
+          border-color: rgba(225,29,72,0.15) !important;
+        }
+        .card-img-wrap {
+          border-radius: 16px 16px 0 0 !important;
+        }
+        .card-body {
+          padding: 1rem 1.15rem 1.15rem !important;
+        }
+        .card-title-wrap strong {
+          font-size: 0.95rem !important;
+          font-weight: 700 !important;
+          letter-spacing: -0.01em !important;
         }
         .card-meta-row {
-          gap: 0.35rem !important;
+          gap: 0.5rem !important;
+          margin-top: 0.15rem !important;
         }
         .price {
-          font-size: 0.95rem !important;
+          font-size: 1.05rem !important;
           font-weight: 800 !important;
           color: var(--primary) !important;
         }
         .card-footer .btn-wa {
-          padding: 0.45rem 0.85rem !important;
-          border-radius: 8px !important;
-          font-size: 0.75rem !important;
+          padding: 0.55rem 1rem !important;
+          border-radius: 10px !important;
+          font-size: 0.8rem !important;
         }
 
         /* ── Features ── */
