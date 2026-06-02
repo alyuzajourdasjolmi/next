@@ -2117,6 +2117,485 @@ export default function Home() {
           </motion.div>
         </div>
       )}
+
+      <style jsx>{`
+        /* ============================================
+           STORE PAGE — Premium Design Overrides
+           ============================================ */
+
+        /* ── Navbar ── */
+        .navbar {
+          background: rgba(255,255,255,0.78) !important;
+          backdrop-filter: blur(18px) saturate(180%) !important;
+          -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
+          border-bottom: 1px solid rgba(226,232,240,0.4) !important;
+          box-shadow: none !important;
+        }
+        body.dark-mode .navbar {
+          background: rgba(15,23,42,0.82) !important;
+          border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+        }
+        .navbar.scrolled {
+          box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+        }
+
+        .nav-container {
+          max-width: 1200px !important;
+          padding: 0 1.5rem !important;
+        }
+        .brand-text { font-weight: 800 !important; letter-spacing: -0.03em !important; }
+
+        .dropdown-content {
+          border: 1px solid rgba(226,232,240,0.5) !important;
+          box-shadow: 0 12px 40px -8px rgba(0,0,0,0.08) !important;
+          border-radius: 14px !important;
+          padding: 0.5rem !important;
+          backdrop-filter: blur(12px) !important;
+          background: rgba(255,255,255,0.92) !important;
+        }
+        body.dark-mode .dropdown-content {
+          background: rgba(15,23,42,0.92) !important;
+          border-color: rgba(255,255,255,0.06) !important;
+          box-shadow: 0 12px 40px -8px rgba(0,0,0,0.4) !important;
+        }
+        .dropdown-content a, .dropdown-content button {
+          border-radius: 10px !important;
+          padding: 0.55rem 0.85rem !important;
+        }
+
+        .user-menu-content {
+          border: 1px solid rgba(226,232,240,0.5) !important;
+          box-shadow: 0 12px 40px -8px rgba(0,0,0,0.08) !important;
+          border-radius: 16px !important;
+          padding: 0.5rem !important;
+          backdrop-filter: blur(12px) !important;
+          background: rgba(255,255,255,0.92) !important;
+        }
+        body.dark-mode .user-menu-content {
+          background: rgba(15,23,42,0.92) !important;
+          border-color: rgba(255,255,255,0.06) !important;
+        }
+        .user-menu-header {
+          padding: 0.75rem 0.75rem 0.5rem !important;
+        }
+
+        .btn-login-pill {
+          border-radius: 999px !important;
+          padding: 0.45rem 1.1rem !important;
+          font-weight: 600 !important;
+          font-size: 0.82rem !important;
+          background: var(--primary) !important;
+          color: #fff !important;
+          border: none !important;
+          transition: all 0.2s !important;
+        }
+        .btn-login-pill:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .mobile-toggle {
+          width: 38px !important; height: 38px !important;
+          border-radius: 10px !important;
+        }
+
+        /* ── Hero ── */
+        .hero {
+          min-height: 85vh !important;
+        }
+        .hero-title-new {
+          font-size: clamp(2rem, 5vw, 3.5rem) !important;
+          font-weight: 800 !important;
+          letter-spacing: -0.03em !important;
+          line-height: 1.15 !important;
+        }
+        .hero-desc-new {
+          font-size: clamp(0.95rem, 1.6vw, 1.1rem) !important;
+          line-height: 1.7 !important;
+          opacity: 0.85 !important;
+        }
+        .btn-hero-primary {
+          padding: 0.85rem 2rem !important;
+          border-radius: 999px !important;
+          font-weight: 700 !important;
+          font-size: 0.95rem !important;
+          transition: all 0.25s !important;
+          box-shadow: 0 6px 20px -4px rgba(225,29,72,0.3) !important;
+        }
+        .btn-hero-primary:hover {
+          transform: translateY(-2px) !important;
+          box-shadow: 0 10px 30px -6px rgba(225,29,72,0.4) !important;
+        }
+        .btn-hero-outline {
+          padding: 0.85rem 2rem !important;
+          border-radius: 999px !important;
+          font-weight: 600 !important;
+          font-size: 0.95rem !important;
+          border: 1.5px solid rgba(255,255,255,0.3) !important;
+          transition: all 0.25s !important;
+        }
+        .btn-hero-outline:hover {
+          border-color: #fff !important;
+          transform: translateY(-2px) !important;
+        }
+        .hero-scroll-new { bottom: 2rem !important; }
+
+        /* ── Buttons ── */
+        .btn-primary {
+          border-radius: 12px !important;
+          padding: 0.75rem 1.5rem !important;
+          font-weight: 700 !important;
+          transition: all 0.25s !important;
+          box-shadow: 0 4px 14px -2px rgba(225,29,72,0.25) !important;
+        }
+        .btn-primary:hover {
+          transform: translateY(-1px) !important;
+          box-shadow: 0 8px 24px -4px rgba(225,29,72,0.35) !important;
+        }
+        .btn-secondary {
+          border-radius: 12px !important;
+          padding: 0.75rem 1.5rem !important;
+          font-weight: 600 !important;
+          border: 1.5px solid var(--border-main) !important;
+          transition: all 0.25s !important;
+        }
+        .btn-secondary:hover {
+          border-color: var(--primary) !important;
+          color: var(--primary) !important;
+          background: var(--primary-light) !important;
+        }
+        .btn-wa {
+          border-radius: 999px !important;
+          padding: 0.5rem 1rem !important;
+          font-weight: 600 !important;
+          gap: 0.5rem !important;
+        }
+
+        /* ── Section Headers ── */
+        .section-header h2 {
+          font-size: clamp(1.5rem, 3vw, 2rem) !important;
+          font-weight: 800 !important;
+          letter-spacing: -0.03em !important;
+        }
+        .underline {
+          width: 48px !important;
+          height: 3px !important;
+          border-radius: 2px !important;
+          background: var(--primary) !important;
+        }
+
+        /* ── Product Cards ── */
+        .product-card {
+          border-radius: 16px !important;
+          border: 1px solid var(--border-main) !important;
+          background: var(--bg-surface) !important;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+          transition: all 0.3s ease !important;
+          overflow: hidden !important;
+        }
+        .product-card:hover {
+          box-shadow: 0 8px 30px -8px rgba(0,0,0,0.08) !important;
+          transform: translateY(-3px) !important;
+          border-color: rgba(225,29,72,0.15) !important;
+        }
+        .card-img-wrap {
+          border-radius: 16px 16px 0 0 !important;
+        }
+        .card-body {
+          padding: 1rem 1.15rem 1.15rem !important;
+        }
+        .card-title-wrap strong {
+          font-size: 0.95rem !important;
+          font-weight: 700 !important;
+          letter-spacing: -0.01em !important;
+        }
+        .card-meta-row {
+          gap: 0.5rem !important;
+          margin-top: 0.15rem !important;
+        }
+        .price {
+          font-size: 1.05rem !important;
+          font-weight: 800 !important;
+          color: var(--primary) !important;
+        }
+        .card-footer .btn-wa {
+          padding: 0.55rem 1rem !important;
+          border-radius: 10px !important;
+          font-size: 0.8rem !important;
+        }
+
+        /* ── Features ── */
+        .feature-card {
+          border-radius: 16px !important;
+          border: 1px solid var(--border-main) !important;
+          padding: 2rem 1.5rem !important;
+          transition: all 0.3s !important;
+        }
+        .feature-card:hover {
+          transform: translateY(-3px) !important;
+          box-shadow: 0 8px 30px -8px rgba(0,0,0,0.06) !important;
+          border-color: var(--primary) !important;
+        }
+        .feature-icon {
+          width: 52px !important; height: 52px !important;
+          border-radius: 14px !important;
+          margin-bottom: 1rem !important;
+        }
+
+        /* ── Testimonials ── */
+        .testimoni-card {
+          border-radius: 16px !important;
+          border: 1px solid var(--border-main) !important;
+          padding: 1.25rem 1.5rem !important;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+        }
+        .testimoni-form-card {
+          border-radius: 16px !important;
+          border: 1px solid var(--border-main) !important;
+          padding: 1.5rem !important;
+        }
+        .star-rating-input .star {
+          font-size: 1.5rem !important;
+          cursor: pointer !important;
+          transition: transform 0.15s !important;
+        }
+        .star-rating-input .star:hover { transform: scale(1.2); }
+
+        /* ── Checkout ── */
+        .checkout-card {
+          border-radius: 18px !important;
+          border: 1px solid var(--border-main) !important;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+        }
+        .checkout-card-head {
+          font-weight: 700 !important;
+          font-size: 1rem !important;
+          padding: 1.15rem 1.25rem !important;
+        }
+        .cart-item {
+          border-radius: 12px !important;
+          padding: 0.75rem 1rem !important;
+          background: var(--bg-surface-soft) !important;
+          border: 1px solid var(--border-light) !important;
+        }
+        .qty-btn {
+          width: 30px !important; height: 30px !important;
+          border-radius: 8px !important;
+          border: 1px solid var(--border-main) !important;
+          background: var(--bg-surface) !important;
+          transition: all 0.15s !important;
+        }
+        .qty-btn:hover { background: var(--primary-light) !important; border-color: var(--primary) !important; color: var(--primary) !important; }
+        .qty-value { font-weight: 700 !important; min-width: 1.5rem !important; }
+
+        .option-card {
+          border-radius: 12px !important;
+          border: 1.5px solid var(--border-main) !important;
+          padding: 0.85rem 1rem !important;
+          transition: all 0.2s !important;
+        }
+        .option-card.active {
+          border-color: var(--primary) !important;
+          background: var(--primary-light) !important;
+          box-shadow: 0 0 0 3px rgba(225,29,72,0.08) !important;
+        }
+        .option-card:hover { border-color: var(--primary) !important; }
+
+        .form-group input, .form-group select, .form-group textarea {
+          border-radius: 11px !important;
+          border: 1.5px solid var(--border-main) !important;
+          padding: 0.75rem 1rem !important;
+          font-size: 0.9rem !important;
+          transition: border-color 0.2s, box-shadow 0.2s !important;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+          border-color: var(--primary) !important;
+          outline: none !important;
+          box-shadow: 0 0 0 3px rgba(225,29,72,0.06) !important;
+        }
+
+        .submit-order-btn {
+          border-radius: 12px !important;
+          padding: 0.9rem !important;
+          font-weight: 700 !important;
+          font-size: 1rem !important;
+          box-shadow: 0 6px 20px -4px rgba(225,29,72,0.25) !important;
+          transition: all 0.25s !important;
+        }
+        .submit-order-btn:hover:not(:disabled) {
+          transform: translateY(-2px) !important;
+          box-shadow: 0 10px 30px -6px rgba(225,29,72,0.35) !important;
+        }
+
+        /* ── Filter Tabs ── */
+        .filter-btn {
+          padding: 0.5rem 1.15rem !important;
+          border-radius: 999px !important;
+          font-weight: 600 !important;
+          font-size: 0.82rem !important;
+          border: 1.5px solid var(--border-main) !important;
+          transition: all 0.2s !important;
+        }
+        .filter-btn.active {
+          background: var(--primary) !important;
+          color: #fff !important;
+          border-color: var(--primary) !important;
+          box-shadow: 0 4px 12px rgba(225,29,72,0.2) !important;
+        }
+        .filter-btn:hover:not(.active) {
+          border-color: var(--primary) !important;
+          color: var(--primary) !important;
+        }
+
+        /* ── Inbox / Tracking ── */
+        .inbox-card {
+          border-radius: 16px !important;
+          border: 1px solid var(--border-main) !important;
+          transition: all 0.2s !important;
+        }
+        .inbox-card.active {
+          border-color: var(--primary) !important;
+          box-shadow: 0 0 0 2px rgba(225,29,72,0.08) !important;
+        }
+        .tracking-card {
+          border-radius: 16px !important;
+          border: 1px solid var(--border-main) !important;
+          padding: 1.5rem !important;
+        }
+        .tracking-order-row {
+          border-radius: 12px !important;
+          padding: 0.85rem 1rem !important;
+          background: var(--bg-surface-soft) !important;
+          border: 1px solid var(--border-light) !important;
+        }
+        .tracking-search-box input {
+          border-radius: 10px !important;
+          border: 1.5px solid var(--border-main) !important;
+          padding: 0.7rem 1rem !important;
+        }
+
+        /* ── Stats Bar ── */
+        .stats-bar {
+          background: var(--bg-surface) !important;
+          border-top: 1px solid var(--border-main) !important;
+          border-bottom: 1px solid var(--border-main) !important;
+        }
+        .stat-item { padding: 1.25rem 1rem !important; }
+        .stat-icon {
+          width: 40px !important; height: 40px !important;
+          border-radius: 10px !important;
+        }
+
+        /* ── Location Card ── */
+        .location-card {
+          border-radius: 18px !important;
+          border: 1px solid var(--border-main) !important;
+          overflow: hidden !important;
+        }
+
+        /* ── Footer ── */
+        .footer {
+          border-top: 1px solid var(--border-main) !important;
+        }
+        .footer-col h4 { font-weight: 700 !important; font-size: 0.9rem !important; }
+
+        /* ── Modal ── */
+        .modal-overlay {
+          background: rgba(0,0,0,0.5) !important;
+          backdrop-filter: blur(6px) !important;
+          -webkit-backdrop-filter: blur(6px) !important;
+        }
+        .modal-content {
+          border-radius: 20px !important;
+          border: 1px solid var(--border-main) !important;
+          box-shadow: 0 25px 60px -12px rgba(0,0,0,0.2) !important;
+        }
+
+        /* ── Mobile Nav ── */
+        .mobile-nav {
+          background: rgba(255,255,255,0.92) !important;
+          backdrop-filter: blur(24px) !important;
+        }
+        body.dark-mode .mobile-nav {
+          background: rgba(15,23,42,0.92) !important;
+        }
+        .mobile-nav-content { padding: 1.25rem !important; }
+        .mobile-nav-header { padding-bottom: 0.75rem !important; }
+        .mobile-nav-links a {
+          border-radius: 10px !important;
+          padding: 0.65rem 0.85rem !important;
+        }
+
+        /* ── Search ── */
+        .section-search-bar input {
+          border-radius: 999px !important;
+          border: 1.5px solid var(--border-main) !important;
+          padding: 0.65rem 1.15rem !important;
+          transition: border-color 0.2s, box-shadow 0.2s !important;
+        }
+        .section-search-bar input:focus {
+          border-color: var(--primary) !important;
+          box-shadow: 0 0 0 3px rgba(225,29,72,0.06) !important;
+          outline: none !important;
+        }
+
+        /* ── Loading State ── */
+        .loading-state { padding: 3rem !important; }
+        .loading-state::after {
+          content: '';
+          width: 32px; height: 32px;
+          border: 3px solid var(--border-main);
+          border-top-color: var(--primary);
+          border-radius: 50%;
+          animation: sp 0.6s linear infinite;
+          display: block;
+          margin: 1rem auto;
+        }
+        @keyframes sp { to { transform: rotate(360deg); } }
+
+        /* ── Tutorial ── */
+        .tutorial-modal {
+          border-radius: 20px !important;
+          border: 1px solid var(--border-main) !important;
+        }
+        .tutorial-step { padding: 0.75rem 0 !important; }
+        .tutorial-icon {
+          width: 48px !important; height: 48px !important;
+          border-radius: 12px !important;
+        }
+
+        /* ── Blog ── */
+        .blog-card {
+          border-radius: 16px !important;
+          border: 1px solid var(--border-main) !important;
+          overflow: hidden !important;
+          transition: all 0.3s !important;
+        }
+        .blog-card:hover {
+          box-shadow: 0 8px 30px -8px rgba(0,0,0,0.06) !important;
+          transform: translateY(-2px) !important;
+        }
+
+        /* ── Cart Button ── */
+        .cart-btn {
+          position: relative !important;
+          width: 38px !important; height: 38px !important;
+          border-radius: 10px !important;
+          transition: all 0.2s !important;
+        }
+        .cart-btn:hover { background: var(--primary-light) !important; color: var(--primary) !important; }
+        .cart-count {
+          min-width: 18px !important; height: 18px !important;
+          font-size: 0.65rem !important;
+          font-weight: 800 !important;
+          border-radius: 999px !important;
+        }
+
+        /* ── Sorting / Filter Select ── */
+        .sort-select, .filter-tabs select {
+          border-radius: 10px !important;
+          border: 1.5px solid var(--border-main) !important;
+          padding: 0.55rem 1rem !important;
+          font-family: inherit !important;
+        }
+      `}</style>
     </>
   );
 }
