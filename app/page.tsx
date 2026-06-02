@@ -866,6 +866,9 @@ export default function Home() {
                       <p>{user.email}</p>
                     </div>
                     <div className="user-menu-divider"></div>
+                    <Link href="/profile">
+                      <UserIcon size={16} /> Profil Saya
+                    </Link>
                     <a href="#inbox" onClick={() => document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' })}>
                       <Package size={16} /> Pesanan Saya
                     </a>
@@ -879,6 +882,9 @@ export default function Home() {
                       <Bell size={16} /> Aktifkan Notifikasi
                     </button>
                     <div className="user-menu-divider"></div>
+                    <button className="user-menu-item-btn" onClick={handleLogout} style={{ color: 'var(--text-muted)' }}>
+                      <LogOut size={16} /> Ganti Akun
+                    </button>
                     <button className="user-logout-btn" onClick={handleLogout}>
                       <LogOut size={16} /> Keluar
                     </button>

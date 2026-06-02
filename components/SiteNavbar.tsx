@@ -13,6 +13,7 @@ import {
   ChevronDown,
   User as UserIcon,
   ChefHat,
+  Package,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -125,8 +126,11 @@ export default function SiteNavbar() {
                       <p>{user.email}</p>
                     </div>
                     <div className="user-menu-divider" />
+                    <Link href="/profile">
+                      <UserIcon size={16} /> Profil Saya
+                    </Link>
                     <Link href="/#inbox">
-                      Pesanan Saya
+                      <Package size={16} /> Pesanan Saya
                     </Link>
                     <Link href="/">Kembali ke Toko</Link>
                   </div>
