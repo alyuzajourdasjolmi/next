@@ -132,7 +132,7 @@ export default function SiteNavbar() {
                   </div>
                 </div>
               ) : (
-                <Link href="/" className="btn-login-pill">
+                <Link href="/auth" className="btn-login-pill">
                   Masuk
                 </Link>
               )}

@@ -938,9 +938,9 @@ export default function Home() {
                   </div>
                 </div>
               ) : (
-                <button className="btn-login-pill" onClick={() => setAuthModal({ isOpen: true, mode: 'login' })}>
+                <Link href="/auth" className="btn-login-pill">
                   Masuk
-                </button>
+                </Link>
               )}
             </div>
 
