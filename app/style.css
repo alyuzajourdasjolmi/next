@@ -5380,3 +5380,152 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
     padding: 0.85rem 1.25rem !important;
   }
 }
+
+
+/* ── Hero Slider ── */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+}
+
+/* Slider Dots */
+.hero-slider-controls {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+.hero-slider-dot {
+  height: 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: width 0.4s ease, opacity 0.4s ease;
+}
+
+/* ── Promo Slide: Feature Badges ── */
+.hero-promo-badges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.promo-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+.promo-badge span {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.promo-badge strong {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.promo-badge p {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── Install Banner ── */
+.hero-install-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+}
+
+.hero-install-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.install-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.hero-install-left strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.hero-install-left p {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hero-promo-badges {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .promo-badge {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .hero-install-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-install-banner .btn-hero-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Slide 2 content full width on mobile */
+  .hero-slide .hero-content-new[style] {
+    max-width: 100% !important;
+  }
+
+  /* Hide right image on very small screens */
+  .hero-slide .hero-bg-image[style] {
+    left: 0 !important;
+    width: 100% !important;
+  }
+
+  .hero-slide .hero-bg-image[style] > div {
+    background: rgba(17, 17, 17, 0.82) !important;
+  }
+}
