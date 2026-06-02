@@ -1810,7 +1810,7 @@ export default function Home() {
           <div className="underline"></div>
         </div>
 
-        <div className="nav-container tracking-shell">
+        <div className="section-content">
           <motion.div
             className="inbox-card active tracking-card"
             initial={{ opacity: 0, y: 20 }}
@@ -1894,7 +1894,7 @@ export default function Home() {
           <p>Kami berlokasi strategis di Padang Pariaman, siap melayani Anda.</p>
           <div className="underline"></div>
         </div>
-        <div className="nav-container">
+        <div className="section-content">
           <div className="location-card-wrapper">
             <div className="location-info-side">
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>

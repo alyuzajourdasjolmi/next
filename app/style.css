@@ -937,11 +937,36 @@ p {
   font-weight: 500;
 }
 
-/* Section Common */
+/* Section container - reset nav-container when used in sections */
+.section .nav-container {
+  display: block;
+  height: auto;
+  padding: 0;
+  max-width: none;
+}
+
+.section-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .section-content {
+    padding: 0 2rem;
+  }
+}
+
 .section {
-  padding: 6rem 2rem;
+  padding: 6rem 1rem;
   position: relative;
   isolation: isolate;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding: 6rem 2rem;
+  }
 }
 
 .section-header {
@@ -1609,12 +1634,9 @@ body.dark-mode .btn-wa {
   flex-shrink: 0;
 }
 
-.tracking-shell {
-  max-width: 1200px;
-}
-
 .tracking-card {
   max-width: 1200px;
+  margin: 0 auto;
   padding: 2.25rem;
   position: relative;
 }
