@@ -1307,7 +1307,7 @@ body.dark-mode .theme-icon {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 2.5rem;
-  margin-bottom: 3rem;
+  margin-bottom: 4rem;
 }
 
 .footer h4 {
@@ -1363,6 +1363,7 @@ body.dark-mode .theme-icon {
   padding-top: 1.5rem;
   text-align: center;
   font-size: 0.85rem;
+  clear: both;
 }
 
 .social-links {
