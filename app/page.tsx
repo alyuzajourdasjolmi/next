@@ -992,7 +992,7 @@ export default function Home() {
       <section className="hero" id="home">
         <div className="hero-bg-image">
           <Image
-            src="/assets/images/hero.jpeg"
+            src="/assets/images/hero-toko.jpeg"
             alt="Toko Hijrah TOKO - Frozen Food & ATK"
             fill
             priority
