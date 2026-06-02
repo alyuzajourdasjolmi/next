@@ -24,3 +24,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+/* Location Card Responsive Fix */
+@media (max-width: 768px) {
+  #lokasi > .nav-container > div {
+    grid-template-columns: 1fr !important;
+  }
+  
+  #lokasi > .nav-container > div > div:last-child {
+    min-height: 350px !important;
+  }
+}

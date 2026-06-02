@@ -1895,23 +1895,35 @@ export default function Home() {
           <div className="underline"></div>
         </div>
         <div className="nav-container">
-          <div className="location-card">
-            <div className="location-details">
+          <div style={{ 
+            maxWidth: '1200px', 
+            margin: '0 auto', 
+            background: 'var(--bg-surface)', 
+            borderRadius: '32px', 
+            overflow: 'hidden',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
+            border: '1px solid var(--border-main)',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 0,
+            minHeight: '500px'
+          }}>
+            <div style={{ padding: '3rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div className="inbox-icon" style={{ background: 'var(--bg-surface-soft)', color: 'var(--primary)', flexShrink: 0 }}><MapPin size={24} /></div>
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '800' }}>Padang Pariaman</h3>
-                  <p style={{ color: 'var(--text-muted)' }}>Sumatera Barat, Indonesia</p>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: '800', margin: 0 }}>Padang Pariaman</h3>
+                  <p style={{ color: 'var(--text-muted)', margin: 0 }}>Sumatera Barat, Indonesia</p>
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div>
                   <h4 style={{ fontSize: '0.9rem', textTransform: 'uppercase', color: 'var(--text-light)', marginBottom: '0.5rem' }}>Alamat</h4>
-                  <p style={{ fontWeight: '600' }}>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik.</p>
+                  <p style={{ fontWeight: '600', margin: 0 }}>Jl. Raya Pariaman - Sicincin, Sungai Sariak, VII Koto Sungai Sarik.</p>
                 </div>
                 <div>
                   <h4 style={{ fontSize: '0.9rem', textTransform: 'uppercase', color: 'var(--text-light)', marginBottom: '0.5rem' }}>Jam Buka</h4>
-                  <p style={{ fontWeight: '600' }}>Senin - Minggu: 08:00 - 21:00 WIB</p>
+                  <p style={{ fontWeight: '600', margin: 0 }}>Senin - Minggu: 08:00 - 21:00 WIB</p>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -1939,10 +1951,11 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <div className="location-map-side">
+            <div style={{ width: '100%', height: '100%', minHeight: '500px', overflow: 'hidden' }}>
               <iframe
                 title="Map Hijrah Toko"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.2882195026853!2d100.21038167425103!3d-0.5940091352848971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4e1d5048135eb%3A0xdc1dba685f9fa4f4!2sHijrah%20TOKO!5e0!3m2!1sid!2sid!4v1714578000000!5m2!1sid!2sid"
+                style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
                 allowFullScreen
                 loading="lazy"
               ></iframe>
