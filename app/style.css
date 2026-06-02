@@ -940,6 +940,8 @@ p {
 /* Section Common */
 .section {
   padding: 6rem 2rem;
+  position: relative;
+  isolation: isolate;
 }
 
 .section-header {
@@ -1587,6 +1589,7 @@ body.dark-mode .btn-wa {
   margin: 0 auto;
   display: block;
   border: 1px solid transparent;
+  position: relative;
 }
 
 .inbox-card.active {
@@ -1613,6 +1616,7 @@ body.dark-mode .btn-wa {
 .tracking-card {
   max-width: 1200px;
   padding: 2.25rem;
+  position: relative;
 }
 
 .tracking-header {
