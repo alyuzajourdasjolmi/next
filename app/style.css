@@ -1212,7 +1212,6 @@ body.dark-mode .btn-wa {
 }
 
 .checkout-card,
-.location-card,
 .inbox-card {
   background: var(--bg-surface);
   border-radius: 28px;
@@ -2869,15 +2868,16 @@ body.dark-mode .nav-links a.active {
   background: var(--surface);
   border-radius: 32px;
   padding: 0;
-  /* Remove padding to allow map and info to touch edges or handle internal padding */
   box-shadow: var(--shadow-strong);
   border: 1px solid var(--border);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   display: grid;
   grid-template-columns: 1fr 1.2fr;
-  min-height: 500px;
+  align-items: stretch;
+  min-height: 480px;
 }
 
 .location-card:hover {
@@ -2897,19 +2897,18 @@ body.dark-mode .nav-links a.active {
 }
 
 .location-map-side {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 400px;
+  overflow: hidden;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
 }
 
 .location-map-side iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
+  flex: 1;
   width: 100%;
-  height: 100%;
+  min-height: 480px;
   border: none;
+  display: block;
 }
 
 .location-info-pills {
