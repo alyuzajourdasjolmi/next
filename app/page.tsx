@@ -1803,7 +1803,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/*  Inbox & Tracking  */}
-      <section className="section" id="inbox" style={{ background: 'var(--bg-surface-soft)' }}>
+      <section className="section" id="inbox" style={{ background: 'var(--bg-surface-soft)', paddingBottom: '8rem' }}>
         <div className="section-header">
           <h2>Lacak Pesanan</h2>
           <p>Pantau status pesanan Anda secara realtime di sini.</p>
@@ -1888,7 +1888,7 @@ export default function Home() {
       </section>
 
       {/*  Location Section  */}
-      <section className="section" id="lokasi">
+      <section className="section" id="lokasi" style={{ marginTop: '4rem' }}>
         <div className="section-header">
           <h2>Lokasi Toko</h2>
           <p>Kami berlokasi strategis di Padang Pariaman, siap melayani Anda.</p>
