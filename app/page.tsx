@@ -1953,48 +1953,48 @@ export default function Home() {
       </section>
 
       {/*  Footer  */}
-      <footer className="footer" id="kontak" style={{ background: 'var(--accent)', color: 'var(--bg-main)', padding: '6rem 2rem 3rem', position: 'relative', zIndex: 1 }}>
-        <div className="nav-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '4rem' }}>
+      <footer className="footer" id="kontak">
+        <div className="footer-grid">
           <div className="footer-col">
             <div className="nav-logo" style={{ marginBottom: '1.5rem' }}>
               <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" className="brand-logo" />
-              <span className="brand-text" style={{ color: 'var(--bg-main)' }}>Hijrah<span>Toko</span></span>
+              <span className="brand-text">Hijrah<span>Toko</span></span>
             </div>
-            <p style={{ color: 'var(--text-light)', lineHeight: '1.8' }}>
+            <p>
               Hijrah Toko adalah pusat penyedia frozen food premium dan alat tulis kantor terlengkap. Kami berkomitmen memberikan kualitas terbaik dan layanan cepat untuk Anda.
             </p>
           </div>
 
           <div className="footer-col">
-            <h4 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '2rem' }}>Tautan Cepat</h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <li><a href="#home" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Beranda</a></li>
-              <li><a href="#produk" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Katalog Produk</a></li>
-              <li><a href="#testimoni" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Testimoni</a></li>
-              <li><a href="#lokasi" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>Lokasi Kami</a></li>
+            <h4>Tautan Cepat</h4>
+            <ul>
+              <li><a href="#home">Beranda</a></li>
+              <li><a href="#produk">Katalog Produk</a></li>
+              <li><a href="#testimoni">Testimoni</a></li>
+              <li><a href="#lokasi">Lokasi Kami</a></li>
             </ul>
           </div>
 
           <div className="footer-col">
-            <h4 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '2rem' }}>Hubungi Kami</h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              <li style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)' }}>
-                <Phone size={20} className="text-primary" />
+            <h4>Hubungi Kami</h4>
+            <ul className="footer-contact-list">
+              <li>
+                <Phone size={20} />
                 <span>+62 852-6396-5031</span>
               </li>
-              <li style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)' }}>
-                <MessageSquare size={20} className="text-primary" />
+              <li>
+                <MessageSquare size={20} />
                 <span>hijrahtoko@gmail.com</span>
               </li>
-              <li style={{ display: 'flex', gap: '1rem', color: 'var(--text-light)' }}>
-                <MapPin size={20} className="text-primary" />
+              <li>
+                <MapPin size={20} />
                 <span>Padang Pariaman, Sumatera Barat</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div style={{ maxWidth: '1280px', margin: '4rem auto 0', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', color: 'var(--text-light)', fontSize: '0.9rem' }}>
+        <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} Hijrah Toko. Seluruh hak cipta dilindungi. Built with ❤️ for your home and office.</p>
         </div>
       </footer>
