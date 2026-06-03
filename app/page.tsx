@@ -253,7 +253,7 @@ export default function Home() {
     // Hero auto-slide every 5 seconds
     const heroTimer = setInterval(() => {
       setHeroPaused(paused => {
-        if (!paused) setHeroSlide(prev => (prev + 1) % 2);
+        if (!paused) setHeroSlide(prev => (prev + 1) % 3);
         return paused;
       });
     }, 5000);
@@ -1138,11 +1138,129 @@ export default function Home() {
               </div>
             </motion.div>
           )}
+
+          {/* ── SLIDE 3: Chef Virtual AI ── */}
+          {heroSlide === 2 && (
+            <motion.div key="slide-chef" className="hero-slide"
+              style={{ background: 'linear-gradient(135deg, #0d0d0d 0%, #1a0a2e 50%, #0d0d0d 100%)' }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              {/* Decorative blobs */}
+              <div style={{ position: 'absolute', top: '10%', right: '42%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(168,85,247,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: '10%', left: '5%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+              {/* Right side: Chat mockup */}
+              <div style={{ position: 'absolute', right: '3%', top: '50%', transform: 'translateY(-50%)', width: '42%', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ background: '#1a1a2e', borderRadius: '24px', border: '1px solid rgba(168,85,247,0.3)', boxShadow: '0 0 60px rgba(168,85,247,0.2)', padding: '1.25rem', width: '100%', maxWidth: '380px' }}>
+                  {/* Chat header */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingBottom: '0.85rem', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0.85rem' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #a855f7, #ec4899)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>🍳</div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <strong style={{ color: '#fff', fontSize: '0.9rem' }}>Chef Virtual</strong>
+                        <span style={{ background: '#a855f7', color: '#fff', fontSize: '0.6rem', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>AI</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e' }} />
+                        <span style={{ color: '#22c55e', fontSize: '0.72rem' }}>Online</span>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Messages */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.8rem' }}>
+                    <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '12px 12px 12px 2px', padding: '0.6rem 0.85rem', color: 'rgba(255,255,255,0.85)', maxWidth: '80%' }}>
+                      Hai! 👋 Bahan apa saja yang tersedia di rumah?
+                    </div>
+                    <div style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)', borderRadius: '12px 12px 2px 12px', padding: '0.6rem 0.85rem', color: '#fff', maxWidth: '85%', alignSelf: 'flex-end' }}>
+                      <strong style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.75rem' }}>Bahan yang saya punya:</strong>
+                      {['Telur', 'Sosis', 'Cabai', 'Nasi', 'Bawang Putih'].map(b => (
+                        <div key={b} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem' }}>
+                          <span style={{ color: '#86efac' }}>✓</span> {b}
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '12px 12px 12px 2px', padding: '0.6rem 0.85rem', color: 'rgba(255,255,255,0.85)', maxWidth: '85%', fontSize: '0.75rem' }}>
+                      Berikut resep yang bisa saya rekomendasikan untukmu!
+                    </div>
+                    {/* Recipe card */}
+                    <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '0.7rem', border: '1px solid rgba(168,85,247,0.2)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                        <span style={{ fontSize: '1.2rem' }}>🍳</span>
+                        <strong style={{ color: '#fff', fontSize: '0.78rem' }}>Nasi Goreng Sosis Pedas</strong>
+                      </div>
+                      <div style={{ color: '#fbbf24', fontSize: '0.7rem', marginBottom: '0.5rem' }}>★★★★★</div>
+                      <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.6rem' }}>
+                        <span>⏱ 20 menit</span><span>✅ Mudah</span>
+                      </div>
+                      <div style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)', borderRadius: '8px', padding: '0.4rem', textAlign: 'center', color: '#fff', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}>
+                        🍴 Lihat Resep Lengkap
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Left side: Content */}
+              <div className="hero-container-new" style={{ position: 'relative', zIndex: 3 }}>
+                <motion.div className="hero-content-new" style={{ maxWidth: '50%' }}
+                  initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}
+                >
+                  {/* Badge */}
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.4)', borderRadius: '999px', padding: '0.35rem 1rem', marginBottom: '1.5rem' }}>
+                    <span>🤖</span>
+                    <span style={{ color: '#d8b4fe', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em' }}>CHEF VIRTUAL</span>
+                    <span style={{ color: '#fbbf24' }}>✨</span>
+                  </div>
+
+                  <h1 className="hero-title-new" style={{ fontSize: 'clamp(1.8rem, 4vw, 3.2rem)', lineHeight: 1.2 }}>
+                    Bingung Mau<br />
+                    Masak <span style={{ color: '#a855f7' }}>Apa</span>{' '}
+                    <span style={{ color: '#ec4899' }}>Hari Ini?</span>
+                  </h1>
+
+                  <p className="hero-desc-new" style={{ fontSize: '1rem', marginBottom: '2rem' }}>
+                    <span style={{ color: '#d8b4fe', fontWeight: 700 }}>Chef Virtual</span> siap membantu menemukan resep terbaik berdasarkan bahan yang tersedia di rumah Anda.
+                  </p>
+
+                  {/* Buttons */}
+                  <div className="hero-actions-new" style={{ marginBottom: '2.5rem' }}>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Link href="/chef" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'linear-gradient(135deg, #a855f7, #ec4899)', color: '#fff', padding: '0.9rem 1.75rem', borderRadius: '12px', fontWeight: 800, fontSize: '1rem', textDecoration: 'none', boxShadow: '0 8px 24px rgba(168,85,247,0.35)' }}>
+                        🤖 Mulai Konsultasi
+                      </Link>
+                    </motion.div>
+                    <motion.a href="#produk" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'transparent', color: '#fff', padding: '0.9rem 1.75rem', borderRadius: '12px', fontWeight: 700, fontSize: '1rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.25)' }}>
+                      ▶ Lihat Cara Kerja
+                    </motion.a>
+                  </div>
+
+                  {/* Stats */}
+                  <div style={{ display: 'flex', gap: '2rem' }}>
+                    {[
+                      { icon: '👨‍🍳', value: '100+', label: 'Resep Tersedia' },
+                      { icon: '⚡', value: '24/7', label: 'Siap Membantu' },
+                      { icon: '🛒', value: '1 Klik', label: 'Lihat Bahan di Toko' },
+                    ].map((s, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ fontSize: '1.4rem', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '0.4rem', lineHeight: 1 }}>{s.icon}</span>
+                        <div>
+                          <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem', lineHeight: 1.2 }}>{s.value}</div>
+                          <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>{s.label}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* ── Slider Dots ── */}
         <div className="hero-slider-controls">
-          {[0, 1].map(i => (
+          {[0, 1, 2].map(i => (
             <button key={i} className="hero-slider-dot" onClick={() => setHeroSlide(i)} aria-label={`Slide ${i + 1}`}
               style={{ opacity: heroSlide === i ? 1 : 0.4, width: heroSlide === i ? '28px' : '10px' }} />
           ))}
