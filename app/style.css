@@ -5430,31 +5430,38 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   display: flex;
   align-items: flex-start;
   gap: 0.6rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 0.75rem 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.promo-badge:hover {
+  border-color: rgba(225, 29, 72, 0.3);
 }
 
 .promo-badge span {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   flex-shrink: 0;
   margin-top: 2px;
 }
 
 .promo-badge strong {
   display: block;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #ffffff;
   line-height: 1.3;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .promo-badge p {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
   margin: 0;
   line-height: 1.4;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* ── Install Banner ── */
@@ -5463,8 +5470,8 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(225, 29, 72, 0.08);
+  border: 1px solid rgba(225, 29, 72, 0.2);
   border-radius: 16px;
   padding: 1rem 1.25rem;
 }
@@ -5476,21 +5483,23 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 }
 
 .install-icon {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   flex-shrink: 0;
 }
 
 .hero-install-left strong {
   display: block;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .hero-install-left p {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
   margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* ── Responsive ── */

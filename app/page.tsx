@@ -1080,14 +1080,16 @@ export default function Home() {
 
           {/* ── SLIDE 2: Promo Install App ── */}
           {heroSlide === 1 && (
-            <motion.div key="slide-promo" className="hero-slide" style={{ background: '#111111' }}
+            <motion.div key="slide-promo" className="hero-slide" style={{ background: '#0F172A' }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.8 }}
             >
+              {/* Decorative red blob */}
+              <div style={{ position: 'absolute', top: '-10%', right: '30%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(225,29,72,0.12) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
               <div className="hero-bg-image" style={{ left: '48%', width: '52%' }}>
                 <Image src="/assets/images/hero-aplikasi.jpeg" alt="Frozen Food" fill unoptimized sizes="52vw"
                   style={{ objectFit: 'cover', objectPosition: 'left center' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #111 0%, rgba(17,17,17,0.6) 35%, transparent 100%)' }}></div>
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #0F172A 0%, rgba(15,23,42,0.65) 40%, rgba(15,23,42,0.15) 100%)' }}></div>
               </div>
               <div className="hero-container-new" style={{ position: 'relative', zIndex: 2 }}>
                 <motion.div className="hero-content-new" style={{ maxWidth: '52%' }}
@@ -1097,12 +1099,13 @@ export default function Home() {
                     <span className="subtitle-line"></span>
                     <span className="subtitle-text">PENGALAMAN BELANJA LEBIH MUDAH</span>
                   </div>
-                  <h1 className="hero-title-new" style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.8rem)', lineHeight: 1.25 }}>
-                    Belanja Frozen Food Favorit,{' '}
-                    <span style={{ color: 'var(--primary)' }}>Lebih Cepat</span>{' '}
-                    di Aplikasi <span style={{ color: 'var(--primary)' }}>HijrahToko!</span>
+                  <h1 className="hero-title-new" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)', lineHeight: 1.2 }}>
+                    BELANJA LEBIH{' '}
+                    <span>CEPAT</span>{' '}
+                    DI APLIKASI
+                    <span> HIJRAHTOKO!</span>
                   </h1>
-                  <p className="hero-desc-new" style={{ fontSize: '1rem', marginBottom: '1.5rem' }}>
+                  <p className="hero-desc-new" style={{ fontSize: '1.05rem', marginBottom: '1.75rem' }}>
                     Install <strong>HijrahToko</strong> di layar utama Anda untuk pengalaman belanja yang lebih cepat, praktis, dan hemat kuota.
                   </p>
                   <div className="hero-promo-badges">
@@ -1127,11 +1130,11 @@ export default function Home() {
                       </div>
                     </div>
                     <motion.button className="btn-hero-primary" onClick={handleInstallClick}
-                      whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+                      whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} style={{ whiteSpace: 'nowrap', flexShrink: 0, border: 'none' }}>
                       Install Sekarang ⬇️
                     </motion.button>
                   </div>
-                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', marginTop: '0.6rem' }}>
+                  <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.78rem', marginTop: '0.75rem' }}>
                     🔒 Aman & terpercaya. Tidak memakan banyak ruang penyimpanan.
                   </p>
                 </motion.div>
@@ -1142,58 +1145,59 @@ export default function Home() {
           {/* ── SLIDE 3: Chef Virtual AI ── */}
           {heroSlide === 2 && (
             <motion.div key="slide-chef" className="hero-slide"
-              style={{ background: 'linear-gradient(135deg, #0d0d0d 0%, #1a0a2e 50%, #0d0d0d 100%)' }}
+              style={{ background: '#0F172A' }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.8 }}
             >
-              {/* Decorative blobs */}
-              <div style={{ position: 'absolute', top: '10%', right: '42%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(168,85,247,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', bottom: '10%', left: '5%', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+              {/* Decorative red blobs — konsisten dengan design system */}
+              <div style={{ position: 'absolute', top: '5%', right: '38%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(225,29,72,0.1) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+              <div style={{ position: 'absolute', bottom: '5%', left: '2%', width: '250px', height: '250px', background: 'radial-gradient(circle, rgba(225,29,72,0.07) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+              <div className="dot-grid top-right"></div>
 
               {/* Right side: Chat mockup */}
-              <div style={{ position: 'absolute', right: '3%', top: '50%', transform: 'translateY(-50%)', width: '42%', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ background: '#1a1a2e', borderRadius: '24px', border: '1px solid rgba(168,85,247,0.3)', boxShadow: '0 0 60px rgba(168,85,247,0.2)', padding: '1.25rem', width: '100%', maxWidth: '380px' }}>
+              <div style={{ position: 'absolute', right: '3%', top: '50%', transform: 'translateY(-50%)', width: '40%', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ background: '#1E293B', borderRadius: '24px', border: '1px solid rgba(225,29,72,0.25)', boxShadow: '0 0 60px rgba(225,29,72,0.12), 0 24px 48px rgba(0,0,0,0.4)', padding: '1.25rem', width: '100%', maxWidth: '360px' }}>
                   {/* Chat header */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingBottom: '0.85rem', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0.85rem' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #a855f7, #ec4899)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>🍳</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingBottom: '0.85rem', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: '0.85rem' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0, boxShadow: '0 0 16px rgba(225,29,72,0.4)' }}>🍳</div>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <strong style={{ color: '#fff', fontSize: '0.9rem' }}>Chef Virtual</strong>
-                        <span style={{ background: '#a855f7', color: '#fff', fontSize: '0.6rem', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>AI</span>
+                        <strong style={{ color: '#fff', fontSize: '0.88rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Chef Virtual</strong>
+                        <span style={{ background: 'var(--primary)', color: '#fff', fontSize: '0.58rem', padding: '2px 7px', borderRadius: '4px', fontWeight: 800, letterSpacing: '0.05em' }}>AI</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
                         <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e' }} />
-                        <span style={{ color: '#22c55e', fontSize: '0.72rem' }}>Online</span>
+                        <span style={{ color: '#22c55e', fontSize: '0.7rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Online</span>
                       </div>
                     </div>
                   </div>
-                  {/* Messages */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.8rem' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '12px 12px 12px 2px', padding: '0.6rem 0.85rem', color: 'rgba(255,255,255,0.85)', maxWidth: '80%' }}>
+                  {/* Chat messages */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                    <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px 12px 12px 2px', padding: '0.65rem 0.9rem', color: 'rgba(255,255,255,0.8)', maxWidth: '78%', fontSize: '0.78rem', fontFamily: 'Plus Jakarta Sans, sans-serif', lineHeight: 1.5 }}>
                       Hai! 👋 Bahan apa saja yang tersedia di rumah?
                     </div>
-                    <div style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)', borderRadius: '12px 12px 2px 12px', padding: '0.6rem 0.85rem', color: '#fff', maxWidth: '85%', alignSelf: 'flex-end' }}>
-                      <strong style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.75rem' }}>Bahan yang saya punya:</strong>
+                    <div style={{ background: 'var(--primary)', borderRadius: '12px 12px 2px 12px', padding: '0.65rem 0.9rem', color: '#fff', maxWidth: '82%', alignSelf: 'flex-end', boxShadow: '0 4px 12px rgba(225,29,72,0.3)' }}>
+                      <strong style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.72rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Bahan yang saya punya:</strong>
                       {['Telur', 'Sosis', 'Cabai', 'Nasi', 'Bawang Putih'].map(b => (
-                        <div key={b} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem' }}>
-                          <span style={{ color: '#86efac' }}>✓</span> {b}
+                        <div key={b} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                          <span style={{ color: '#fca5a5' }}>✓</span> {b}
                         </div>
                       ))}
                     </div>
-                    <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '12px 12px 12px 2px', padding: '0.6rem 0.85rem', color: 'rgba(255,255,255,0.85)', maxWidth: '85%', fontSize: '0.75rem' }}>
+                    <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px 12px 12px 2px', padding: '0.65rem 0.9rem', color: 'rgba(255,255,255,0.8)', maxWidth: '82%', fontSize: '0.72rem', fontFamily: 'Plus Jakarta Sans, sans-serif', lineHeight: 1.5 }}>
                       Berikut resep yang bisa saya rekomendasikan untukmu!
                     </div>
                     {/* Recipe card */}
-                    <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '0.7rem', border: '1px solid rgba(168,85,247,0.2)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
-                        <span style={{ fontSize: '1.2rem' }}>🍳</span>
-                        <strong style={{ color: '#fff', fontSize: '0.78rem' }}>Nasi Goreng Sosis Pedas</strong>
+                    <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '12px', padding: '0.75rem', border: '1px solid rgba(225,29,72,0.2)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                        <span style={{ fontSize: '1.1rem' }}>🍳</span>
+                        <strong style={{ color: '#fff', fontSize: '0.75rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Nasi Goreng Sosis Pedas</strong>
                       </div>
-                      <div style={{ color: '#fbbf24', fontSize: '0.7rem', marginBottom: '0.5rem' }}>★★★★★</div>
-                      <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.6rem' }}>
+                      <div style={{ color: '#fbbf24', fontSize: '0.68rem', marginBottom: '0.4rem' }}>★★★★★</div>
+                      <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.68rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.6rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                         <span>⏱ 20 menit</span><span>✅ Mudah</span>
                       </div>
-                      <div style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)', borderRadius: '8px', padding: '0.4rem', textAlign: 'center', color: '#fff', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}>
+                      <div style={{ background: 'var(--primary)', borderRadius: '8px', padding: '0.45rem', textAlign: 'center', color: '#fff', fontSize: '0.7rem', fontWeight: 800, cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 4px 10px rgba(225,29,72,0.3)' }}>
                         🍴 Lihat Resep Lengkap
                       </div>
                     </div>
@@ -1206,48 +1210,47 @@ export default function Home() {
                 <motion.div className="hero-content-new" style={{ maxWidth: '50%' }}
                   initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}
                 >
-                  {/* Badge */}
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.4)', borderRadius: '999px', padding: '0.35rem 1rem', marginBottom: '1.5rem' }}>
-                    <span>🤖</span>
-                    <span style={{ color: '#d8b4fe', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.05em' }}>CHEF VIRTUAL</span>
-                    <span style={{ color: '#fbbf24' }}>✨</span>
+                  {/* Badge — pakai gaya subtitle-new tapi dengan icon */}
+                  <div className="hero-subtitle-new" style={{ marginBottom: '1.25rem' }}>
+                    <span className="subtitle-line"></span>
+                    <span className="subtitle-text">CHEF VIRTUAL ✨</span>
                   </div>
 
-                  <h1 className="hero-title-new" style={{ fontSize: 'clamp(1.8rem, 4vw, 3.2rem)', lineHeight: 1.2 }}>
-                    Bingung Mau<br />
-                    Masak <span style={{ color: '#a855f7' }}>Apa</span>{' '}
-                    <span style={{ color: '#ec4899' }}>Hari Ini?</span>
+                  <h1 className="hero-title-new" style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: 1.15 }}>
+                    BINGUNG MAU<br />
+                    MASAK <span>APA</span><br />
+                    HARI INI?
                   </h1>
 
-                  <p className="hero-desc-new" style={{ fontSize: '1rem', marginBottom: '2rem' }}>
-                    <span style={{ color: '#d8b4fe', fontWeight: 700 }}>Chef Virtual</span> siap membantu menemukan resep terbaik berdasarkan bahan yang tersedia di rumah Anda.
+                  <p className="hero-desc-new" style={{ fontSize: '1.05rem', marginBottom: '2rem' }}>
+                    <strong>Chef Virtual</strong> siap membantu menemukan resep terbaik berdasarkan bahan yang tersedia di rumah Anda.
                   </p>
 
-                  {/* Buttons */}
+                  {/* Buttons — pakai class design system */}
                   <div className="hero-actions-new" style={{ marginBottom: '2.5rem' }}>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Link href="/chef" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'linear-gradient(135deg, #a855f7, #ec4899)', color: '#fff', padding: '0.9rem 1.75rem', borderRadius: '12px', fontWeight: 800, fontSize: '1rem', textDecoration: 'none', boxShadow: '0 8px 24px rgba(168,85,247,0.35)' }}>
-                        🤖 Mulai Konsultasi
-                      </Link>
-                    </motion.div>
-                    <motion.a href="#produk" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', background: 'transparent', color: '#fff', padding: '0.9rem 1.75rem', borderRadius: '12px', fontWeight: 700, fontSize: '1rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.25)' }}>
+                    <Link href="/chef" className="btn-hero-primary">
+                      🤖 Mulai Konsultasi
+                    </Link>
+                    <motion.a href="#produk" className="btn-hero-outline"
+                      whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       ▶ Lihat Cara Kerja
                     </motion.a>
                   </div>
 
-                  {/* Stats */}
-                  <div style={{ display: 'flex', gap: '2rem' }}>
+                  {/* Stats — pakai gaya konsisten */}
+                  <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
                     {[
                       { icon: '👨‍🍳', value: '100+', label: 'Resep Tersedia' },
                       { icon: '⚡', value: '24/7', label: 'Siap Membantu' },
-                      { icon: '🛒', value: '1 Klik', label: 'Lihat Bahan di Toko' },
+                      { icon: '🛒', value: '1 Klik', label: 'Bahan di Toko' },
                     ].map((s, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '1.4rem', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', padding: '0.4rem', lineHeight: 1 }}>{s.icon}</span>
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(225,29,72,0.12)', border: '1px solid rgba(225,29,72,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
+                          {s.icon}
+                        </div>
                         <div>
-                          <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem', lineHeight: 1.2 }}>{s.value}</div>
-                          <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>{s.label}</div>
+                          <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem', lineHeight: 1.2, fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{s.value}</div>
+                          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.72rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{s.label}</div>
                         </div>
                       </div>
                     ))}
