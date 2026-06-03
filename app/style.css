@@ -5538,3 +5538,16 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
     background: rgba(17, 17, 17, 0.82) !important;
   }
 }
+
+
+/* ── NURA Sparkle Animation ── */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}

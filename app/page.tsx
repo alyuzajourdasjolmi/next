@@ -1142,118 +1142,87 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* ── SLIDE 3: Chef Virtual AI ── */}
+          {/* ── SLIDE 3: NURA AI ── */}
           {heroSlide === 2 && (
             <motion.div key="slide-chef" className="hero-slide"
-              style={{ background: '#0F172A' }}
+              style={{ background: '#111111' }}
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.8 }}
             >
-              {/* Decorative red blobs — konsisten dengan design system */}
-              <div style={{ position: 'absolute', top: '5%', right: '38%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(225,29,72,0.1) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
-              <div style={{ position: 'absolute', bottom: '5%', left: '2%', width: '250px', height: '250px', background: 'radial-gradient(circle, rgba(225,29,72,0.07) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
-              <div className="dot-grid top-right"></div>
+              {/* Background glow merah sesuai palette NURA */}
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '700px', height: '700px', background: 'radial-gradient(circle, rgba(255,0,85,0.08) 0%, transparent 65%)', pointerEvents: 'none', zIndex: 0 }} />
+              <div style={{ position: 'absolute', bottom: '0', right: '5%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255,0,85,0.06) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
 
-              {/* Right side: Chat mockup */}
-              <div style={{ position: 'absolute', right: '3%', top: '50%', transform: 'translateY(-50%)', width: '40%', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ background: '#1E293B', borderRadius: '24px', border: '1px solid rgba(225,29,72,0.25)', boxShadow: '0 0 60px rgba(225,29,72,0.12), 0 24px 48px rgba(0,0,0,0.4)', padding: '1.25rem', width: '100%', maxWidth: '360px' }}>
-                  {/* Chat header */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingBottom: '0.85rem', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: '0.85rem' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0, boxShadow: '0 0 16px rgba(225,29,72,0.4)' }}>🍳</div>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <strong style={{ color: '#fff', fontSize: '0.88rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Chef Virtual</strong>
-                        <span style={{ background: 'var(--primary)', color: '#fff', fontSize: '0.58rem', padding: '2px 7px', borderRadius: '4px', fontWeight: 800, letterSpacing: '0.05em' }}>AI</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                        <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e' }} />
-                        <span style={{ color: '#22c55e', fontSize: '0.7rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Online</span>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Chat messages */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px 12px 12px 2px', padding: '0.65rem 0.9rem', color: 'rgba(255,255,255,0.8)', maxWidth: '78%', fontSize: '0.78rem', fontFamily: 'Plus Jakarta Sans, sans-serif', lineHeight: 1.5 }}>
-                      Hai! 👋 Bahan apa saja yang tersedia di rumah?
-                    </div>
-                    <div style={{ background: 'var(--primary)', borderRadius: '12px 12px 2px 12px', padding: '0.65rem 0.9rem', color: '#fff', maxWidth: '82%', alignSelf: 'flex-end', boxShadow: '0 4px 12px rgba(225,29,72,0.3)' }}>
-                      <strong style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.72rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Bahan yang saya punya:</strong>
-                      {['Telur', 'Sosis', 'Cabai', 'Nasi', 'Bawang Putih'].map(b => (
-                        <div key={b} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.72rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                          <span style={{ color: '#fca5a5' }}>✓</span> {b}
-                        </div>
-                      ))}
-                    </div>
-                    <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px 12px 12px 2px', padding: '0.65rem 0.9rem', color: 'rgba(255,255,255,0.8)', maxWidth: '82%', fontSize: '0.72rem', fontFamily: 'Plus Jakarta Sans, sans-serif', lineHeight: 1.5 }}>
-                      Berikut resep yang bisa saya rekomendasikan untukmu!
-                    </div>
-                    {/* Recipe card */}
-                    <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '12px', padding: '0.75rem', border: '1px solid rgba(225,29,72,0.2)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                        <span style={{ fontSize: '1.1rem' }}>🍳</span>
-                        <strong style={{ color: '#fff', fontSize: '0.75rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Nasi Goreng Sosis Pedas</strong>
-                      </div>
-                      <div style={{ color: '#fbbf24', fontSize: '0.68rem', marginBottom: '0.4rem' }}>★★★★★</div>
-                      <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.68rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.6rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                        <span>⏱ 20 menit</span><span>✅ Mudah</span>
-                      </div>
-                      <div style={{ background: 'var(--primary)', borderRadius: '8px', padding: '0.45rem', textAlign: 'center', color: '#fff', fontSize: '0.7rem', fontWeight: 800, cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 4px 10px rgba(225,29,72,0.3)' }}>
-                        🍴 Lihat Resep Lengkap
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {/* Right side: NURA character */}
+              <div style={{ position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)', width: '48%', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {/* Glow ring behind character */}
+                <div style={{ position: 'absolute', width: '420px', height: '420px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,0,85,0.15) 0%, transparent 70%)', filter: 'blur(20px)' }} />
+                <Image
+                  src="/assets/images/nura.png"
+                  alt="NURA - Asisten Belanja Cerdas HijrahToko"
+                  width={460}
+                  height={460}
+                  unoptimized
+                  style={{ objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'drop-shadow(0 0 40px rgba(255,0,85,0.4))' }}
+                />
+                {/* Sparkles dekoratif */}
+                <div style={{ position: 'absolute', top: '8%', right: '10%', fontSize: '1.5rem', animation: 'sparkle 2s ease-in-out infinite' }}>✦</div>
+                <div style={{ position: 'absolute', top: '20%', left: '8%', fontSize: '1rem', color: '#FF0055', animation: 'sparkle 2.5s ease-in-out infinite 0.5s' }}>✦</div>
+                <div style={{ position: 'absolute', bottom: '20%', right: '8%', fontSize: '0.8rem', color: '#FF0055', animation: 'sparkle 2s ease-in-out infinite 1s' }}>✦</div>
               </div>
 
               {/* Left side: Content */}
               <div className="hero-container-new" style={{ position: 'relative', zIndex: 3 }}>
-                <motion.div className="hero-content-new" style={{ maxWidth: '50%' }}
+                <motion.div className="hero-content-new" style={{ maxWidth: '52%' }}
                   initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}
                 >
-                  {/* Badge — pakai gaya subtitle-new tapi dengan icon */}
-                  <div className="hero-subtitle-new" style={{ marginBottom: '1.25rem' }}>
-                    <span className="subtitle-line"></span>
-                    <span className="subtitle-text">CHEF VIRTUAL ✨</span>
-                  </div>
+                  {/* MEET label */}
+                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.2em', marginBottom: '0.25rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>MEET</div>
 
-                  <h1 className="hero-title-new" style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: 1.15 }}>
-                    BINGUNG MAU<br />
-                    MASAK <span>APA</span><br />
-                    HARI INI?
+                  {/* NURA title */}
+                  <h1 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 'clamp(3.5rem, 8vw, 6.5rem)', fontWeight: 900, color: '#fff', lineHeight: 0.9, letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>
+                    NURA
                   </h1>
 
-                  <p className="hero-desc-new" style={{ fontSize: '1.05rem', marginBottom: '2rem' }}>
-                    <strong>Chef Virtual</strong> siap membantu menemukan resep terbaik berdasarkan bahan yang tersedia di rumah Anda.
-                  </p>
-
-                  {/* Buttons — pakai class design system */}
-                  <div className="hero-actions-new" style={{ marginBottom: '2.5rem' }}>
-                    <Link href="/chef" className="btn-hero-primary">
-                      🤖 Mulai Konsultasi
-                    </Link>
-                    <motion.a href="#produk" className="btn-hero-outline"
-                      whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      ▶ Lihat Cara Kerja
-                    </motion.a>
+                  {/* Subtitle */}
+                  <div style={{ marginBottom: '1.25rem' }}>
+                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '1.25rem', fontWeight: 700, color: '#fff', margin: 0, lineHeight: 1.3 }}>Asisten Belanja Cerdas</p>
+                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '1.25rem', fontWeight: 800, color: '#FF0055', margin: 0, lineHeight: 1.3 }}>HijrahToko</p>
                   </div>
 
-                  {/* Stats — pakai gaya konsisten */}
-                  <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+                  <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '1rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '420px' }}>
+                    Nura siap membantu pengalaman belanja Anda menjadi lebih mudah, cepat, dan menyenangkan.
+                  </p>
+
+                  {/* Feature badges — 2x2 grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem', marginBottom: '2rem', maxWidth: '440px' }}>
                     {[
-                      { icon: '👨‍🍳', value: '100+', label: 'Resep Tersedia' },
-                      { icon: '⚡', value: '24/7', label: 'Siap Membantu' },
-                      { icon: '🛒', value: '1 Klik', label: 'Bahan di Toko' },
-                    ].map((s, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                        <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(225,29,72,0.12)', border: '1px solid rgba(225,29,72,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
-                          {s.icon}
+                      { icon: '⚡', title: 'Cepat & Responsif', desc: 'Nura selalu siap membantu kapan saja.' },
+                      { icon: '🛍️', title: 'Belanja Lebih Mudah', desc: 'Temukan produk favorit dengan rekomendasi terbaik.' },
+                      { icon: '🔔', title: 'Informasi Akurat', desc: 'Notifikasi promo, status pesanan, dan info penting lainnya.' },
+                      { icon: '🛡️', title: 'Aman & Terpercaya', desc: 'Data Anda aman bersama HijrahToko.' },
+                    ].map((f, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', padding: '0.7rem 0.85rem', transition: 'border-color 0.2s' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,0,85,0.15)', border: '1px solid rgba(255,0,85,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', flexShrink: 0 }}>
+                          {f.icon}
                         </div>
                         <div>
-                          <div style={{ color: '#fff', fontWeight: 800, fontSize: '1rem', lineHeight: 1.2, fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{s.value}</div>
-                          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.72rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{s.label}</div>
+                          <strong style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#fff', lineHeight: 1.3, fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{f.title}</strong>
+                          <p style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.4)', margin: 0, lineHeight: 1.4, fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{f.desc}</p>
                         </div>
                       </div>
                     ))}
+                  </div>
+
+                  {/* CTA Buttons */}
+                  <div className="hero-actions-new">
+                    <Link href="/chef" className="btn-hero-primary" style={{ background: '#FF0055', boxShadow: '0 8px 24px rgba(255,0,85,0.4)' }}>
+                      🤖 Chat dengan Nura
+                    </Link>
+                    <motion.a href="#produk" className="btn-hero-outline"
+                      whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      Lihat Produk ✦
+                    </motion.a>
                   </div>
                 </motion.div>
               </div>
