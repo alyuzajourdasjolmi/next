@@ -1154,21 +1154,21 @@ export default function Home() {
               <div style={{ position: 'absolute', bottom: '0', right: '5%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255,0,85,0.06) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
 
               {/* Right side: NURA character */}
-              <div style={{ position: 'absolute', right: '-2%', top: '50%', transform: 'translateY(-50%)', width: '52%', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ position: 'absolute', right: '-5%', top: '50%', transform: 'translateY(-50%)', width: '58%', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {/* Glow ring behind character */}
-                <div style={{ position: 'absolute', width: '550px', height: '550px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,0,85,0.18) 0%, transparent 70%)', filter: 'blur(30px)' }} />
+                <div style={{ position: 'absolute', width: '700px', height: '700px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,0,85,0.2) 0%, transparent 70%)', filter: 'blur(40px)' }} />
                 <Image
                   src="/assets/images/nura.png"
                   alt="NURA - Asisten Belanja Cerdas HijrahToko"
-                  width={620}
-                  height={620}
+                  width={820}
+                  height={820}
                   unoptimized
-                  style={{ objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'drop-shadow(0 0 50px rgba(255,0,85,0.5))' }}
+                  style={{ objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'drop-shadow(0 0 60px rgba(255,0,85,0.55))' }}
                 />
                 {/* Sparkles dekoratif */}
-                <div style={{ position: 'absolute', top: '8%', right: '10%', fontSize: '1.5rem', animation: 'sparkle 2s ease-in-out infinite', color: '#FF0055' }}>✦</div>
-                <div style={{ position: 'absolute', top: '20%', left: '8%', fontSize: '1rem', color: '#FF0055', animation: 'sparkle 2.5s ease-in-out infinite 0.5s' }}>✦</div>
-                <div style={{ position: 'absolute', bottom: '20%', right: '8%', fontSize: '0.8rem', color: '#FF0055', animation: 'sparkle 2s ease-in-out infinite 1s' }}>✦</div>
+                <div style={{ position: 'absolute', top: '8%', right: '12%', fontSize: '2rem', animation: 'sparkle 2s ease-in-out infinite', color: '#FF0055' }}>✦</div>
+                <div style={{ position: 'absolute', top: '18%', left: '6%', fontSize: '1.2rem', color: '#FF0055', animation: 'sparkle 2.5s ease-in-out infinite 0.5s' }}>✦</div>
+                <div style={{ position: 'absolute', bottom: '18%', right: '6%', fontSize: '1rem', color: '#FF0055', animation: 'sparkle 2s ease-in-out infinite 1s' }}>✦</div>
               </div>
 
               {/* Left side: Content */}
