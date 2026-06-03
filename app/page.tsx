@@ -1069,9 +1069,6 @@ export default function Home() {
                     <motion.a href="https://wa.me/6285263965031" className="btn-hero-outline" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <MessageSquare size={18} /> Hubungi Admin
                     </motion.a>
-                    <Link href="/chef" className="btn-hero-outline" style={{ background: 'linear-gradient(135deg,#e11d48,#be123c)', border: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <ChefHat size={18} /> Chef Virtual
-                    </Link>
                   </div>
                 </motion.div>
               </div>
