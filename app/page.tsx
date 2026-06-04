@@ -28,7 +28,18 @@ import {
   HelpCircle,
   ChevronLeft,
   ChevronRight,
-  Plus
+  Plus,
+  ArrowLeft,
+  ArrowRight,
+  Pause,
+  Play,
+  Sparkles,
+  Zap,
+  Wifi,
+  Shield,
+  Smartphone,
+  Bot,
+  Download
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import AddressSelector from '../components/AddressSelector';
@@ -98,6 +109,7 @@ export default function Home() {
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [heroSlide, setHeroSlide] = useState(0);
   const [heroPaused, setHeroPaused] = useState(false);
+  const [heroManuallyPaused, setHeroManuallyPaused] = useState(false);
   const isLocatingRef = useRef(false);
 
   const [orderInfo, setOrderInfo] = useState({
@@ -252,13 +264,13 @@ export default function Home() {
     };
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Hero auto-slide every 5 seconds
+    // Hero auto-slide every 6 seconds
     const heroTimer = setInterval(() => {
       setHeroPaused(paused => {
         if (!paused) setHeroSlide(prev => (prev + 1) % 3);
         return paused;
       });
-    }, 5000);
+    }, 6000);
 
     // Initial cart load (will be overridden by user-specific useEffect if logged in)
     const initialCart = localStorage.getItem('hijrahTokoCart_guest') || '[]';
@@ -1037,30 +1049,43 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <section className="hero" id="home"
+      <section className="hero hero-v2" id="home"
         onMouseEnter={() => setHeroPaused(true)}
-        onMouseLeave={() => setHeroPaused(false)}
+        onMouseLeave={() => {
+          if (!heroManuallyPaused) setHeroPaused(false);
+        }}
       >
+        {/* Progress bar */}
+        <div className="hero-progress-track" aria-hidden="true">
+          <motion.div
+            className="hero-progress-bar"
+            key={`progress-${heroSlide}-${heroPaused}`}
+            initial={{ width: '0%' }}
+            animate={{ width: heroPaused ? '0%' : '100%' }}
+            transition={{ duration: heroPaused ? 0 : 6, ease: 'linear' }}
+          />
+        </div>
+
         <AnimatePresence mode="wait">
 
           {/* ── SLIDE 1: Foto Toko ── */}
           {heroSlide === 0 && (
-            <motion.div key="slide-toko" className="hero-slide"
+            <motion.div key="slide-toko" className="hero-slide hero-slide-toko"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.7 }}
             >
               <div className="hero-bg-image">
                 <Image src="/assets/images/hero-toko.jpeg" alt="Toko Hijrah TOKO" fill priority unoptimized sizes="100vw"
                   style={{ objectFit: 'cover', objectPosition: 'center' }} />
-                <div className="hero-dark-overlay" style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.55) 100%)' }}></div>
+                <div className="hero-dark-overlay hero-dark-overlay-left"></div>
               </div>
               <div className="dot-grid top-right"></div>
               <div className="dot-grid bottom-left"></div>
               <div className="hero-container-new">
                 <motion.div className="hero-content-new" initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
-                  <div className="hero-subtitle-new">
-                    <span className="subtitle-line"></span>
-                    <span className="subtitle-text">SATU PINTU SOLUSI ANDA</span>
+                  <div className="hero-eyebrow-v2">
+                    <Sparkles size={14} />
+                    <span>Salah Satu Solusi Belanja Anda</span>
                   </div>
                   <h1 className="hero-title-new">HIJRAH<span>TOKO</span></h1>
                   <p className="hero-desc-new">
@@ -1074,6 +1099,35 @@ export default function Home() {
                       <MessageSquare size={18} /> Hubungi Admin
                     </motion.a>
                   </div>
+
+                  {/* Trust indicators */}
+                  <div className="hero-trust-row">
+                    <div className="hero-trust-item">
+                      <div className="hero-trust-avatars">
+                        <span className="hero-trust-avatar" style={{ background: 'linear-gradient(135deg, #f43f5e, #e11d48)' }}>A</span>
+                        <span className="hero-trust-avatar" style={{ background: 'linear-gradient(135deg, #a855f7, #7c3aed)' }}>B</span>
+                        <span className="hero-trust-avatar" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>C</span>
+                      </div>
+                      <div>
+                        <strong>1.000+</strong>
+                        <span>Pelanggan puas</span>
+                      </div>
+                    </div>
+                    <div className="hero-trust-divider"></div>
+                    <div className="hero-trust-item">
+                      <div className="hero-trust-rating">
+                        <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
+                        <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
+                        <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
+                        <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
+                        <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
+                      </div>
+                      <div>
+                        <strong>4.9 / 5.0</strong>
+                        <span>Rating toko</span>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               </div>
             </motion.div>
@@ -1081,63 +1135,69 @@ export default function Home() {
 
           {/* ── SLIDE 2: Promo Install App ── */}
           {heroSlide === 1 && (
-            <motion.div key="slide-promo" className="hero-slide" style={{ background: '#0F172A' }}
+            <motion.div key="slide-promo" className="hero-slide hero-slide-app"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.7 }}
             >
-              {/* Decorative red blob */}
-              <div style={{ position: 'absolute', top: '-10%', right: '30%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(225,29,72,0.12) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
-              <div className="hero-bg-image" style={{ left: '48%', width: '52%' }}>
+              <div className="hero-bg-image hero-bg-image-right">
                 <Image src="/assets/images/hero-aplikasi.jpeg" alt="Frozen Food" fill unoptimized sizes="52vw"
                   style={{ objectFit: 'cover', objectPosition: 'left center' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #0F172A 0%, rgba(15,23,42,0.65) 40%, rgba(15,23,42,0.15) 100%)' }}></div>
+                <div className="hero-dark-overlay hero-dark-overlay-app"></div>
               </div>
-              <div className="hero-container-new" style={{ position: 'relative', zIndex: 2 }}>
-                <motion.div className="hero-content-new" style={{ maxWidth: '52%' }}
+              <div className="hero-app-blob hero-app-blob-1"></div>
+              <div className="hero-app-blob hero-app-blob-2"></div>
+              <div className="hero-container-new">
+                <motion.div className="hero-content-new hero-content-app"
                   initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}
                 >
-                  <div className="hero-subtitle-new">
-                    <span className="subtitle-line"></span>
-                    <span className="subtitle-text">PENGALAMAN BELANJA LEBIH MUDAH</span>
+                  <div className="hero-eyebrow-v2 hero-eyebrow-app">
+                    <Smartphone size={14} />
+                    <span>Pengalaman Belanja Lebih Mudah</span>
                   </div>
-                  <h1 className="hero-title-new" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)', lineHeight: 1.2 }}>
-                    BELANJA LEBIH{' '}
-                    <span>CEPAT</span>{' '}
-                    DI APLIKASI
-                    <span> HIJRAHTOKO!</span>
+                  <h1 className="hero-title-new hero-title-app">
+                    Belanja Lebih <span>Cepat</span> di Aplikasi HijrahToko
                   </h1>
-                  <p className="hero-desc-new" style={{ fontSize: '1.05rem', marginBottom: '1.75rem' }}>
+                  <p className="hero-desc-new hero-desc-app">
                     Install <strong>HijrahToko</strong> di layar utama Anda untuk pengalaman belanja yang lebih cepat, praktis, dan hemat kuota.
                   </p>
-                  <div className="hero-promo-badges">
+
+                  <div className="hero-feature-grid">
                     {[
-                      { icon: '⚡', title: 'Akses Cepat', desc: 'Sekali klik, langsung belanja' },
-                      { icon: '📶', title: 'Bisa Offline', desc: 'Jelajahi produk tanpa internet' },
-                      { icon: '🔔', title: 'Notifikasi Promo', desc: 'Dapatkan info promo terbaru' },
-                      { icon: '🛡️', title: 'Aman & Ringan', desc: 'Hemat kuota penyimpanan' },
-                    ].map((b, i) => (
-                      <div key={i} className="promo-badge">
-                        <span>{b.icon}</span>
-                        <div><strong>{b.title}</strong><p>{b.desc}</p></div>
-                      </div>
-                    ))}
+                      { icon: Zap, title: 'Akses Cepat', desc: 'Sekali klik, langsung belanja' },
+                      { icon: Wifi, title: 'Bisa Offline', desc: 'Jelajahi produk tanpa internet' },
+                      { icon: Bell, title: 'Notifikasi Promo', desc: 'Dapatkan info promo terbaru' },
+                      { icon: Shield, title: 'Aman & Ringan', desc: 'Hemat kuota penyimpanan' },
+                    ].map((b, i) => {
+                      const Icon = b.icon;
+                      return (
+                        <div key={i} className="hero-feature-card">
+                          <div className="hero-feature-card-icon">
+                            <Icon size={18} />
+                          </div>
+                          <div>
+                            <strong>{b.title}</strong>
+                            <p>{b.desc}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
+
                   <div className="hero-install-banner">
                     <div className="hero-install-left">
-                      <span className="install-icon">⬇️</span>
+                      <span className="install-icon-wrap">
+                        <Download size={20} />
+                      </span>
                       <div>
-                        <strong>Install Aplikasi <span style={{ color: 'var(--primary)' }}>HijrahToko</span></strong>
+                        <strong>Install Aplikasi <span className="install-brand">HijrahToko</span></strong>
                         <p>Nikmati belanja lebih praktis seperti aplikasi native.</p>
                       </div>
                     </div>
-                    <motion.button className="btn-hero-primary" onClick={handleInstallClick}
-                      whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} style={{ whiteSpace: 'nowrap', flexShrink: 0, border: 'none' }}>
-                      Install Sekarang ⬇️
+                    <motion.button className="btn-hero-primary btn-install" onClick={handleInstallClick}
+                      whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      Install Sekarang
                     </motion.button>
                   </div>
-                  <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.78rem', marginTop: '0.75rem' }}>
-                    🔒 Aman & terpercaya. Tidak memakan banyak ruang penyimpanan.
-                  </p>
                 </motion.div>
               </div>
             </motion.div>
@@ -1145,84 +1205,77 @@ export default function Home() {
 
           {/* ── SLIDE 3: NURA AI ── */}
           {heroSlide === 2 && (
-            <motion.div key="slide-chef" className="hero-slide"
-              style={{ background: '#111111' }}
+            <motion.div key="slide-chef" className="hero-slide hero-slide-nura"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.7 }}
             >
-              {/* Background glow merah sesuai palette NURA */}
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '700px', height: '700px', background: 'radial-gradient(circle, rgba(255,0,85,0.08) 0%, transparent 65%)', pointerEvents: 'none', zIndex: 0 }} />
-              <div style={{ position: 'absolute', bottom: '0', right: '5%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255,0,85,0.06) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+              <div className="hero-nura-glow hero-nura-glow-1"></div>
+              <div className="hero-nura-glow hero-nura-glow-2"></div>
 
-              {/* Right side: NURA character */}
-              <div style={{ position: 'absolute', right: '-5%', top: '50%', transform: 'translateY(-50%)', width: '58%', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {/* Glow ring behind character */}
-                <div style={{ position: 'absolute', width: '700px', height: '700px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,0,85,0.2) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+              <div className="hero-nura-visual">
+                <div className="hero-nura-glow-ring"></div>
                 <Image
                   src="/assets/images/nura.png"
                   alt="NURA - Asisten Belanja Cerdas HijrahToko"
                   width={820}
                   height={820}
                   unoptimized
-                  style={{ objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'drop-shadow(0 0 60px rgba(255,0,85,0.55))' }}
+                  className="hero-nura-img"
                 />
-                {/* Sparkles dekoratif */}
-                <div style={{ position: 'absolute', top: '8%', right: '12%', fontSize: '2rem', animation: 'sparkle 2s ease-in-out infinite', color: '#FF0055' }}>✦</div>
-                <div style={{ position: 'absolute', top: '18%', left: '6%', fontSize: '1.2rem', color: '#FF0055', animation: 'sparkle 2.5s ease-in-out infinite 0.5s' }}>✦</div>
-                <div style={{ position: 'absolute', bottom: '18%', right: '6%', fontSize: '1rem', color: '#FF0055', animation: 'sparkle 2s ease-in-out infinite 1s' }}>✦</div>
+                <div className="hero-nura-spark hero-nura-spark-1">✦</div>
+                <div className="hero-nura-spark hero-nura-spark-2">✦</div>
+                <div className="hero-nura-spark hero-nura-spark-3">✦</div>
               </div>
 
-              {/* Left side: Content */}
-              <div className="hero-container-new" style={{ position: 'relative', zIndex: 3 }}>
-                <motion.div className="hero-content-new" style={{ maxWidth: '52%' }}
+              <div className="hero-container-new">
+                <motion.div className="hero-content-new hero-content-nura"
                   initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}
                 >
-                  {/* MEET label */}
-                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.2em', marginBottom: '0.25rem', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>MEET</div>
-
-                  {/* NURA title */}
-                  <h1 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 'clamp(3.5rem, 8vw, 6.5rem)', fontWeight: 900, color: '#fff', lineHeight: 0.9, letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>
-                    NURA
-                  </h1>
-
-                  {/* Subtitle */}
-                  <div style={{ marginBottom: '1.25rem' }}>
-                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '1.25rem', fontWeight: 700, color: '#fff', margin: 0, lineHeight: 1.3 }}>Asisten Belanja Cerdas</p>
-                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '1.25rem', fontWeight: 800, color: '#FF0055', margin: 0, lineHeight: 1.3 }}>HijrahToko</p>
+                  <div className="hero-eyebrow-v2 hero-eyebrow-nura">
+                    <Bot size={14} />
+                    <span>Meet Your New Shopping Buddy</span>
                   </div>
 
-                  <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '1rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginBottom: '2rem', maxWidth: '420px' }}>
-                    Nura siap membantu pengalaman belanja Anda menjadi lebih mudah, cepat, dan menyenangkan.
+                  <h1 className="hero-nura-title">NURA</h1>
+
+                  <div className="hero-nura-subtitle">
+                    <p>Asisten Belanja Cerdas</p>
+                    <p className="hero-nura-brand">HijrahToko</p>
+                  </div>
+
+                  <p className="hero-desc-new hero-desc-nura">
+                    Nura siap membantu pengalaman belanja Anda menjadi lebih mudah, cepat, dan menyenangkan — kapan saja, 24/7.
                   </p>
 
-                  {/* Feature badges — 2x2 grid */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem', marginBottom: '2rem', maxWidth: '440px' }}>
+                  <div className="hero-feature-grid hero-feature-grid-nura">
                     {[
-                      { icon: '⚡', title: 'Cepat & Responsif', desc: 'Nura selalu siap membantu kapan saja.' },
-                      { icon: '🛍️', title: 'Belanja Lebih Mudah', desc: 'Temukan produk favorit dengan rekomendasi terbaik.' },
-                      { icon: '🔔', title: 'Informasi Akurat', desc: 'Notifikasi promo, status pesanan, dan info penting lainnya.' },
-                      { icon: '🛡️', title: 'Aman & Terpercaya', desc: 'Data Anda aman bersama HijrahToko.' },
-                    ].map((f, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', padding: '0.7rem 0.85rem', transition: 'border-color 0.2s' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,0,85,0.15)', border: '1px solid rgba(255,0,85,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', flexShrink: 0 }}>
-                          {f.icon}
+                      { icon: Zap, title: 'Cepat & Responsif', desc: 'Selalu siap membantu kapan saja.' },
+                      { icon: ShoppingCart, title: 'Belanja Lebih Mudah', desc: 'Rekomendasi produk terbaik.' },
+                      { icon: Bell, title: 'Informasi Akurat', desc: 'Promo & info pesanan real-time.' },
+                      { icon: Shield, title: 'Aman & Terpercaya', desc: 'Data Anda aman bersama kami.' },
+                    ].map((f, i) => {
+                      const Icon = f.icon;
+                      return (
+                        <div key={i} className="hero-feature-card hero-feature-card-nura">
+                          <div className="hero-feature-card-icon hero-feature-card-icon-nura">
+                            <Icon size={16} />
+                          </div>
+                          <div>
+                            <strong>{f.title}</strong>
+                            <p>{f.desc}</p>
+                          </div>
                         </div>
-                        <div>
-                          <strong style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#fff', lineHeight: 1.3, fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{f.title}</strong>
-                          <p style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.4)', margin: 0, lineHeight: 1.4, fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{f.desc}</p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
-                  {/* CTA Buttons */}
                   <div className="hero-actions-new">
-                    <Link href="/chef" className="btn-hero-primary" style={{ background: '#FF0055', boxShadow: '0 8px 24px rgba(255,0,85,0.4)' }}>
-                      🤖 Chat dengan Nura
+                    <Link href="/chef" className="btn-hero-primary btn-nura" >
+                      <Bot size={18} /> Chat dengan Nura
                     </Link>
-                    <motion.a href="#produk" className="btn-hero-outline"
+                    <motion.a href="#produk" className="btn-hero-outline btn-nura-outline"
                       whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      Lihat Produk ✦
+                      <ShoppingCart size={18} /> Lihat Produk
                     </motion.a>
                   </div>
                 </motion.div>
@@ -1231,12 +1284,65 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {/* ── Slider Dots ── */}
-        <div className="hero-slider-controls">
-          {[0, 1, 2].map(i => (
-            <button key={i} className="hero-slider-dot" onClick={() => setHeroSlide(i)} aria-label={`Slide ${i + 1}`}
-              style={{ opacity: heroSlide === i ? 1 : 0.4, width: heroSlide === i ? '28px' : '10px' }} />
-          ))}
+        {/* ── Slider Controls V2 ── */}
+        <div className="hero-controls-v2">
+          {/* Slide counter */}
+          <div className="hero-slide-counter">
+            <span className="hero-slide-counter-current">
+              {String(heroSlide + 1).padStart(2, '0')}
+            </span>
+            <span className="hero-slide-counter-sep"></span>
+            <span className="hero-slide-counter-total">03</span>
+          </div>
+
+          {/* Arrow nav + Play/Pause */}
+          <div className="hero-nav-group">
+            <button
+              type="button"
+              className="hero-nav-btn"
+              onClick={() => setHeroSlide(prev => (prev - 1 + 3) % 3)}
+              aria-label="Slide sebelumnya"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <button
+              type="button"
+              className="hero-nav-btn hero-play-btn"
+              onClick={() => {
+                setHeroManuallyPaused(p => {
+                  const next = !p;
+                  setHeroPaused(next);
+                  return next;
+                });
+              }}
+              aria-label={heroManuallyPaused ? 'Lanjutkan slideshow' : 'Jeda slideshow'}
+            >
+              {heroManuallyPaused ? <Play size={16} fill="currentColor" /> : <Pause size={16} fill="currentColor" />}
+            </button>
+            <button
+              type="button"
+              className="hero-nav-btn"
+              onClick={() => setHeroSlide(prev => (prev + 1) % 3)}
+              aria-label="Slide berikutnya"
+            >
+              <ArrowRight size={18} />
+            </button>
+          </div>
+
+          {/* Dot pagination */}
+          <div className="hero-dots-v2">
+            {[0, 1, 2].map(i => (
+              <button
+                key={i}
+                type="button"
+                className={`hero-dot-v2 ${heroSlide === i ? 'active' : ''}`}
+                onClick={() => setHeroSlide(i)}
+                aria-label={`Slide ${i + 1}`}
+              >
+                <span className="hero-dot-v2-fill" />
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
