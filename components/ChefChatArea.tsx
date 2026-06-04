@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Send, User, Bot, Loader2, ChefHat, Sparkles, RotateCcw } from 'lucide-react';
+import { Send, User, Loader2, ChefHat, Sparkles, RotateCcw } from 'lucide-react';
+import Image from 'next/image';
 import { chatWithChef, Message } from '../lib/groq';
 
 interface ChefChatAreaProps {
@@ -73,7 +74,7 @@ export default function ChefChatArea({ initialMessage, allProducts = [] }: ChefC
       <div className="chef-chat-header">
         <div className="chef-chat-header-left">
           <div className="chef-chat-avatar">
-            <ChefHat color="#fff" size={22} />
+            <Image src="/assets/images/nura.png" alt="Nura AI" width={40} height={40} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
           </div>
           <div>
             <div className="chef-chat-title">Nura (AI Assistant)</div>
@@ -110,7 +111,10 @@ export default function ChefChatArea({ initialMessage, allProducts = [] }: ChefC
           >
             <div className="chef-msg-bubble-wrap">
               <div className={`chef-msg-icon ${msg.role === 'user' ? 'user' : 'bot'}`}>
-                {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
+                {msg.role === 'user'
+                  ? <User size={14} />
+                  : <Image src="/assets/images/nura.png" alt="Nura" width={28} height={28} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
+                }
               </div>
               <div className={`chef-msg-bubble ${msg.role}`}>
                 {msg.content.split('\n').map((line, idx, arr) => (
@@ -128,7 +132,7 @@ export default function ChefChatArea({ initialMessage, allProducts = [] }: ChefC
           <div className="chef-msg-row assistant">
             <div className="chef-msg-bubble-wrap">
               <div className="chef-msg-icon bot">
-                <Bot size={14} />
+                <Image src="/assets/images/nura.png" alt="Nura" width={28} height={28} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
               </div>
               <div className="chef-msg-loading">
                 <span />

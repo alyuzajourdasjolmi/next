@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, User, Bot, Loader2, X, ChefHat, Sparkles } from 'lucide-react';
+import { Send, User, Loader2, X, ChefHat, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 import { chatWithChef, Message } from '../lib/groq';
 
 interface ChefVirtualProps {
@@ -65,8 +66,8 @@ export default function ChefVirtual({ initialMessage, onClose }: ChefVirtualProp
       {/* Header */}
       <div className="p-5 bg-gradient-to-r from-[#e11d48] to-[#be123c] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-            <ChefHat className="text-white" size={24} />
+          <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-white/10">
+            <Image src="/assets/images/nura.png" alt="Nura AI" width={40} height={40} unoptimized style={{ objectFit: 'contain' }} />
           </div>
           <div>
             <h3 className="text-white font-bold leading-tight">Chef Virtual Hijrah</h3>
@@ -111,9 +112,12 @@ export default function ChefVirtual({ initialMessage, onClose }: ChefVirtualProp
           >
             <div className={`flex gap-2 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                msg.role === 'user' ? 'bg-[#e11d48] text-white' : 'bg-white/10 text-white/70'
+                msg.role === 'user' ? 'bg-[#e11d48] text-white' : 'bg-black overflow-hidden'
               }`}>
-                {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
+                {msg.role === 'user'
+                  ? <User size={16} />
+                  : <Image src="/assets/images/nura.png" alt="Nura" width={32} height={32} unoptimized style={{ objectFit: 'contain' }} />
+                }
               </div>
               <div className={`p-3 rounded-2xl text-sm leading-relaxed ${
                 msg.role === 'user' 
@@ -129,8 +133,8 @@ export default function ChefVirtual({ initialMessage, onClose }: ChefVirtualProp
         {isLoading && (
           <div className="flex justify-start">
             <div className="flex gap-2 max-w-[85%]">
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/70">
-                <Bot size={16} />
+              <div className="w-8 h-8 rounded-full bg-black overflow-hidden flex items-center justify-center">
+                <Image src="/assets/images/nura.png" alt="Nura" width={32} height={32} unoptimized style={{ objectFit: 'contain' }} />
               </div>
               <div className="bg-white/5 border border-white/5 p-3 rounded-2xl rounded-tl-none flex items-center gap-1">
                 <div className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
