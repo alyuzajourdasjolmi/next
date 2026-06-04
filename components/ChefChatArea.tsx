@@ -74,7 +74,7 @@ export default function ChefChatArea({ initialMessage, allProducts = [] }: ChefC
       <div className="chef-chat-header">
         <div className="chef-chat-header-left">
           <div className="chef-chat-avatar">
-            <Image src="/assets/images/nura.png" alt="Nura AI" width={40} height={40} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
+            <Image src="/assets/images/icon-nura.png" alt="Nura AI" width={40} height={40} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
           </div>
           <div>
             <div className="chef-chat-title">Nura (AI Assistant)</div>
@@ -113,7 +113,7 @@ export default function ChefChatArea({ initialMessage, allProducts = [] }: ChefC
               <div className={`chef-msg-icon ${msg.role === 'user' ? 'user' : 'bot'}`}>
                 {msg.role === 'user'
                   ? <User size={14} />
-                  : <Image src="/assets/images/nura.png" alt="Nura" width={28} height={28} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
+                  : <Image src="/assets/images/icon-nura.png" alt="Nura" width={28} height={28} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
                 }
               </div>
               <div className={`chef-msg-bubble ${msg.role}`}>
@@ -132,7 +132,7 @@ export default function ChefChatArea({ initialMessage, allProducts = [] }: ChefC
           <div className="chef-msg-row assistant">
             <div className="chef-msg-bubble-wrap">
               <div className="chef-msg-icon bot">
-                <Image src="/assets/images/nura.png" alt="Nura" width={28} height={28} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
+                <Image src="/assets/images/icon-nura.png" alt="Nura" width={28} height={28} unoptimized style={{ objectFit: 'contain', borderRadius: '50%' }} />
               </div>
               <div className="chef-msg-loading">
                 <span />
