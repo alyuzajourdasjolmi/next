@@ -37,6 +37,7 @@ import AddressManager from '../components/AddressManager';
 
 const WA_NUMBER = "6285263965031";
 const STORE_NAME = "Hijrah Toko";
+const ADMIN_EMAIL = "admin.hijrahtoko@gmail.com";
 const STORE_COORDINATES = { lat: -0.5940091, lon: 100.2129566 };
 const SHIPPING_NEAR_MAX_KM = 2;
 const SHIPPING_MAX_KM = 20;
@@ -410,7 +411,7 @@ export default function Home() {
       });
 
       // 4. Send subscription to server
-      const role = user?.email === 'admin.hijrahtoko@gmail.com' ? 'admin' : 'customer';
+      const role = user?.email === ADMIN_EMAIL ? 'admin' : 'customer';
       const response = await fetch('/api/push/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -919,9 +920,11 @@ export default function Home() {
                     <button className="user-menu-item-btn" onClick={() => setShowProfileManager(true)}>
                       <MapPin size={16} /> Kelola Alamat
                     </button>
-                    <a href="/admin">
-                      <CheckCircle2 size={16} /> Dashboard Admin
-                    </a>
+                    {user?.email === ADMIN_EMAIL && (
+                      <a href="/admin">
+                        <CheckCircle2 size={16} /> Dashboard Admin
+                      </a>
+                    )}
                     <button className="user-menu-item-btn" onClick={subscribeToPush}>
                       <Bell size={16} /> Aktifkan Notifikasi
                     </button>
@@ -998,7 +1001,7 @@ export default function Home() {
                   <li><a href="#inbox" onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</a></li>
                   <li><a href="#lokasi" onClick={() => setMobileNavOpen(false)}>📍 Lokasi</a></li>
                   <li><a href="#kontak" onClick={() => setMobileNavOpen(false)}>📞 Kontak</a></li>
-                  {user && (
+                  {user && user?.email === ADMIN_EMAIL && (
                     <li style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
                       <a href="/admin" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>⚙️ Dashboard Admin</a>
                     </li>
