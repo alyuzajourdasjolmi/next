@@ -176,11 +176,15 @@ body.dark-mode .chef-hero {
   opacity: 0.8;
 }
 
-/* Product grid — 2 cols, same card style as dashboard */
+/* Product grid — responsive */
 .chef-product-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1.25rem;
+}
+
+.chef-product-grid > * {
+  min-width: 0;
 }
 
 @media (max-width: 560px) {
@@ -221,15 +225,58 @@ body.dark-mode .chef-hero {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 0.65rem 1rem;
+  padding: 0.55rem 0.85rem;
   border: 1px solid var(--border-main);
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--bg-surface-soft);
   color: var(--text-main);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition-fast);
+  white-space: nowrap;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.chef-product-grid .product-card .card-footer {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chef-product-grid .product-card .card-footer > div:last-child {
+  display: flex;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.chef-product-grid .product-card .card-footer .btn-wa {
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  flex: 0 0 auto;
+}
+
+/* When card is narrow, stack footer vertically */
+@media (max-width: 480px) {
+  .chef-product-grid .product-card .card-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .chef-product-grid .product-card .card-footer > div:first-child {
+    text-align: center;
+  }
+
+  .chef-product-grid .product-card .card-footer > div:last-child {
+    justify-content: center;
+  }
+
+  .chef-btn-resep {
+    flex: 1;
+  }
 }
 
 .chef-btn-resep:hover {
