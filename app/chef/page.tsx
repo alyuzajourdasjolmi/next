@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { ChefHat, ShoppingCart, Sparkles, ArrowRight, Star, Package } from 'lucide-react';
+import { ChefHat, ShoppingCart, Sparkles, ArrowRight, Star, Package, Plus } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '../../lib/supabase';
@@ -238,23 +238,24 @@ function ChefContent() {
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <span className="price">Rp {p.price.toLocaleString('id-ID')}</span>
                           </div>
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <div style={{ display: 'flex', gap: '0.4rem' }}>
                             <button
                               type="button"
-                              className="chef-btn-resep"
+                              className="btn-icon-card"
                               onClick={() => askRecipe(p.name)}
+                              title="Tanya Resep"
+                              aria-label={`Tanya resep ${displayName}`}
                             >
-                              Resep
-                              <Sparkles size={14} />
+                              <Sparkles size={15} />
                             </button>
                             <button
                               type="button"
-                              className="btn-wa"
+                              className="btn-icon-card btn-icon-card-primary"
                               onClick={() => addToCart(p)}
-                              style={{ minWidth: 'auto', padding: '0.75rem' }}
+                              title="Tambah ke Keranjang"
                               aria-label={`Tambah ${displayName}`}
                             >
-                              <ShoppingCart size={16} />
+                              <Plus size={16} />
                             </button>
                           </div>
                         </div>

@@ -27,7 +27,8 @@ import {
   ChefHat,
   HelpCircle,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Plus
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import AddressSelector from '../components/AddressSelector';
@@ -1403,26 +1404,26 @@ export default function Home() {
                           Stok: {p.stock || 0}
                         </span>
                       </div>
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
                         {p.category === 'frozen' && (
                           <Link
                             href={`/chef?recipe=${encodeURIComponent(p.name)}`}
-                            className="btn-wa"
-                            style={{ background: 'var(--bg-surface-soft)', color: 'var(--text-main)', border: '1px solid var(--border-main)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            className="btn-icon-card"
                             title="Tanya Resep"
+                            aria-label="Tanya Resep"
                           >
-                            <ChefHat size={16} />
+                            <ChefHat size={15} />
                           </Link>
                         )}
                         <button
                           type="button"
-                          className="btn-wa"
+                          className="btn-icon-card btn-icon-card-primary"
                           onClick={() => addToCart(p.id)}
                           disabled={(p.stock || 0) <= 0}
-                          style={{ opacity: (p.stock || 0) <= 0 ? 0.5 : 1, cursor: (p.stock || 0) <= 0 ? 'not-allowed' : 'pointer' }}
+                          title={(p.stock || 0) <= 0 ? 'Stok Habis' : 'Tambah ke Keranjang'}
+                          aria-label={`Tambah ${p.name}`}
                         >
-                          <ShoppingCart size={16} />
-                          {(p.stock || 0) <= 0 ? 'Habis' : 'Tambah'}
+                          {(p.stock || 0) <= 0 ? <X size={15} /> : <Plus size={16} />}
                         </button>
                       </div>
                     </div>

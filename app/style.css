@@ -1206,6 +1206,58 @@ p {
   max-width: 120px;
 }
 
+/* Compact icon button for product cards */
+.btn-icon-card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 0;
+  padding: 0;
+  background: var(--bg-surface-soft);
+  color: var(--text-main);
+  border: 1px solid var(--border-main);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.btn-icon-card:hover {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.btn-icon-card:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 35%, #fff 65%);
+  outline-offset: 2px;
+}
+
+.btn-icon-card-primary {
+  background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 75%, #000 25%));
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 8px 16px -6px rgba(225, 29, 72, 0.4);
+}
+
+.btn-icon-card-primary:hover {
+  background: var(--primary-dark);
+  border-color: color-mix(in srgb, var(--primary-dark) 80%, #fff 20%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px -8px rgba(225, 29, 72, 0.55);
+}
+
+.btn-icon-card-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .btn-wa:hover {
   background: var(--primary-dark);
   border-color: color-mix(in srgb, var(--primary-dark) 80%, #fff 20%);
