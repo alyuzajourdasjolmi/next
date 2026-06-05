@@ -31,8 +31,6 @@ import {
   Plus,
   ArrowLeft,
   ArrowRight,
-  Pause,
-  Play,
   Sparkles,
   Zap,
   Wifi,
@@ -110,7 +108,6 @@ export default function Home() {
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [heroSlide, setHeroSlide] = useState(0);
   const [heroPaused, setHeroPaused] = useState(false);
-  const [heroManuallyPaused, setHeroManuallyPaused] = useState(false);
   const isLocatingRef = useRef(false);
 
   const [orderInfo, setOrderInfo] = useState({
@@ -602,6 +599,7 @@ export default function Home() {
   const grandTotal = subtotal + (shipInfo.finalCost || 0);
   const reviewDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pelanggan';
   const visibleUserOrders = userOrders.filter((order: any) => order.status !== 'cancelled');
+  const heroSlideLabels = ['Belanja Lengkap', 'Install Cepat', 'Asisten AI'];
 
   const useCurrentLocation = () => {
     if (orderInfo.deliveryMethod !== 'delivery') {
@@ -1059,9 +1057,7 @@ export default function Home() {
 
       <section className="hero hero-v2" id="home"
         onMouseEnter={() => setHeroPaused(true)}
-        onMouseLeave={() => {
-          if (!heroManuallyPaused) setHeroPaused(false);
-        }}
+        onMouseLeave={() => setHeroPaused(false)}
       >
         {/* Progress bar */}
         <div className="hero-progress-track" aria-hidden="true">
@@ -1294,7 +1290,6 @@ export default function Home() {
 
         {/* ── Slider Controls V2 ── */}
         <div className="hero-controls-v2">
-          {/* Slide counter */}
           <div className="hero-slide-counter">
             <span className="hero-slide-counter-current">
               {String(heroSlide + 1).padStart(2, '0')}
@@ -1303,7 +1298,6 @@ export default function Home() {
             <span className="hero-slide-counter-total">03</span>
           </div>
 
-          {/* Arrow nav + Play/Pause */}
           <div className="hero-nav-group">
             <button
               type="button"
@@ -1315,20 +1309,6 @@ export default function Home() {
             </button>
             <button
               type="button"
-              className="hero-nav-btn hero-play-btn"
-              onClick={() => {
-                setHeroManuallyPaused(p => {
-                  const next = !p;
-                  setHeroPaused(next);
-                  return next;
-                });
-              }}
-              aria-label={heroManuallyPaused ? 'Lanjutkan slideshow' : 'Jeda slideshow'}
-            >
-              {heroManuallyPaused ? <Play size={16} fill="currentColor" /> : <Pause size={16} fill="currentColor" />}
-            </button>
-            <button
-              type="button"
               className="hero-nav-btn"
               onClick={() => setHeroSlide(prev => (prev + 1) % 3)}
               aria-label="Slide berikutnya"
@@ -1337,15 +1317,14 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Dot pagination */}
           <div className="hero-dots-v2">
-            {[0, 1, 2].map(i => (
+            {heroSlideLabels.map((label, i) => (
               <button
                 key={i}
                 type="button"
                 className={`hero-dot-v2 ${heroSlide === i ? 'active' : ''}`}
                 onClick={() => setHeroSlide(i)}
-                aria-label={`Slide ${i + 1}`}
+                aria-label={label}
               >
                 <span className="hero-dot-v2-fill" />
               </button>
