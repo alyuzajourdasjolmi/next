@@ -1292,35 +1292,8 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {/* ── Slider Controls V2 ── */}
+        {/* ── Slider Controls ── */}
         <div className="hero-controls-v2">
-          <div className="hero-slide-counter">
-            <span className="hero-slide-counter-current">
-              {String(heroSlide + 1).padStart(2, '0')}
-            </span>
-            <span className="hero-slide-counter-sep"></span>
-            <span className="hero-slide-counter-total">03</span>
-          </div>
-
-          <div className="hero-nav-group">
-            <button
-              type="button"
-              className="hero-nav-btn"
-              onClick={() => setHeroSlide(prev => (prev - 1 + 3) % 3)}
-              aria-label="Slide sebelumnya"
-            >
-              <ArrowLeft size={18} />
-            </button>
-            <button
-              type="button"
-              className="hero-nav-btn"
-              onClick={() => setHeroSlide(prev => (prev + 1) % 3)}
-              aria-label="Slide berikutnya"
-            >
-              <ArrowRight size={18} />
-            </button>
-          </div>
-
           <div className="hero-dots-v2">
             {heroSlideLabels.map((label, i) => (
               <button
