@@ -1078,18 +1078,20 @@ export default function Home() {
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.7 }}
             >
-              <div className="hero-bg-image">
+              {/* Full bleed background */}
+              <div className="hero-bg-image" style={{ inset: 0, width: '100%', height: '100%', borderRadius: 0, border: 'none', boxShadow: 'none', transform: 'none', top: 0, right: 0, bottom: 0, left: 0 }}>
                 <Image src="/assets/images/hero-toko.jpeg" alt="Toko Hijrah TOKO" fill priority unoptimized sizes="100vw"
                   style={{ objectFit: 'cover', objectPosition: 'center' }} />
-                <div className="hero-dark-overlay hero-dark-overlay-left"></div>
+                {/* Gradient gelap dari kiri */}
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.6) 45%, rgba(0,0,0,0.15) 100%)' }} />
               </div>
-              <div className="dot-grid top-right"></div>
-              <div className="dot-grid bottom-left"></div>
-              <div className="hero-container-new">
-                <motion.div className="hero-content-new" initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
+
+              <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
+                <motion.div className="hero-content-new" style={{ width: 'min(50%, 600px)', maxWidth: '600px' }}
+                  initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
                   <div className="hero-eyebrow-v2">
                     <Sparkles size={14} />
-                    <span>Salah Satu Solusi Belanja Anda</span>
+                    <span>Satu Pintu Solusi Anda</span>
                   </div>
                   <h1 className="hero-title-new">HIJRAH<span>TOKO</span></h1>
                   <p className="hero-desc-new">
@@ -1104,7 +1106,7 @@ export default function Home() {
                     </motion.a>
                   </div>
 
-                  {/* Trust indicators */}
+                  {/* Trust row */}
                   <div className="hero-trust-row">
                     <div className="hero-trust-item">
                       <div className="hero-trust-avatars">
@@ -1120,11 +1122,7 @@ export default function Home() {
                     <div className="hero-trust-divider"></div>
                     <div className="hero-trust-item">
                       <div className="hero-trust-rating">
-                        <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
-                        <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
-                        <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
-                        <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
-                        <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
+                        {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="#f59e0b" stroke="#f59e0b" />)}
                       </div>
                       <div>
                         <strong>4.9 / 5.0</strong>
@@ -1143,65 +1141,71 @@ export default function Home() {
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.7 }}
             >
-              <div className="hero-bg-image hero-bg-image-right">
-                <Image src="/assets/images/hero-aplikasi.jpeg" alt="Frozen Food" fill unoptimized sizes="52vw"
-                  style={{ objectFit: 'cover', objectPosition: 'left center' }} />
-                <div className="hero-dark-overlay hero-dark-overlay-app"></div>
+              {/* Full bleed image di kanan */}
+              <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}>
+                <Image src="/assets/images/hero-aplikasi.jpeg" alt="Frozen Food" fill unoptimized sizes="100vw"
+                  style={{ objectFit: 'cover', objectPosition: 'right center' }} />
+                {/* Gradient kuat dari kiri */}
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(10,10,10,0.97) 0%, rgba(10,10,10,0.85) 40%, rgba(10,10,10,0.4) 70%, rgba(10,10,10,0.1) 100%)' }} />
               </div>
-              <div className="hero-app-blob hero-app-blob-1"></div>
-              <div className="hero-app-blob hero-app-blob-2"></div>
-              <div className="hero-container-new">
-                <motion.div className="hero-content-new hero-content-app"
+
+              <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
+                <motion.div className="hero-content-new" style={{ width: 'min(52%, 580px)', maxWidth: '580px' }}
                   initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}
                 >
-                  <div className="hero-eyebrow-v2 hero-eyebrow-app">
+                  <div className="hero-eyebrow-v2">
                     <Smartphone size={14} />
                     <span>Pengalaman Belanja Lebih Mudah</span>
                   </div>
-                  <h1 className="hero-title-new hero-title-app">
-                    Belanja Lebih <span>Cepat</span> di Aplikasi HijrahToko
+
+                  {/* Mixed-case title sesuai referensi */}
+                  <h1 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 'clamp(2.2rem, 4.5vw, 3.75rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: '1.25rem', letterSpacing: '-0.02em' }}>
+                    Belanja Frozen Food<br />
+                    Favorit, <span style={{ color: 'var(--primary)' }}>Lebih Cepat</span><br />
+                    di Aplikasi <span style={{ color: 'var(--primary)' }}>HijrahToko!</span>
                   </h1>
-                  <p className="hero-desc-new hero-desc-app">
+
+                  <p className="hero-desc-new" style={{ marginBottom: '2rem' }}>
                     Install <strong>HijrahToko</strong> di layar utama Anda untuk pengalaman belanja yang lebih cepat, praktis, dan hemat kuota.
                   </p>
 
-                  <div className="hero-feature-grid">
+                  {/* Feature badges — 1 row horizontal sesuai referensi */}
+                  <div className="hero-features-row">
                     {[
-                      { icon: Zap, title: 'Akses Cepat', desc: 'Sekali klik, langsung belanja' },
-                      { icon: Wifi, title: 'Bisa Offline', desc: 'Jelajahi produk tanpa internet' },
-                      { icon: Bell, title: 'Notifikasi Promo', desc: 'Dapatkan info promo terbaru' },
-                      { icon: Shield, title: 'Aman & Ringan', desc: 'Hemat kuota penyimpanan' },
-                    ].map((b, i) => {
-                      const Icon = b.icon;
-                      return (
-                        <div key={i} className="hero-feature-card">
-                          <div className="hero-feature-card-icon">
-                            <Icon size={18} />
-                          </div>
-                          <div>
-                            <strong>{b.title}</strong>
-                            <p>{b.desc}</p>
-                          </div>
+                      { Icon: Zap, title: 'Akses Cepat', desc: 'Sekali klik, langsung belanja' },
+                      { Icon: Wifi, title: 'Bisa Offline', desc: 'Jelajahi tanpa internet' },
+                      { Icon: Bell, title: 'Notifikasi Promo', desc: 'Info promo terbaru' },
+                      { Icon: Shield, title: 'Aman & Ringan', desc: 'Hemat kuota' },
+                    ].map((b, i) => (
+                      <div key={i} className="hero-feature-pill">
+                        <div className="hero-feature-pill-icon"><b.Icon size={16} /></div>
+                        <div>
+                          <strong>{b.title}</strong>
+                          <p>{b.desc}</p>
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                   </div>
 
-                  <div className="hero-install-banner">
-                    <div className="hero-install-left">
-                      <span className="install-icon-wrap">
-                        <Download size={20} />
-                      </span>
+                  {/* Install banner */}
+                  <div className="hero-install-banner-v2">
+                    <div className="hero-install-banner-left">
+                      <div className="hero-install-banner-icon"><Download size={22} /></div>
                       <div>
-                        <strong>Install Aplikasi <span className="install-brand">HijrahToko</span></strong>
+                        <strong>Install Aplikasi <span style={{ color: 'var(--primary)' }}>HijrahToko</span></strong>
                         <p>Nikmati belanja lebih praktis seperti aplikasi native.</p>
                       </div>
                     </div>
-                    <motion.button className="btn-hero-primary btn-install" onClick={handleInstallClick}
-                      whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      Install Sekarang
+                    <motion.button className="btn-hero-primary" onClick={handleInstallClick}
+                      whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                      style={{ whiteSpace: 'nowrap', flexShrink: 0, border: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      Install Sekarang <Download size={16} />
                     </motion.button>
                   </div>
+
+                  <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem', marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    🔒 Aman &amp; terpercaya. Tidak memakan banyak ruang penyimpanan.
+                  </p>
                 </motion.div>
               </div>
             </motion.div>
