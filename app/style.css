@@ -10427,3 +10427,29 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
     font-size: 0.82rem !important;
   }
 }
+
+
+/* ── Footer Dark Mode Fix ── */
+/* Footer selalu gelap regardless of theme */
+body.dark-mode .footer {
+  background: #0F172A !important;
+}
+
+body.dark-mode .footer-col h4 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .footer-col p,
+body.dark-mode .footer-col ul li a,
+body.dark-mode .footer-contact-list li,
+body.dark-mode .footer-contact-list li span {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+body.dark-mode .footer-bottom p {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+body.dark-mode .footer-bottom {
+  border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
