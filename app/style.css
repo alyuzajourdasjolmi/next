@@ -9647,3 +9647,528 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
     justify-content: center;
   }
 }
+
+
+/* ══════════════════════════════════════════════════
+   HERO SLIDER — RESPONSIVE FINAL FIX
+   Covers: desktop 1280+, laptop 1024, tablet 768,
+           mobile 480, small mobile 360
+   ══════════════════════════════════════════════════ */
+
+/* ── Base: reset semua hero v2 ke pendekatan clean ── */
+.hero.hero-v2 {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100svh;
+  min-height: 600px;
+  max-height: 1080px;
+  background: #0f172a;
+  padding: 0;
+  display: block;
+}
+
+.hero-v2 .hero-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hero-v2 .hero-container-new {
+  width: min(1200px, calc(100% - 48px));
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-top: 80px;
+  padding-bottom: 80px;
+  position: relative;
+  z-index: 4;
+}
+
+/* Content width pada setiap slide */
+.hero-slide-toko .hero-content-new {
+  width: min(52%, 620px) !important;
+  max-width: 620px !important;
+}
+
+.hero-content-app {
+  width: min(52%, 580px) !important;
+  max-width: 580px !important;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-content-nura {
+  width: min(50%, 540px) !important;
+  max-width: 540px !important;
+  position: relative;
+  z-index: 3;
+}
+
+/* Title size universal */
+.hero-title-new {
+  font-size: clamp(2.8rem, 6vw, 5.5rem) !important;
+  line-height: 1 !important;
+  margin-bottom: 1.25rem !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* Desc size universal */
+.hero-desc-new,
+.hero-desc-app,
+.hero-desc-nura {
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem) !important;
+  line-height: 1.7 !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* Buttons */
+.hero-actions-new {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.btn-hero-primary,
+.btn-hero-outline {
+  padding: 14px 28px !important;
+  font-size: 0.95rem !important;
+  border-radius: 12px !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+/* Dots controls — selalu di bottom center */
+.hero-controls-v2 {
+  position: absolute !important;
+  bottom: 1.5rem !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  width: auto !important;
+  max-width: none !important;
+  height: auto !important;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: 999px !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  z-index: 20 !important;
+  box-shadow: none !important;
+  justify-content: center !important;
+}
+
+.hero-dots-v2 {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.3rem !important;
+  padding: 0 !important;
+}
+
+.hero-dot-v2 {
+  width: 24px !important;
+  height: 24px !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-dot-v2-fill {
+  display: block;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.3s ease;
+}
+
+.hero-dot-v2.active .hero-dot-v2-fill {
+  width: 22px !important;
+  border-radius: 999px !important;
+  background: var(--primary) !important;
+  box-shadow: 0 0 8px rgba(225, 29, 72, 0.5) !important;
+}
+
+/* ── Laptop: 1025 – 1280px ── */
+@media (max-width: 1280px) {
+  .hero-slide-toko .hero-content-new,
+  .hero-content-app,
+  .hero-content-nura {
+    width: min(55%, 560px) !important;
+  }
+
+  .hero-nura-visual {
+    right: -4%;
+    width: 48%;
+  }
+}
+
+/* ── Tablet: 769 – 1024px ── */
+@media (max-width: 1024px) {
+  .hero.hero-v2 {
+    height: auto;
+    min-height: 100svh;
+    max-height: none;
+  }
+
+  .hero-v2 .hero-slide {
+    position: relative;
+    min-height: 100svh;
+    height: auto;
+  }
+
+  .hero-v2 .hero-container-new {
+    padding-top: 100px;
+    padding-bottom: 100px;
+    width: calc(100% - 48px);
+  }
+
+  .hero-slide-toko .hero-content-new,
+  .hero-content-app,
+  .hero-content-nura {
+    width: 60% !important;
+    max-width: 560px !important;
+  }
+
+  /* Foto di slide 1 & 2 dimunculkan tapi semi transparan */
+  .hero-slide-toko .hero-bg-image {
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    border-radius: 0 !important;
+    transform: none !important;
+    opacity: 0.3 !important;
+  }
+
+  .hero-nura-visual {
+    width: 42%;
+    right: -5%;
+    opacity: 0.45;
+  }
+
+  .hero-title-new {
+    font-size: clamp(2.5rem, 6vw, 4rem) !important;
+  }
+}
+
+/* ── Mobile landscape / tablet portrait: max 768px ── */
+@media (max-width: 768px) {
+  .hero.hero-v2 {
+    height: auto;
+    min-height: 100svh;
+  }
+
+  .hero-v2 .hero-slide {
+    position: relative;
+    min-height: 100svh;
+    height: auto;
+    align-items: center;
+  }
+
+  .hero-v2 .hero-container-new {
+    width: calc(100% - 40px);
+    padding-top: 90px;
+    padding-bottom: 90px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Semua slide: konten full width, centered */
+  .hero-slide-toko .hero-content-new,
+  .hero-content-app,
+  .hero-content-nura {
+    width: 100% !important;
+    max-width: 480px !important;
+    margin: 0 auto;
+  }
+
+  /* Background images: full bleed, heavily dimmed */
+  .hero-slide-toko .hero-bg-image {
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    border-radius: 0 !important;
+    transform: none !important;
+    opacity: 0.2 !important;
+  }
+
+  /* Hide NURA visual on mobile */
+  .hero-nura-visual {
+    display: none !important;
+  }
+
+  /* Center trust row */
+  .hero-trust-row {
+    justify-content: center !important;
+    margin-inline: auto !important;
+    max-width: 400px !important;
+    grid-template-columns: 1fr auto 1fr !important;
+  }
+
+  /* Center actions */
+  .hero-actions-new {
+    justify-content: center !important;
+  }
+
+  /* Center eyebrow */
+  .hero-eyebrow-v2 {
+    margin-inline: auto;
+  }
+
+  .hero-title-new {
+    font-size: clamp(2.2rem, 8vw, 3.5rem) !important;
+  }
+
+  .hero-desc-new,
+  .hero-desc-app,
+  .hero-desc-nura {
+    max-width: 100% !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Slide 2: features 2x2 on mobile */
+  .hero-features-row {
+    max-width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  .hero-feature-pill {
+    min-width: unset !important;
+    flex: unset !important;
+  }
+
+  .hero-feature-pill p {
+    display: none !important;
+  }
+
+  .hero-install-banner-v2 {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    text-align: center !important;
+  }
+
+  .hero-install-banner-left {
+    justify-content: center !important;
+  }
+
+  .hero-install-banner-v2 .btn-hero-primary {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* NURA title center */
+  .hero-nura-title {
+    text-align: center !important;
+  }
+
+  .hero-nura-subtitle {
+    text-align: center !important;
+  }
+
+  /* Dots */
+  .hero-controls-v2 {
+    bottom: 1rem !important;
+  }
+}
+
+/* ── Mobile portrait: max 480px ── */
+@media (max-width: 480px) {
+  .hero-v2 .hero-container-new {
+    width: calc(100% - 32px);
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+
+  .hero-title-new {
+    font-size: clamp(1.9rem, 9vw, 2.8rem) !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .hero-desc-new,
+  .hero-desc-app,
+  .hero-desc-nura {
+    font-size: 0.88rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .hero-eyebrow-v2 {
+    font-size: 0.65rem !important;
+    padding: 0.35rem 0.65rem !important;
+  }
+
+  .btn-hero-primary,
+  .btn-hero-outline {
+    padding: 12px 20px !important;
+    font-size: 0.85rem !important;
+    flex: 1;
+    justify-content: center !important;
+  }
+
+  /* Feature pills 2 kolom lebih compact */
+  .hero-feature-pill {
+    padding: 0.5rem 0.6rem !important;
+    gap: 0.4rem !important;
+  }
+
+  .hero-feature-pill strong {
+    font-size: 0.72rem !important;
+  }
+
+  .hero-feature-pill-icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .hero-feature-pill-icon svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .hero-install-banner-v2 {
+    padding: 0.75rem 0.9rem !important;
+    border-radius: 12px !important;
+  }
+
+  .hero-install-banner-icon {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .hero-install-banner-left strong {
+    font-size: 0.8rem !important;
+  }
+
+  .hero-install-banner-left p {
+    font-size: 0.65rem !important;
+  }
+
+  .hero-trust-row {
+    gap: 0.75rem !important;
+    padding-top: 0.85rem !important;
+    margin-top: 1rem !important;
+  }
+
+  .hero-trust-divider {
+    display: none !important;
+  }
+
+  .hero-trust-item strong {
+    font-size: 0.82rem !important;
+  }
+
+  .hero-trust-item span {
+    font-size: 0.62rem !important;
+  }
+
+  .hero-trust-avatar {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 0.55rem !important;
+    margin-left: -5px !important;
+  }
+
+  /* NURA slide */
+  .hero-nura-title {
+    font-size: clamp(2.5rem, 12vw, 4rem) !important;
+  }
+
+  .hero-nura-subtitle p {
+    font-size: 1rem !important;
+  }
+
+  .hero-desc-nura {
+    font-size: 0.85rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .hero-feature-grid-nura {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.4rem !important;
+    max-width: 100% !important;
+  }
+
+  .hero-feature-card-nura strong {
+    font-size: 0.72rem !important;
+  }
+
+  .hero-feature-card-nura p {
+    display: none !important;
+  }
+
+  /* Dots compact */
+  .hero-dot-v2 {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .hero-dot-v2-fill {
+    width: 5px !important;
+    height: 5px !important;
+  }
+
+  .hero-dot-v2.active .hero-dot-v2-fill {
+    width: 16px !important;
+  }
+}
+
+/* ── Very small mobile: max 360px ── */
+@media (max-width: 360px) {
+  .hero-v2 .hero-container-new {
+    width: calc(100% - 24px);
+    padding-top: 70px;
+    padding-bottom: 70px;
+  }
+
+  .hero-title-new {
+    font-size: clamp(1.6rem, 9vw, 2.2rem) !important;
+    margin-bottom: 0.6rem !important;
+  }
+
+  .hero-desc-new,
+  .hero-desc-app,
+  .hero-desc-nura {
+    font-size: 0.82rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .hero-eyebrow-v2 {
+    font-size: 0.58rem !important;
+    padding: 0.28rem 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .btn-hero-primary,
+  .btn-hero-outline {
+    padding: 10px 16px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .hero-features-row {
+    gap: 0.35rem !important;
+  }
+
+  .hero-actions-new {
+    gap: 0.5rem !important;
+  }
+}

@@ -1087,7 +1087,7 @@ export default function Home() {
               </div>
 
               <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
-                <motion.div className="hero-content-new" style={{ width: 'min(50%, 600px)', maxWidth: '600px' }}
+                <motion.div className="hero-content-new hero-slide-toko"
                   initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
                   <div className="hero-eyebrow-v2">
                     <Sparkles size={14} />
@@ -1150,7 +1150,7 @@ export default function Home() {
               </div>
 
               <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
-                <motion.div className="hero-content-new" style={{ width: 'min(52%, 580px)', maxWidth: '580px' }}
+                <motion.div className="hero-content-new hero-content-app"
                   initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}
                 >
                   <div className="hero-eyebrow-v2">
