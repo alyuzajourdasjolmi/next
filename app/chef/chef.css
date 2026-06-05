@@ -593,6 +593,11 @@ body.dark-mode .chef-hero-v2 {
 .chef-product-grid .product-card .card-footer {
   flex-wrap: wrap;
   gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.1rem 1rem;
+  margin-top: auto;
 }
 
 .chef-product-grid .product-card .card-footer > div:last-child {
@@ -606,6 +611,107 @@ body.dark-mode .chef-hero-v2 {
   min-width: 0;
   padding: 0.55rem 0.75rem;
   flex: 0 0 auto;
+}
+
+/* Product Card Body Styles */
+.chef-product-grid .product-card .card-body {
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.chef-product-grid .product-card .card-title-wrap {
+  min-height: 2.6rem;
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.chef-product-grid .product-card .card-body h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-main);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.chef-product-grid .product-card .card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 20px;
+  flex-wrap: wrap;
+}
+
+.chef-product-grid .product-card .sold-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-light);
+  background: var(--bg-surface-soft);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+}
+
+.chef-product-grid .product-card .desc {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.45;
+  min-height: 3.6rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.chef-product-grid .product-card .price {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.chef-product-grid .product-card .btn-icon-card {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border-main);
+  background: var(--bg-surface-soft);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.chef-product-grid .product-card .btn-icon-card:hover {
+  background: var(--bg-surface);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.chef-product-grid .product-card .btn-icon-card-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.chef-product-grid .product-card .btn-icon-card-primary:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: white;
 }
 
 @media (max-width: 480px) {
