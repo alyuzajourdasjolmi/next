@@ -7706,6 +7706,7 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   color: #0f172a;
   font-size: 0.875rem;
   width: 100%;
+  padding: 0.25rem 0;
 }
 
 .prods-search input::placeholder { color: #94a3b8; }
@@ -8202,6 +8203,7 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   outline: none;
   color: #1e293b;
   font-size: 0.9rem;
+  padding: 0.25rem 0;
 }
 
 .pos-search input::placeholder {
