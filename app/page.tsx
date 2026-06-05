@@ -262,11 +262,10 @@ export default function Home() {
     };
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Hero auto-slide every 6 seconds
-    // Hero auto‑slide every 6 seconds (only two slides now)
+    // Hero auto‑slide every 6 seconds (now three slides including NURA AI)
     const heroTimer = setInterval(() => {
       setHeroPaused(paused => {
-        if (!paused) setHeroSlide(prev => (prev + 1) % 2);
+        if (!paused) setHeroSlide(prev => (prev + 1) % 3);
         return paused;
       });
     }, 6000);
@@ -600,8 +599,8 @@ export default function Home() {
   const grandTotal = subtotal + (shipInfo.finalCost || 0);
   const reviewDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pelanggan';
   const visibleUserOrders = userOrders.filter((order: any) => order.status !== 'cancelled');
-  // Define the two hero slides we want to display: Store intro and App install promo
-  const heroSlideLabels = ['Belanja Lengkap', 'Install Cepat'];
+  // Define the three hero slides we want to display: Store intro, App install promo, and NURA AI
+  const heroSlideLabels = ['Belanja Lengkap', 'Install Cepat', 'NURA AI'];
 
   const useCurrentLocation = () => {
     if (orderInfo.deliveryMethod !== 'delivery') {
@@ -2752,6 +2751,7 @@ export default function Home() {
     </>
   );
 }
+
 
 
 

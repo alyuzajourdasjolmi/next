@@ -67,23 +67,63 @@
   </div>
 </div>
 
-<!-- Hero -->
+<!-- Hero Slider -->
 <section class="hero" id="home">
-  <div class="hero-container">
-    <div class="hero-content fade-in">
-      <div class="hero-brand-badge">
-        <img src="assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" class="hero-logo">
-        <span>Brand Resmi Hijrah Toko</span>
-      </div>
-      <h1>Solusi <span class="highlight">Dapur & Meja Kerja</span> dalam Satu Pintu.</h1>
-      <p>Hijrah Toko menyediakan frozen food berkualitas dan alat tulis kantor lengkap dengan harga terjangkau. Belanja mudah, langsung via WhatsApp!</p>
-      <div class="hero-buttons">
-        <a href="#produk" class="btn-primary">🛒 Lihat Produk</a>
-        <a href="https://wa.me/6285263965031" class="btn-secondary" target="_blank">💬 Hubungi Kami</a>
+  <div class="hero-slider">
+    <!-- Slide 1 - Original Hijrah Toko -->
+    <div class="hero-slide active" data-slide="0">
+      <div class="hero-container">
+        <div class="hero-content fade-in">
+          <div class="hero-brand-badge">
+            <img src="assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" class="hero-logo">
+            <span>Brand Resmi Hijrah Toko</span>
+          </div>
+          <h1>Solusi <span class="highlight">Dapur & Meja Kerja</span> dalam Satu Pintu.</h1>
+          <p>Hijrah Toko menyediakan frozen food berkualitas dan alat tulis kantor lengkap dengan harga terjangkau. Belanja mudah, langsung via WhatsApp!</p>
+          <div class="hero-buttons">
+            <a href="#produk" class="btn-primary">🛒 Lihat Produk</a>
+            <a href="https://wa.me/6285263965031" class="btn-secondary" target="_blank">💬 Hubungi Kami</a>
+          </div>
+        </div>
+        <div class="hero-image fade-in">
+          <img src="assets/images/hero-banner.png" alt="Hijrah Toko Products">
+        </div>
       </div>
     </div>
-    <div class="hero-image fade-in">
-      <img src="assets/images/hero-banner.png" alt="Hijrah Toko Products">
+
+    <!-- Slide 2 - NURA AI -->
+    <div class="hero-slide" data-slide="1">
+      <div class="hero-container">
+        <div class="hero-content fade-in">
+          <div class="hero-brand-badge">
+            <img src="public/assets/images/nura.svg" alt="NURA AI Logo" class="hero-logo">
+            <span>AI Assistant</span>
+          </div>
+          <h1>Meet <span class="highlight">NURA AI</span></h1>
+          <p>Asisten cerdas yang siap membantu Anda dengan pertanyaan, rekomendasi produk, dan layanan pelanggan 24/7. Rasakan pengalaman belanja yang lebih baik!</p>
+          <div class="hero-buttons">
+            <a href="#nura" class="btn-primary">🤖 Chat dengan NURA</a>
+            <a href="#produk" class="btn-secondary">🛒 Lihat Produk</a>
+          </div>
+        </div>
+        <div class="hero-image fade-in">
+          <img src="public/assets/images/nura.svg" alt="NURA AI Assistant">
+        </div>
+      </div>
+    </div>
+
+    <!-- Slider Navigation -->
+    <div class="slider-nav">
+      <button class="slider-btn slider-prev" id="sliderPrev" aria-label="Previous slide">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <div class="slider-dots">
+        <button class="slider-dot active" data-slide="0" aria-label="Slide 1"></button>
+        <button class="slider-dot" data-slide="1" aria-label="Slide 2"></button>
+      </div>
+      <button class="slider-btn slider-next" id="sliderNext" aria-label="Next slide">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
     </div>
   </div>
 </section>
@@ -409,6 +449,120 @@ function resetMapCenter() {
     iframe.src = iframe.src;
   }
 }
+
+// Hero Slider Functionality
+class HeroSlider {
+  constructor() {
+    this.slides = document.querySelectorAll('.hero-slide');
+    this.dots = document.querySelectorAll('.slider-dot');
+    this.prevBtn = document.getElementById('sliderPrev');
+    this.nextBtn = document.getElementById('sliderNext');
+    this.currentSlide = 0;
+    this.totalSlides = this.slides.length;
+    this.autoPlayInterval = null;
+    this.autoPlayDelay = 5000; // 5 seconds
+
+    this.init();
+  }
+
+  init() {
+    if (this.slides.length === 0) return;
+
+    // Add event listeners
+    this.prevBtn?.addEventListener('click', () => this.prev());
+    this.nextBtn?.addEventListener('click', () => this.next());
+
+    this.dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => this.goToSlide(index));
+    });
+
+    // Start autoplay
+    this.startAutoPlay();
+
+    // Pause on hover
+    const slider = document.querySelector('.hero-slider');
+    if (slider) {
+      slider.addEventListener('mouseenter', () => this.stopAutoPlay());
+      slider.addEventListener('mouseleave', () => this.startAutoPlay());
+    }
+
+    // Touch/swipe support for mobile
+    this.initTouchSwipe();
+  }
+
+  goToSlide(index) {
+    if (index < 0) index = this.totalSlides - 1;
+    if (index >= this.totalSlides) index = 0;
+
+    // Remove active class from current slide and dot
+    this.slides[this.currentSlide].classList.remove('active');
+    this.dots[this.currentSlide]?.classList.remove('active');
+
+    // Add active class to new slide and dot
+    this.currentSlide = index;
+    this.slides[this.currentSlide].classList.add('active');
+    this.dots[this.currentSlide]?.classList.add('active');
+
+    // Reset autoplay timer
+    this.stopAutoPlay();
+    this.startAutoPlay();
+  }
+
+  next() {
+    this.goToSlide(this.currentSlide + 1);
+  }
+
+  prev() {
+    this.goToSlide(this.currentSlide - 1);
+  }
+
+  startAutoPlay() {
+    if (this.autoPlayInterval) return;
+    this.autoPlayInterval = setInterval(() => {
+      this.next();
+    }, this.autoPlayDelay);
+  }
+
+  stopAutoPlay() {
+    if (this.autoPlayInterval) {
+      clearInterval(this.autoPlayInterval);
+      this.autoPlayInterval = null;
+    }
+  }
+
+  initTouchSwipe() {
+    let startX = 0;
+    let endX = 0;
+    const slider = document.querySelector('.hero-slider');
+
+    if (!slider) return;
+
+    slider.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    slider.addEventListener('touchend', (e) => {
+      endX = e.changedTouches[0].clientX;
+      this.handleSwipe();
+    }, { passive: true });
+
+    this.handleSwipe = () => {
+      const diff = startX - endX;
+      const threshold = 50; // minimum swipe distance
+
+      if (diff > threshold) {
+        this.next(); // swipe left
+      } else if (diff < -threshold) {
+        this.prev(); // swipe right
+      }
+    };
+  }
+}
+
+// Initialize slider when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  new HeroSlider();
+});
 
 // Product Data
 const products = [

@@ -323,25 +323,54 @@ body.dark-mode .theme-icon {
 }
 
 /* ══════════════════════════════
-   HERO
+   HERO SLIDER
 ══════════════════════════════ */
 .hero {
   min-height: 100vh;
   display: flex;
   align-items: center;
   padding: 6rem 1.5rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
 
+.hero-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
+  display: flex;
+  align-items: center;
+}
+
+.hero-slide.active {
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+}
+
+.hero-slide:nth-child(1) {
   background:
     linear-gradient(rgba(0, 0, 0, 0.72),
       rgba(0, 0, 0, 0.72)),
     url('images/hero.jpeg');
-
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
 
-  position: relative;
-  overflow: hidden;
+.hero-slide:nth-child(2) {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
 }
 
 .hero::before {
@@ -524,6 +553,195 @@ body.dark-mode .theme-icon {
 
   100% {
     transform: translateY(-15px);
+  }
+}
+
+/* Slider Navigation */
+.slider-nav {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  z-index: 10;
+}
+
+.slider-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.slider-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.slider-btn:active {
+  transform: scale(0.95);
+}
+
+.slider-dots {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.slider-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider-dot:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.slider-dot.active {
+  background: white;
+  width: 32px;
+  border-radius: 6px;
+}
+
+/* Responsive Design for Hero Slider */
+@media (max-width: 1024px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .hero-content {
+    order: 2;
+  }
+
+  .hero-image {
+    order: 1;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-content p {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .slider-nav {
+    bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 5rem 1rem 3rem;
+    min-height: auto;
+    min-height: 90vh;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+
+  .hero-image {
+    max-width: 300px;
+  }
+
+  .slider-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .slider-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .slider-dot.active {
+    width: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 4rem 0.75rem 2rem;
+  }
+
+  .hero-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .hero-brand-badge {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .hero-logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .hero-image {
+    max-width: 250px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .slider-nav {
+    gap: 1rem;
+  }
+
+  .slider-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .slider-btn svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
