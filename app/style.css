@@ -10172,3 +10172,239 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
     gap: 0.5rem !important;
   }
 }
+
+
+/* ══════════════════════════════════════════════════
+   HERO MOBILE CLEAN DESIGN — UX FIX
+   Prinsip: kurangi density, prioritas konten utama
+   ══════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+
+  /* Container: breathing room yang cukup */
+  .hero.hero-v2 {
+    height: auto !important;
+    min-height: 100svh !important;
+    max-height: none !important;
+  }
+
+  .hero-v2 .hero-slide {
+    position: relative !important;
+    min-height: 100svh !important;
+    height: auto !important;
+    align-items: center !important;
+  }
+
+  .hero-v2 .hero-container-new {
+    padding-top: 88px !important;
+    padding-bottom: 72px !important;
+    width: calc(100% - 36px) !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  .hero-slide-toko .hero-content-new,
+  .hero-content-app,
+  .hero-content-nura {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* 1. EYEBROW — lebih kecil, tidak terlalu mencolok */
+  .hero-eyebrow-v2 {
+    font-size: 0.6rem !important;
+    padding: 0.3rem 0.7rem !important;
+    margin-bottom: 0.75rem !important;
+    margin-inline: auto !important;
+  }
+
+  /* 2. JUDUL — dominan tapi tidak overflow */
+  .hero-title-new,
+  .hero-title-app,
+  .hero-nura-title {
+    font-size: clamp(1.85rem, 8.5vw, 2.5rem) !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  /* Slide 2: judul mixed-case lebih kecil */
+  .hero-content-app h1 {
+    font-size: clamp(1.7rem, 7.5vw, 2.25rem) !important;
+    line-height: 1.15 !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* 3. DESKRIPSI — singkat, cukup 2-3 baris */
+  .hero-desc-new,
+  .hero-desc-app,
+  .hero-desc-nura {
+    font-size: 0.875rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 1.25rem !important;
+    max-width: 100% !important;
+    /* Batasi ke 3 baris */
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  /* 4. FEATURE PILLS — sembunyikan di mobile, tidak perlu */
+  .hero-features-row {
+    display: none !important;
+  }
+
+  /* 5. INSTALL BANNER — sederhanakan jadi satu baris */
+  .hero-install-banner-v2 {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    padding: 0.85rem !important;
+    text-align: center !important;
+    background: rgba(255, 255, 255, 0.07) !important;
+    border-radius: 14px !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .hero-install-banner-left {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+  }
+
+  .hero-install-banner-icon {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .hero-install-banner-left strong {
+    font-size: 0.85rem !important;
+    text-align: center !important;
+  }
+
+  .hero-install-banner-left p {
+    display: none !important;
+  }
+
+  .hero-install-banner-v2 .btn-hero-primary {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 13px 20px !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* 6. CTA BUTTONS — full width, stacked vertikal */
+  .hero-actions-new {
+    flex-direction: column !important;
+    gap: 0.6rem !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+
+  .hero-actions-new .btn-hero-primary,
+  .hero-actions-new .btn-hero-outline,
+  .hero-actions-new a,
+  .hero-actions-new button {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 13px 20px !important;
+    font-size: 0.9rem !important;
+    border-radius: 14px !important;
+  }
+
+  /* Untuk slide 1: hanya tampilkan tombol utama */
+  .hero-slide-toko .hero-actions-new .btn-hero-outline {
+    display: none !important;
+  }
+
+  /* 7. TRUST ROW — sembunyikan di mobile, terlalu rame */
+  .hero-trust-row {
+    display: none !important;
+  }
+
+  /* 8. NURA SLIDE — clean */
+  .hero-nura-title {
+    font-size: clamp(2.5rem, 11vw, 3.5rem) !important;
+    margin-bottom: 0.3rem !important;
+  }
+
+  .hero-nura-subtitle {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .hero-nura-subtitle p {
+    font-size: 0.95rem !important;
+  }
+
+  .hero-desc-nura {
+    -webkit-line-clamp: 2 !important;
+  }
+
+  /* Feature grid NURA — sembunyikan di mobile */
+  .hero-feature-grid-nura {
+    display: none !important;
+  }
+
+  /* 9. DOTS — kecil dan tidak mengganggu */
+  .hero-controls-v2 {
+    bottom: 0.85rem !important;
+  }
+
+  .hero-dot-v2 {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .hero-dot-v2-fill {
+    width: 5px !important;
+    height: 5px !important;
+  }
+
+  .hero-dot-v2.active .hero-dot-v2-fill {
+    width: 16px !important;
+  }
+
+  /* 10. Overlay lebih gelap untuk readability */
+  .hero-slide-app > div:first-child > div:last-child {
+    background: linear-gradient(
+      to bottom,
+      rgba(5, 5, 5, 0.88) 0%,
+      rgba(5, 5, 5, 0.82) 100%
+    ) !important;
+  }
+}
+
+/* ── Very small: 360px ── */
+@media (max-width: 360px) {
+  .hero-v2 .hero-container-new {
+    padding-top: 80px !important;
+    padding-bottom: 64px !important;
+    width: calc(100% - 28px) !important;
+  }
+
+  .hero-title-new,
+  .hero-title-app,
+  .hero-nura-title {
+    font-size: clamp(1.6rem, 9vw, 2rem) !important;
+  }
+
+  .hero-content-app h1 {
+    font-size: clamp(1.5rem, 8vw, 1.9rem) !important;
+  }
+
+  .hero-desc-new,
+  .hero-desc-app {
+    -webkit-line-clamp: 2 !important;
+  }
+
+  .hero-eyebrow-v2 {
+    font-size: 0.55rem !important;
+  }
+
+  .hero-actions-new .btn-hero-primary,
+  .hero-actions-new .btn-hero-outline,
+  .hero-install-banner-v2 .btn-hero-primary {
+    padding: 12px 16px !important;
+    font-size: 0.82rem !important;
+  }
+}
