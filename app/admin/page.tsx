@@ -23,6 +23,7 @@ import {
   UserCircle2,
   Users,
   ShoppingCart,
+  Plus,
   PlusCircle,
   MinusCircle,
   Menu,
@@ -31,6 +32,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import POSCashier from "../../components/POSCashier";
 import "../style.css";
 
 const ADMIN_EMAIL = "admin.hijrahtoko@gmail.com";
@@ -91,6 +93,8 @@ export default function AdminDashboard() {
   const [cashAmount, setCashAmount] = useState<number | string>("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isUnauthorized, setIsUnauthorized] = useState(false);
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   useEffect(() => {
     const checkUser = async () => {
@@ -1347,112 +1351,11 @@ return (
             )}
 
             {activeTab === "cashier" && (
-              <section className="admin-pos-layout">
-                <article className="admin-panel">
-                  <div className="admin-panel-header split">
-                    <h2>
-                      <ShoppingCart size={18} />
-                      Katalog Kasir
-                    </h2>
-                    <div className="admin-search-minimal">
-                      <Search size={14} />
-                      <input 
-                        type="text" 
-                        placeholder="Cari produk..." 
-                        value={posSearchTerm}
-                        onChange={(e) => setPosSearchTerm(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pos-grid">
-                    {products
-                      .filter(p => p.name.toLowerCase().includes(posSearchTerm.toLowerCase()))
-                      .map(product => (
-                        <div key={product.id} className={`pos-card ${(product.stock || 0) <= 0 ? 'out-of-stock' : ''}`}>
-                          <img src={product.img} alt={product.name} />
-                          <div className="pos-card-info" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                            <div style={{ flex: 1 }}>
-                              <strong>{product.name}</strong>
-                              <span className="price">Rp {product.price.toLocaleString('id-ID')}</span>
-                              <span className={`stock ${product.stock <= 5 ? 'low' : ''}`}>
-                                Stok: {product.stock || 0}
-                              </span>
-                            </div>
-                            <button 
-                              onClick={() => addToPosCart(product)}
-                              disabled={product.stock <= 0}
-                              className="btn-add-pos"
-                            >
-                              {product.stock <= 0 ? 'Habis' : 'Tambah'}
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </article>
-
-                <article className="admin-panel">
-                  <div className="admin-panel-header">
-                    <h2>Detail Transaksi</h2>
-                  </div>
-                  
-                  <div className="pos-cart-list">
-                    {posCart.length === 0 ? (
-                      <div className="pos-empty">Keranjang kosong</div>
-                    ) : (
-                      posCart.map(item => (
-                        <div key={item.id} className="pos-cart-item">
-                          <div className="item-info">
-                            <strong>{item.name}</strong>
-                            <span>Rp {item.price.toLocaleString('id-ID')}</span>
-                          </div>
-                          <div className="item-qty-ctrl">
-                            <button onClick={() => updatePosQty(item.id, -1)}><MinusCircle size={16}/></button>
-                            <span>{item.qty}</span>
-                            <button onClick={() => updatePosQty(item.id, 1)}><PlusCircle size={16}/></button>
-                            <button className="remove" onClick={() => removeFromPosCart(item.id)}><Trash2 size={14}/></button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  <div className="pos-summary">
-                    <div className="summary-row">
-                      <span>Total</span>
-                      <strong>Rp {posCart.reduce((s, i) => s + (i.price * i.qty), 0).toLocaleString('id-ID')}</strong>
-                    </div>
-
-                    <div className="pos-calc">
-                      <div className="calc-field">
-                        <label>Uang Pelanggan (Rp)</label>
-                        <input 
-                          type="number" 
-                          placeholder="Masukkan jumlah..." 
-                          value={cashAmount}
-                          onChange={(e) => setCashAmount(e.target.value)}
-                        />
-                      </div>
-                      <div className="calc-result">
-                        <span>Kembalian</span>
-                        <strong className={Number(cashAmount) - posCart.reduce((s, i) => s + (i.price * i.qty), 0) < 0 ? 'negative' : ''}>
-                          Rp {(Number(cashAmount) > 0 
-                            ? Math.max(0, Number(cashAmount) - posCart.reduce((s, i) => s + (i.price * i.qty), 0)) 
-                            : 0).toLocaleString('id-ID')}
-                        </strong>
-                      </div>
-                    </div>
-
-                    <button 
-                      className="btn-process-pos" 
-                      disabled={posCart.length === 0 || isPosProcessing || (Number(cashAmount) < posCart.reduce((s, i) => s + (i.price * i.qty), 0))}
-                      onClick={processPosOrder}
-                    >
-                      {isPosProcessing ? 'Memproses...' : 'Proses Pembayaran'}
-                    </button>
-                  </div>
-                </article>
+              <section className="admin-pos-wrapper">
+                <POSCashier
+                  products={products}
+                  onTransactionComplete={fetchData}
+                />
               </section>
             )}
 
@@ -1596,144 +1499,264 @@ return (
             )}
 
             {activeTab === "products" && (
-              <section className="admin-product-layout">
-                <article className="admin-panel">
-                  <div className="admin-panel-header split">
-                    <h2>
-                      <Edit3 size={18} />
-                      {editingProductId ? "Edit Produk" : "Tambah Produk"}
-                    </h2>
-                  </div>
-
-                  <form onSubmit={saveProduct} className="admin-form">
-                    <label>
-                      Nama Produk
-                      <input
-                        type="text"
-                        value={productForm.name}
-                        onChange={(e) => setProductForm(p => ({ ...p, name: e.target.value }))}
-                        required
-                      />
-                    </label>
-                    <label>
-                      Deskripsi
-                      <textarea
-                        rows={3}
-                        value={productForm.desc}
-                        onChange={(e) => setProductForm(p => ({ ...p, desc: e.target.value }))}
-                        required
-                      />
-                    </label>
-                    <div className="admin-form-grid">
-                      <label>
-                        Harga
-                        <input
-                          type="number"
-                          value={productForm.price}
-                          onChange={(e) => setProductForm(p => ({ ...p, price: Number(e.target.value) }))}
-                          required
-                        />
-                      </label>
-                      <label>
-                        Kategori
-                        <select
-                          value={productForm.category}
-                          onChange={(e) => setProductForm(p => ({ ...p, category: e.target.value }))}
-                        >
-                          <option value="frozen">Frozen Food</option>
-                          <option value="atk">ATK</option>
-                          <option value="other">Lainnya</option>
-                        </select>
-                      </label>
-                      <label>
-                        Stok
-                        <input
-                          type="number"
-                          value={productForm.stock}
-                          onChange={(e) => setProductForm(p => ({ ...p, stock: Number(e.target.value) }))}
-                          required
-                        />
-                      </label>
+              <section className="admin-products-page">
+                {/* Stats */}
+                <div className="prods-stats">
+                  <div className="prods-stat">
+                    <Package size={18} />
+                    <div>
+                      <strong>{products.length}</strong>
+                      <span>Total Produk</span>
                     </div>
-                    <label>
-                      URL Gambar
-                      <input
-                        type="text"
-                        value={productForm.img}
-                        onChange={(e) => setProductForm(p => ({ ...p, img: e.target.value }))}
-                      />
-                    </label>
-                    <label className="upload-trigger">
-                      <Upload size={16} /> Upload Gambar
-                      <input type="file" onChange={handleFileUpload} accept="image/*" hidden />
-                    </label>
-                    {isUploading && (
-                      <div className="upload-progress">
-                        <span style={{ width: `${uploadProgress}%` }} />
+                  </div>
+                  <div className="prods-stat warn">
+                    <AlertCircle size={18} />
+                    <div>
+                      <strong>{products.filter(p => (p.stock || 0) > 0 && (p.stock || 0) <= 5).length}</strong>
+                      <span>Stok Menipis</span>
+                    </div>
+                  </div>
+                  <div className="prods-stat danger">
+                    <X size={18} />
+                    <div>
+                      <strong>{products.filter(p => (p.stock || 0) <= 0).length}</strong>
+                      <span>Habis</span>
+                    </div>
+                  </div>
+                  <div className="prods-stat accent">
+                    <TrendingUp size={18} />
+                    <div>
+                      <strong>Rp {products.reduce((s, p) => s + (p.price * (p.stock || 0)), 0).toLocaleString("id-ID")}</strong>
+                      <span>Nilai Stok</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Toolbar */}
+                <div className="prods-toolbar">
+                  <div className="prods-search">
+                    <Search size={15} />
+                    <input
+                      type="text"
+                      placeholder="Cari produk..."
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                  <div className="prods-cats">
+                    {["all", "frozen", "atk", "other"].map(cat => (
+                      <button
+                        key={cat}
+                        type="button"
+                        className={`prods-cat ${(categoryFilter || "all") === cat ? "active" : ""}`}
+                        onClick={() => setCategoryFilter(cat)}
+                      >
+                        {cat === "all" ? "Semua" : cat === "frozen" ? "Frozen" : cat === "atk" ? "ATK" : "Lainnya"}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    className="prods-add-btn"
+                    onClick={() => {
+                      setEditingProductId(null);
+                      setShowProductForm(true);
+                      setProductForm({ name: "", desc: "", price: 0, category: "frozen", img: "", stock: 0 });
+                    }}
+                  >
+                    <Plus size={15} /> Tambah Produk
+                  </button>
+                </div>
+
+                {/* Product form modal */}
+                {showProductForm && (
+                  <div className="prods-modal-overlay" onClick={() => setShowProductForm(false)}>
+                    <div className="prods-modal" onClick={e => e.stopPropagation()}>
+                      <div className="prods-modal-header">
+                        <h3>{editingProductId ? "Edit Produk" : "Tambah Produk Baru"}</h3>
+                        <button type="button" onClick={() => setShowProductForm(false)}>
+                          <X size={18} />
+                        </button>
                       </div>
-                    )}
-                    <button type="submit" className="admin-btn admin-btn-primary">
-                      {editingProductId ? "Simpan Perubahan" : "Tambah Produk"}
-                    </button>
-                  </form>
-                </article>
-
-                <article className="admin-panel">
-                  <div className="admin-panel-header split">
-                    <h2>
-                      <Package size={18} />
-                      Katalog Produk
-                    </h2>
-                    <span className="panel-chip">{products.length} item</span>
+                      <form onSubmit={saveProduct} className="prods-form">
+                        <div className="prods-form-grid">
+                          <label>
+                            Nama Produk
+                            <input
+                              type="text"
+                              value={productForm.name}
+                              onChange={e => setProductForm(p => ({ ...p, name: e.target.value }))}
+                              required
+                              placeholder="Nama produk"
+                            />
+                          </label>
+                          <label>
+                            Kategori
+                            <select
+                              value={productForm.category}
+                              onChange={e => setProductForm(p => ({ ...p, category: e.target.value }))}
+                            >
+                              <option value="frozen">Frozen Food</option>
+                              <option value="atk">ATK</option>
+                              <option value="other">Lainnya</option>
+                            </select>
+                          </label>
+                          <label>
+                            Harga (Rp)
+                            <input
+                              type="number"
+                              value={productForm.price}
+                              onChange={e => setProductForm(p => ({ ...p, price: Number(e.target.value) }))}
+                              required
+                              placeholder="0"
+                            />
+                          </label>
+                          <label>
+                            Stok
+                            <input
+                              type="number"
+                              value={productForm.stock}
+                              onChange={e => setProductForm(p => ({ ...p, stock: Number(e.target.value) }))}
+                              required
+                              placeholder="0"
+                            />
+                          </label>
+                        </div>
+                        <label>
+                          URL Gambar
+                          <input
+                            type="text"
+                            value={productForm.img}
+                            onChange={e => setProductForm(p => ({ ...p, img: e.target.value }))}
+                            placeholder="https://example.com/image.jpg"
+                          />
+                        </label>
+                        <label className="prods-upload">
+                          <Upload size={14} /> Upload dari file
+                          <input type="file" onChange={handleFileUpload} accept="image/*" hidden />
+                        </label>
+                        {isUploading && (
+                          <div className="prods-upload-bar">
+                            <span style={{ width: `${uploadProgress}%` }} />
+                          </div>
+                        )}
+                        <label>
+                          Deskripsi
+                          <textarea
+                            rows={3}
+                            value={productForm.desc}
+                            onChange={e => setProductForm(p => ({ ...p, desc: e.target.value }))}
+                            required
+                            placeholder="Deskripsi produk"
+                          />
+                        </label>
+                        <div className="prods-form-actions">
+                          <button type="button" className="prods-btn-cancel" onClick={() => setShowProductForm(false)}>
+                            Batal
+                          </button>
+                          <button type="submit" className="prods-btn-save">
+                            {editingProductId ? "Simpan Perubahan" : "Tambah Produk"}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
+                )}
 
-                  <div className="admin-table-wrap">
-                    <table className="admin-table">
-                      <thead>
-                        <tr>
-                          <th>Produk</th>
-                          <th>Harga</th>
-                          <th>Stok</th>
-                          <th>Aksi</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {products.map(product => (
-                          <tr key={product.id}>
-                            <td>
-                              <div className="admin-product-cell">
-                                <img src={product.img} alt="" />
-                                <div>
-                                  <strong>{product.name}</strong>
-                                  <small>{product.category}</small>
-                                </div>
-                              </div>
-                            </td>
-                            <td>Rp {product.price.toLocaleString('id-ID')}</td>
-                            <td>{product.stock}</td>
-                            <td>
-                              <div className="admin-action-row">
-                                <button 
-                                  className="icon-action info"
-                                  onClick={() => {
-                                    setEditingProductId(product.id);
-                                    setProductForm({ ...product });
-                                    window.scrollTo({ top: 0, behavior: "smooth" });
-                                  }}
-                                >
-                                  <Edit3 size={16} />
-                                </button>
-                                <button className="icon-action danger" onClick={() => deleteProduct(product.id)}>
-                                  <Trash2 size={16} />
-                                </button>
-                              </div>
-                            </td>
+                {/* Product table */}
+                <div className="prods-table-wrap">
+                  <table className="prods-table">
+                    <thead>
+                      <tr>
+                        <th>Produk</th>
+                        <th>Kategori</th>
+                        <th>Harga</th>
+                        <th>Stok</th>
+                        <th>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(() => {
+                        const filtered = products.filter(p => {
+                          const matchSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+                          const matchCat = !categoryFilter || categoryFilter === "all" || p.category === categoryFilter;
+                          return matchSearch && matchCat;
+                        });
+                        return filtered.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="prods-empty">Tidak ada produk ditemukan</td>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </article>
+                        ) : (
+                          filtered.map(product => (
+                            <tr key={product.id}>
+                              <td>
+                                <div className="prods-cell-name">
+                                  <div className="prods-cell-img">
+                                    {product.img ? (
+                                      <img src={product.img} alt="" />
+                                    ) : (
+                                      <Package size={16} />
+                                    )}
+                                  </div>
+                                  <div>
+                                    <strong>{product.name}</strong>
+                                    <small>{product.desc?.substring(0, 40)}{product.desc?.length > 40 ? "..." : ""}</small>
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <span className={`prods-badge badge-${product.category}`}>
+                                  {product.category === "frozen" ? "Frozen" : product.category === "atk" ? "ATK" : "Lainnya"}
+                                </span>
+                              </td>
+                              <td className="prods-price">Rp {product.price.toLocaleString("id-ID")}</td>
+                              <td>
+                                <div className="prods-stock-cell">
+                                  <span className={`prods-stock-val ${(product.stock || 0) <= 0 ? "out" : (product.stock || 0) <= 5 ? "low" : ""}`}>
+                                    {product.stock || 0}
+                                  </span>
+                                  <div className="prods-stock-bar">
+                                    <span
+                                      className="prods-stock-fill"
+                                      style={{
+                                        width: `${Math.min(100, ((product.stock || 0) / 50) * 100)}%`,
+                                        background: (product.stock || 0) <= 0 ? "#ef4444" : (product.stock || 0) <= 5 ? "#f59e0b" : "#22c55e",
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="prods-actions">
+                                  <button
+                                    type="button"
+                                    className="prods-action edit"
+                                    title="Edit"
+                                    onClick={() => {
+                                      setEditingProductId(product.id);
+                                      setProductForm({ ...product });
+                                      setShowProductForm(true);
+                                    }}
+                                  >
+                                    <Edit3 size={14} />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="prods-action delete"
+                                    title="Hapus"
+                                    onClick={() => deleteProduct(product.id)}
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        );
+                      })()}
+                    </tbody>
+                  </table>
+                </div>
               </section>
             )}
 
