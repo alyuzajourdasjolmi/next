@@ -1475,10 +1475,10 @@ export default function Home() {
                       <p className="desc">{p.desc.length > 70 ? p.desc.substring(0, 70) + '...' : p.desc}</p>
                     </div>
                     <div className="card-footer">
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <div className="card-price-block">
                         <span className="price">Rp {p.price.toLocaleString('id-ID')}</span>
-                        <span style={{ fontSize: '0.7rem', color: (p.stock || 0) <= 5 ? '#ef4444' : '#64748b' }}>
-                          Stok: {p.stock || 0}
+                        <span className="card-stock-label" style={{ color: (p.stock || 0) <= 5 ? '#ef4444' : 'var(--text-light)' }}>
+                          {(p.stock || 0) <= 0 ? 'Stok Habis' : `Stok: ${p.stock}`}
                         </span>
                       </div>
                       <div style={{ display: 'flex', gap: '0.4rem' }}>
