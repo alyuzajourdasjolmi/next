@@ -263,9 +263,10 @@ export default function Home() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     // Hero auto-slide every 6 seconds
+    // Hero auto‑slide every 6 seconds (only two slides now)
     const heroTimer = setInterval(() => {
       setHeroPaused(paused => {
-        if (!paused) setHeroSlide(prev => (prev + 1) % 3);
+        if (!paused) setHeroSlide(prev => (prev + 1) % 2);
         return paused;
       });
     }, 6000);
@@ -599,7 +600,8 @@ export default function Home() {
   const grandTotal = subtotal + (shipInfo.finalCost || 0);
   const reviewDisplayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pelanggan';
   const visibleUserOrders = userOrders.filter((order: any) => order.status !== 'cancelled');
-  const heroSlideLabels = ['Belanja Lengkap', 'Install Cepat', 'Asisten AI'];
+  // Define the two hero slides we want to display: Store intro and App install promo
+  const heroSlideLabels = ['Belanja Lengkap', 'Install Cepat'];
 
   const useCurrentLocation = () => {
     if (orderInfo.deliveryMethod !== 'delivery') {
@@ -2750,4 +2752,8 @@ export default function Home() {
     </>
   );
 }
+
+
+
+
 
