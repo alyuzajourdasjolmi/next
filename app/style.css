@@ -2079,7 +2079,7 @@ body.dark-mode .tracking-status-badge.status-cancelled {
 
 /* Footer */
 .footer {
-  background: var(--accent);
+  background: #0F172A;
   color: #ffffff;
   padding: 6rem 2rem 2rem;
   position: relative;
@@ -2105,7 +2105,7 @@ body.dark-mode .tracking-status-badge.status-cancelled {
 .footer-col p {
   font-size: 1rem;
   line-height: 1.8;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.75);
   max-width: 380px;
 }
 
