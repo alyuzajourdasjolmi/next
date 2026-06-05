@@ -548,8 +548,8 @@ body.dark-mode .chef-hero-v2 {
 /* ─────────────────────────────────────────── */
 .chef-product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1rem;
 }
 
 .chef-product-grid > * {
