@@ -392,7 +392,7 @@ function ChefContent() {
                             <h3>{displayName}</h3>
                           </div>
                           <div className="card-meta-row">
-                            <span className="sold-label">Terjual {p.sold_count || 0}+</span>
+                            <span className="sold-label">Terjual {(p as any).sold_count || 0}+</span>
                             <div style={{ display: 'flex', color: '#FACC15' }}>
                               {[...Array(5)].map((_, i) => (
                                 <Star key={i} size={12} fill="currentColor" />
