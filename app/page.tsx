@@ -2188,7 +2188,7 @@ export default function Home() {
           <div className="footer-col">
             <div className="nav-logo" style={{ marginBottom: '1.5rem' }}>
               <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" className="brand-logo" />
-              <span className="brand-text">Hijrah<span>Toko</span></span>
+              <span className="brand-text" style={{ color: '#ffffff' }}>Hijrah<span style={{ color: 'var(--primary)' }}>Toko</span></span>
             </div>
             <p>
               Hijrah Toko adalah pusat penyedia frozen food premium dan alat tulis kantor terlengkap. Kami berkomitmen memberikan kualitas terbaik dan layanan cepat untuk Anda.
