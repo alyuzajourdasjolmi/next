@@ -101,6 +101,7 @@ export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [soldCounts, setSoldCounts] = useState<any>({});
   const [isLocating, setIsLocating] = useState(false);
+  const [cartToast, setCartToast] = useState('');
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [showProfileManager, setShowProfileManager] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
@@ -380,6 +381,12 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!cartToast) return;
+    const t = setTimeout(() => setCartToast(''), 2500);
+    return () => clearTimeout(t);
+  }, [cartToast]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -510,6 +517,7 @@ export default function Home() {
       if (existing) return prev.map((item: any) => item.id === id ? { ...item, qty: item.qty + 1 } : item);
       return [...prev, { ...product, qty: 1 }];
     });
+    setCartToast('✓ Ditambahkan ke keranjang');
   };
 
   const changeQuantity = (id: number, delta: number) => {
@@ -1445,13 +1453,17 @@ export default function Home() {
         </div>
 
         {loadingProducts ? (
-          <div className="loading-state">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-              style={{ width: 40, height: 40, border: '4px solid var(--primary-light)', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto' }}
-            />
-            <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>Memuat koleksi terbaik kami...</p>
+          <div className="products-grid">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="shimmer-card">
+                <div className="shimmer-img" />
+                <div className="shimmer-body">
+                  <div className="shimmer-line" />
+                  <div className="shimmer-line thin" />
+                  <div className="shimmer-line short" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="products-grid">
@@ -2411,6 +2423,21 @@ export default function Home() {
         <span>Install App</span>
       </motion.button>
 
+      {/* Cart Toast */}
+      <AnimatePresence>
+        {cartToast && (
+          <motion.div
+            className="cart-toast"
+            initial={{ opacity: 0, y: 20, x: '-50%', scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, x: '-50%', scale: 1 }}
+            exit={{ opacity: 0, y: -10, x: '-50%', scale: 0.95 }}
+          >
+            <CheckCircle2 size={18} />
+            <span>{cartToast}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <style jsx>{`
         /* ============================================
            STORE PAGE — Scoped Style Tweaks
@@ -2754,58 +2781,6 @@ export default function Home() {
           border-color: var(--primary) !important;
           box-shadow: 0 0 0 3px rgba(225,29,72,0.06) !important;
           outline: none !important;
-        }
-
-        /* ── Loading State ── */
-        .loading-state { padding: 3rem !important; }
-        .loading-state::after {
-          content: '';
-          width: 32px; height: 32px;
-          border: 3px solid var(--border-main);
-          border-top-color: var(--primary);
-          border-radius: 50%;
-          animation: sp 0.6s linear infinite;
-          display: block;
-          margin: 1rem auto;
-        }
-        @keyframes sp { to { transform: rotate(360deg); } }
-
-        /* ── Tutorial ── */
-        .tutorial-modal {
-          border-radius: 20px !important;
-          border: 1px solid var(--border-main) !important;
-        }
-        .tutorial-step { padding: 0.75rem 0 !important; }
-        .tutorial-icon {
-          width: 48px !important; height: 48px !important;
-          border-radius: 12px !important;
-        }
-
-        /* ── Blog ── */
-        .blog-card {
-          border-radius: 16px !important;
-          border: 1px solid var(--border-main) !important;
-          overflow: hidden !important;
-          transition: all 0.3s !important;
-        }
-        .blog-card:hover {
-          box-shadow: 0 8px 30px -8px rgba(0,0,0,0.06) !important;
-          transform: translateY(-2px) !important;
-        }
-
-        /* ── Cart Button ── */
-        .cart-btn {
-          position: relative !important;
-          width: 38px !important; height: 38px !important;
-          border-radius: 10px !important;
-          transition: all 0.2s !important;
-        }
-        .cart-btn:hover { background: var(--primary-light) !important; color: var(--primary) !important; }
-        .cart-count {
-          min-width: 18px !important; height: 18px !important;
-          font-size: 0.65rem !important;
-          font-weight: 800 !important;
-          border-radius: 999px !important;
         }
 
         /* ── Sorting / Filter Select ── */

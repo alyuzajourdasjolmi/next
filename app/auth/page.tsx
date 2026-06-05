@@ -21,6 +21,7 @@ import {
   Star,
   Shield,
   Package,
+  Check,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -41,6 +42,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const [form, setForm] = useState({
     email: '',
@@ -104,12 +106,8 @@ export default function AuthPage() {
           }
         }
 
-        setMessage({
-          type: 'success',
-          text: 'Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi atau langsung login.',
-        });
-        setMode('login');
-        setForm(prev => ({ ...prev, password: '' }));
+        setShowSuccess(true);
+        setForm({ email: '', password: '', name: '', phone: '', address: '' });
       }
     } catch (error: any) {
       setMessage({ type: 'error', text: error.message });
@@ -426,6 +424,44 @@ export default function AuthPage() {
       {/* Decorative corner blobs */}
       <div className="auth-corner-blob tl" />
       <div className="auth-corner-blob br" />
+
+      {/* Success Modal */}
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            className="success-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowSuccess(false)}
+          >
+            <motion.div
+              className="success-modal"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+            >
+              <div className="success-check-wrap">
+                <Check size={40} strokeWidth={3} className="success-check" />
+              </div>
+              <h2>Akun Berhasil Dibuat! 🎉</h2>
+              <p>Silakan cek email Anda untuk verifikasi, lalu login.</p>
+              <button
+                type="button"
+                className="success-btn"
+                onClick={() => {
+                  setShowSuccess(false);
+                  setMode('login');
+                }}
+              >
+                Lanjut ke Login
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
