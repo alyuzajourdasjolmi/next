@@ -369,7 +369,7 @@ function ChefContent() {
                         className="product-card"
                       >
                         <span className="card-badge badge-frozen">Frozen</span>
-                        <div className="chef-card-img-wrap">
+                        <div className="card-img-wrap">
                           {imgSrc ? (
                             <Image
                               src={imgSrc}
@@ -392,7 +392,7 @@ function ChefContent() {
                             <h3>{displayName}</h3>
                           </div>
                           <div className="card-meta-row">
-                            <span className="sold-label">Frozen Food</span>
+                            <span className="sold-label">Terjual {p.sold_count || 0}+</span>
                             <div style={{ display: 'flex', color: '#FACC15' }}>
                               {[...Array(5)].map((_, i) => (
                                 <Star key={i} size={12} fill="currentColor" />
@@ -403,8 +403,11 @@ function ChefContent() {
                         </div>
 
                         <div className="card-footer">
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <div className="card-price-block">
                             <span className="price">Rp {p.price.toLocaleString('id-ID')}</span>
+                            <span className="card-stock-label" style={{ color: (p.stock || 0) <= 5 ? '#ef4444' : 'var(--text-light)' }}>
+                              {(p.stock || 0) <= 0 ? 'Stok Habis' : `Stok: ${p.stock}`}
+                            </span>
                           </div>
                           <div style={{ display: 'flex', gap: '0.4rem' }}>
                             <button
