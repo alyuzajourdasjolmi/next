@@ -1360,7 +1360,7 @@ export default function Home() {
         </div>
 
         <div className="section-search-bar" style={{ maxWidth: '600px', margin: '0 auto 2.5rem', position: 'relative' }}>
-          <div style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', display: 'flex' }}>
+          <div style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', display: 'flex', zIndex: 2, pointerEvents: 'none' }}>
             <Search size={20} />
           </div>
           <input
@@ -1370,7 +1370,7 @@ export default function Home() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%',
-              padding: '1.1rem 3.5rem 1.1rem 3.25rem',
+              padding: '1.1rem 3.5rem 1.1rem 3.5rem',
               borderRadius: '50px',
               border: '2px solid var(--border-main)',
               background: 'var(--bg-surface)',
@@ -1378,7 +1378,9 @@ export default function Home() {
               fontSize: '1rem',
               boxShadow: 'var(--shadow-sm)',
               outline: 'none',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              position: 'relative',
+              zIndex: 1
             }}
             className="search-input-focus"
           />
@@ -2731,7 +2733,7 @@ export default function Home() {
         .section-search-bar input {
           border-radius: 999px !important;
           border: 1.5px solid var(--border-main) !important;
-          padding: 0.65rem 1.15rem !important;
+          padding: 0.9rem 3.5rem 0.9rem 3.5rem !important;
           transition: border-color 0.2s, box-shadow 0.2s !important;
         }
         .section-search-bar input:focus {
