@@ -1899,7 +1899,7 @@ return (
         .admin-v2 {
           display: flex; min-height: 100vh;
           background: #f0f2f5;
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           color: #0f172a;
           -webkit-font-smoothing: antialiased;
         }
