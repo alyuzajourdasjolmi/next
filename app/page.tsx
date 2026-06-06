@@ -612,7 +612,7 @@ export default function Home() {
               transition={{ duration: 0.7 }}
             >
               <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}>
-                <Image src="/assets/images/hero-nura.jpeg" alt="Nura AI" fill unoptimized sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} />
+                <Image src="/assets/images/nura.png" alt="Nura AI" fill unoptimized sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(88,28,135,0.92) 0%, rgba(157,23,77,0.85) 50%, rgba(15,23,42,0.7) 100%)' }} />
               </div>
 
