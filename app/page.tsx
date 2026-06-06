@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import {
@@ -83,6 +84,10 @@ type Review = {
 };
 
 export default function Home() {
+  const pathname = usePathname();
+  const isHome = pathname === '/';
+  const homeAnchor = (hash: string) => isHome ? hash : `/${hash}`;
+
   const [isClient, setIsClient] = useState(false);
   const [productsData, setProductsData] = useState<any[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -894,20 +899,23 @@ export default function Home() {
           </motion.a>
 
           <ul className="nav-links">
-            <li><a href="#home" className={activeSection === 'home' ? 'active' : ''}>Home</a></li>
+            <li><Link href={homeAnchor('#home')} className={activeSection === 'home' ? 'active' : ''}>Home</Link></li>
             <li className="dropdown">
-              <a href="#produk" className="dropbtn">
+              <Link href={homeAnchor('#produk')} className="dropbtn">
                 Produk <ChevronDown className="chevron" size={16} />
-              </a>
+              </Link>
               <div className="dropdown-content">
-                <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>🧊 Frozen Food</a>
-                <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>📝 ATK</a>
-                <a href="#other" onClick={(e) => navToCategory(e, 'other')}>📦 Lainnya</a>
+                <Link href={homeAnchor('#frozen')} onClick={(e) => navToCategory(e, 'frozen')}>🧊 Frozen Food</Link>
+                <Link href={homeAnchor('#atk')} onClick={(e) => navToCategory(e, 'atk')}>📝 ATK</Link>
+                <Link href={homeAnchor('#other')} onClick={(e) => navToCategory(e, 'other')}>📦 Lainnya</Link>
               </div>
             </li>
-            <li><a href="#testimoni" className={activeSection === 'testimoni' ? 'active' : ''}>Testimoni</a></li>
-            <li><a href="#inbox" className={activeSection === 'inbox' ? 'active' : ''}>Lacak</a></li>
-            <li><a href="#kontak" className={activeSection === 'kontak' ? 'active' : ''}>Kontak</a></li>
+            <li><Link href={homeAnchor('#testimoni')} className={activeSection === 'testimoni' ? 'active' : ''}>Testimoni</Link></li>
+            <li><Link href="/features" className={pathname === '/features' ? 'active' : ''}>Fitur</Link></li>
+            <li><Link href="/pricing" className={pathname === '/pricing' ? 'active' : ''}>Harga</Link></li>
+            <li><Link href="/about" className={pathname === '/about' ? 'active' : ''}>Tentang</Link></li>
+            <li><Link href={homeAnchor('#inbox')} className={activeSection === 'inbox' ? 'active' : ''}>Lacak</Link></li>
+            <li><Link href="/contact" className={pathname === '/contact' ? 'active' : ''}>Kontak</Link></li>
             <li className="nav-item-desktop-only">
               <button className="tutorial-btn" onClick={(e) => { e.preventDefault(); setTutorialStep(0); setIsTutorialOpen(true); }}>
                 <HelpCircle size={16} /> <span style={{ marginLeft: '6px' }}>Cara Pesan</span>
@@ -934,14 +942,14 @@ export default function Home() {
                     <Link href="/profile">
                       <UserIcon size={16} /> Profil Saya
                     </Link>
-                    <a href="#inbox" onClick={() => document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' })}>
+                    <a href={homeAnchor('#inbox')} onClick={() => document.getElementById('inbox')?.scrollIntoView({ behavior: 'smooth' })}>
                       <Package size={16} /> Pesanan Saya
                     </a>
                     <button className="user-menu-item-btn" onClick={() => setShowProfileManager(true)}>
                       <MapPin size={16} /> Kelola Alamat
                     </button>
                     {user?.email === ADMIN_EMAIL && (
-                      <a href="/admin">
+                      <a href="/dashboard">
                         <CheckCircle2 size={16} /> Dashboard Admin
                       </a>
                     )}
@@ -958,7 +966,7 @@ export default function Home() {
                   </div>
                 </div>
               ) : (
-                <Link href="/auth" className="btn-login-pill">
+                <Link href="/login" className="btn-login-pill">
                   Masuk
                 </Link>
               )}
@@ -1014,16 +1022,19 @@ export default function Home() {
 
               <div className="mobile-nav-scroll">
                 <ul className="mobile-nav-links">
-                  <li><a href="#home" onClick={() => setMobileNavOpen(false)}>🏠 Home</a></li>
-                  <li><a href="#produk" onClick={() => setMobileNavOpen(false)}>📦 Produk</a></li>
-                  <li><a href="#testimoni" onClick={() => setMobileNavOpen(false)}>⭐ Testimoni</a></li>
-                  <li><a href="#checkout" onClick={() => setMobileNavOpen(false)}>🛒 Checkout</a></li>
-                  <li><a href="#inbox" onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</a></li>
-                  <li><a href="#lokasi" onClick={() => setMobileNavOpen(false)}>📍 Lokasi</a></li>
-                  <li><a href="#kontak" onClick={() => setMobileNavOpen(false)}>📞 Kontak</a></li>
+                  <li><Link href={homeAnchor('#home')} onClick={() => setMobileNavOpen(false)}>🏠 Home</Link></li>
+                  <li><Link href={homeAnchor('#produk')} onClick={() => setMobileNavOpen(false)}>📦 Produk</Link></li>
+                  <li><Link href={homeAnchor('#testimoni')} onClick={() => setMobileNavOpen(false)}>⭐ Testimoni</Link></li>
+                  <li><Link href={homeAnchor('#checkout')} onClick={() => setMobileNavOpen(false)}>🛒 Checkout</Link></li>
+                  <li><Link href={homeAnchor('#inbox')} onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</Link></li>
+                  <li><Link href="/features" onClick={() => setMobileNavOpen(false)}>✨ Fitur</Link></li>
+                  <li><Link href="/pricing" onClick={() => setMobileNavOpen(false)}>💰 Harga</Link></li>
+                  <li><Link href="/about" onClick={() => setMobileNavOpen(false)}>ℹ️ Tentang</Link></li>
+                  <li><Link href={homeAnchor('#lokasi')} onClick={() => setMobileNavOpen(false)}>📍 Lokasi</Link></li>
+                  <li><Link href="/contact" onClick={() => setMobileNavOpen(false)}>📞 Kontak</Link></li>
                   {user && user?.email === ADMIN_EMAIL && (
                     <li style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
-                      <a href="/admin" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>⚙️ Dashboard Admin</a>
+                      <Link href="/dashboard" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>⚙️ Dashboard Admin</Link>
                     </li>
                   )}
                 </ul>
@@ -1046,7 +1057,7 @@ export default function Home() {
                     </button>
                   </div>
                 ) : (
-                  <Link href="/auth" className="mobile-auth-btn" onClick={() => setMobileNavOpen(false)}>
+                  <Link href="/login" className="mobile-auth-btn" onClick={() => setMobileNavOpen(false)}>
                     Masuk / Daftar
                   </Link>
                 )}
@@ -1099,7 +1110,7 @@ export default function Home() {
                     Menghadirkan kenyamanan belanja <strong>Frozen Food</strong> premium dan kelengkapan <strong>ATK</strong> dalam satu genggaman modern.
                   </p>
                   <div className="hero-actions-new">
-                    <motion.a href="#produk" className="btn-hero-primary" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <motion.a href={homeAnchor('#produk')} className="btn-hero-primary" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       Jelajahi Produk <ShoppingCart size={18} />
                     </motion.a>
                     <motion.a href="https://wa.me/6285263965031" className="btn-hero-outline" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -1282,7 +1293,7 @@ export default function Home() {
                     <Link href="/chef" className="btn-hero-primary btn-nura" >
                       <Bot size={18} /> Chat dengan Nura
                     </Link>
-                    <motion.a href="#produk" className="btn-hero-outline btn-nura-outline"
+                    <motion.a href={homeAnchor('#produk')} className="btn-hero-outline btn-nura-outline"
                       whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <ShoppingCart size={18} /> Lihat Produk
                     </motion.a>
@@ -1605,7 +1616,7 @@ export default function Home() {
                 <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
                   Silakan login terlebih dahulu untuk mengirim ulasan.
                 </p>
-                <Link href="/auth" className="btn-primary">
+                <Link href="/login" className="btn-primary">
                   Login Untuk Ulasan
                 </Link>
               </div>
@@ -1680,7 +1691,7 @@ export default function Home() {
               <div className="empty-cart" style={{ border: '2px dashed var(--border-main)', padding: '4rem 2rem' }}>
                 <Package size={48} strokeWidth={1} style={{ marginBottom: '1rem', color: 'var(--text-light)' }} />
                 <p>Wah, keranjangmu masih kosong!</p>
-                <a href="#produk" className="btn-primary btn-small" style={{ marginTop: '1rem' }}>Mulai Belanja</a>
+                <a href={homeAnchor('#produk')} className="btn-primary btn-small" style={{ marginTop: '1rem' }}>Mulai Belanja</a>
               </div>
             ) : (
               <div className="cart-items">
@@ -1740,7 +1751,7 @@ export default function Home() {
                 <AlertCircle size={48} style={{ color: 'var(--primary)', marginBottom: '1.5rem' }} />
                 <h4 style={{ marginBottom: '1rem' }}>Login Diperlukan</h4>
                 <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Silakan login terlebih dahulu untuk melanjutkan proses pemesanan.</p>
-                <Link href="/auth" className="btn-primary">Masuk Sekarang</Link>
+                <Link href="/login" className="btn-primary">Masuk Sekarang</Link>
               </div>
             ) : (
               <form onSubmit={submitOrder} className="order-form" style={{ marginTop: '1.5rem' }}>
@@ -2058,7 +2069,7 @@ export default function Home() {
             {!user && (
               <div className="tracking-login-required">
                 <p>Silakan login untuk melihat status pesanan sesuai akun Anda.</p>
-                <Link href="/auth" className="btn-primary">
+                <Link href="/login" className="btn-primary">
                   Login Sekarang
                 </Link>
               </div>
@@ -2198,10 +2209,13 @@ export default function Home() {
           <div className="footer-col">
             <h4>Tautan Cepat</h4>
             <ul>
-              <li><a href="#home">Beranda</a></li>
-              <li><a href="#produk">Katalog Produk</a></li>
-              <li><a href="#testimoni">Testimoni</a></li>
-              <li><a href="#lokasi">Lokasi Kami</a></li>
+              <li><Link href={homeAnchor('#home')}>Beranda</Link></li>
+              <li><Link href={homeAnchor('#produk')}>Katalog Produk</Link></li>
+              <li><Link href="/features">Fitur</Link></li>
+              <li><Link href="/pricing">Harga</Link></li>
+              <li><Link href="/about">Tentang Kami</Link></li>
+              <li><Link href={homeAnchor('#testimoni')}>Testimoni</Link></li>
+              <li><Link href={homeAnchor('#lokasi')}>Lokasi Kami</Link></li>
             </ul>
           </div>
 
