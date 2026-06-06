@@ -6099,145 +6099,32 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 /* Slide 3: Nura */
 .hero-slide-nura {
-  background: linear-gradient(135deg, #4c0519 0%, #831843 35%, #9f1239 70%, #500724 100%);
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-nura-bg {
-  position: absolute;
-  inset: 0;
   background:
-    radial-gradient(ellipse at 70% 30%, rgba(244, 63, 94, 0.5) 0%, transparent 50%),
-    radial-gradient(ellipse at 30% 70%, rgba(190, 18, 60, 0.45) 0%, transparent 55%),
-    linear-gradient(135deg, #4c0519 0%, #831843 50%, #500724 100%);
-  z-index: 0;
+    radial-gradient(ellipse at 75% 40%, rgba(244, 63, 94, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(159, 18, 57, 0.15) 0%, transparent 55%),
+    linear-gradient(135deg, #111827 0%, #1a0d18 50%, #080b16 100%);
+  position: relative;
   overflow: hidden;
 }
 
-.hero-nura-bg::after {
-  content: '';
+.hero-slide-nura .hero-bg-image-right {
   position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 1.5px),
-    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.04) 0%, transparent 1.5px);
-  background-size: 50px 50px, 70px 70px;
-  pointer-events: none;
-  opacity: 0.5;
-}
-
-.hero-nura-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
-  align-items: center;
-  gap: 2.5rem;
-  width: 100%;
-}
-
-.hero-nura-visual {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  width: 100%;
-  height: 100%;
-  min-height: 420px;
-}
-
-/* Card AI message — match style with hero-bg-image card on other slides */
-.hero-nura-card {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 560px;
-  aspect-ratio: 3 / 2;
+  top: 50%;
+  right: max(5vw, calc((100vw - 1240px) / 2));
+  width: min(44vw, 520px);
+  height: min(46vh, 440px);
+  transform: translateY(-50%);
   border-radius: 30px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: 0 34px 90px rgba(0, 0, 0, 0.36);
-  background: rgba(255, 255, 255, 0.02);
-  transition: transform 0.5s ease, box-shadow 0.5s ease;
-}
-
-.hero-nura-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.06), rgba(15, 23, 42, 0.18));
   z-index: 2;
-  pointer-events: none;
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.02);
 }
 
-.hero-nura-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.45), 0 0 60px rgba(251, 113, 133, 0.25);
-}
-
-.hero-nura-img {
-  object-fit: contain;
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  display: block;
-  padding: 0.5rem;
-}
-
-/* Nura title highlight */
-.hero-nura-highlight {
-  background: linear-gradient(135deg, #fda4af 0%, #fb7185 50%, #f43f5e 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 0 40px rgba(251, 113, 133, 0.4);
-}
-
-/* Nura description */
-.hero-desc-nura {
-  font-size: 1.05rem;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.82);
-  max-width: 480px;
-  margin-bottom: 1.5rem;
-}
-
-/* Nura feature pills */
-.hero-nura-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-bottom: 1.75rem;
-}
-
-.hero-nura-feature {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.9rem;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: all 0.25s ease;
-}
-
-.hero-nura-feature:hover {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-}
-
-.hero-nura-feature-icon {
-  font-size: 0.95rem;
-  line-height: 1;
+.hero-slide-nura .hero-bg-image-right::after {
+  content: none;
 }
 
 .hero-nura-spark {
@@ -6485,21 +6372,9 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 /* ── Hero V2 Responsive ── */
 @media (max-width: 1024px) {
-  .hero-nura-card {
-    max-width: 480px;
-  }
-
-  .hero-nura-visual {
-    min-height: 360px;
-  }
-
-  .hero-nura-features {
-    gap: 0.5rem;
-  }
-
-  .hero-nura-feature {
-    font-size: 0.72rem;
-    padding: 0.4rem 0.75rem;
+  .hero-slide-nura .hero-bg-image-right {
+    width: min(40vw, 400px);
+    height: min(36vh, 340px);
   }
 
   .hero-content-app {
@@ -6512,38 +6387,8 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 }
 
 @media (max-width: 768px) {
-  .hero-nura-layout {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    text-align: center;
-  }
-
-  .hero-nura-visual {
-    order: -1;
-    min-height: 280px;
-  }
-
-  .hero-nura-card {
-    max-width: 380px;
-    aspect-ratio: 3 / 2;
-  }
-
-  .hero-nura-features {
-    justify-content: center;
-  }
-
-  .hero-nura-content {
-    text-align: center;
-  }
-
-  .hero-desc-nura {
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 0.95rem;
-  }
-
-  .hero-actions-new {
-    justify-content: center;
+  .hero-slide-nura .hero-bg-image-right {
+    display: none;
   }
 
   .hero-content-nura {
@@ -6552,6 +6397,10 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
   .hero-content-app {
     max-width: 100%;
+  }
+
+  .hero-actions-new {
+    justify-content: center;
   }
 
   .hero-controls-v2 {
@@ -7524,36 +7373,8 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   background: transparent !important;
 }
 
-.hero-nura-visual {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  width: 100%;
-  min-height: 420px;
-  opacity: 1;
-  transform: none;
-  top: auto;
-  right: auto;
-}
-
-.hero-nura-card {
-  max-width: 560px;
-  aspect-ratio: 3 / 2;
-  border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.36);
-  padding: 0;
-}
-
 .hero-nura-img {
-  max-width: 100%;
-  filter: none;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 0.5rem;
+  display: none;
 }
 
 .hero-feature-grid {

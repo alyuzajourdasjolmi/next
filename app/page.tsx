@@ -611,75 +611,44 @@ export default function Home() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.7 }}
             >
-              <div className="hero-nura-bg" aria-hidden="true" />
+              <div className="hero-bg-image-right">
+                <Image
+                  src="/assets/images/nura.png"
+                  alt="Nura AI Assistant"
+                  fill
+                  unoptimized
+                  sizes="50vw"
+                  priority
+                  style={{ objectFit: 'contain', objectPosition: 'center' }}
+                />
+              </div>
 
-              <div className="hero-container-new hero-container-nura" style={{ position: 'relative', zIndex: 4 }}>
-                <div className="hero-nura-layout">
-                  <motion.div
-                    className="hero-content-new hero-content-nura"
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.7 }}
-                  >
-                    <div className="hero-eyebrow-v2 hero-eyebrow-nura">
-                      <Sparkles size={14} />
-                      <span>Powered by AI</span>
-                    </div>
-                    <h1 className="hero-title-new">
-                      Kenalan dengan <span className="hero-nura-highlight">NURA</span>
-                    </h1>
-                    <p className="hero-desc-new hero-desc-nura">
-                      Chef AI assistant yang siap membantu kamu memasak frozen food dengan resep, tips, dan trik yang praktis.
-                    </p>
-
-                    <div className="hero-nura-features">
-                      {[
-                        { icon: '⚡', text: 'Respon cepat 24/7' },
-                        { icon: '🍳', text: 'Resep terlengkap' },
-                        { icon: '🎯', text: 'Rekomendasi personal' },
-                      ].map((f, i) => (
-                        <motion.div
-                          key={i}
-                          className="hero-nura-feature"
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
-                        >
-                          <span className="hero-nura-feature-icon">{f.icon}</span>
-                          <span>{f.text}</span>
-                        </motion.div>
-                      ))}
-                    </div>
-
-                    <div className="hero-actions-new">
-                      <Link href="/chef" className="btn-hero-primary btn-nura">
-                        <Bot size={18} /> Chat dengan Nura
-                      </Link>
-                      <a href="#produk" className="btn-hero-outline">
-                        <ShoppingCart size={18} /> Lihat Produk
-                      </a>
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    className="hero-nura-visual"
-                    initial={{ opacity: 0, scale: 0.94 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                  >
-                    <div className="hero-nura-card">
-                      <Image
-                        src="/assets/images/nura.png"
-                        alt="Nura AI Assistant"
-                        width={1536}
-                        height={1024}
-                        unoptimized
-                        priority
-                        className="hero-nura-img"
-                      />
-                    </div>
-                  </motion.div>
-                </div>
+              <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
+                <motion.div
+                  className="hero-content-new hero-content-nura"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.7 }}
+                >
+                  <div className="hero-eyebrow-v2">
+                    <Bot size={14} />
+                    <span>Powered by AI</span>
+                  </div>
+                  <h1 className="hero-title-new">
+                    Kenalan dengan <span>NURA</span>
+                  </h1>
+                  <p className="hero-desc-new">
+                    Chef AI assistant yang siap membantu kamu memasak frozen food dengan resep, tips, dan trik yang praktis.
+                  </p>
+                  <div className="hero-actions-new">
+                    <Link href="/chef" className="btn-hero-primary btn-nura">
+                      <Bot size={18} /> Chat dengan Nura
+                    </Link>
+                    <a href="#produk" className="btn-hero-outline">
+                      <ShoppingCart size={18} /> Lihat Produk
+                    </a>
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
           )}
