@@ -69,108 +69,107 @@ export default function ProductsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="min-h-screen">
       <SiteNavbar />
       
-      <main className="max-w-7xl mx-auto px-4 pt-24 pb-16">
-        {/* Header */}
-        <div className="mb-8">
-          <Link 
-            href="/" 
-            className="inline-flex items-center text-sm text-slate-500 hover:text-primary mb-4 transition-colors"
-          >
-            <ArrowLeft size={16} className="mr-1" /> Kembali ke Beranda
-          </Link>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl tracking-tight">
-            Katalog Produk
-          </h1>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">
-            Temukan semua kebutuhan Frozen Food dan ATK Anda di sini.
-          </p>
-        </div>
-
-        {/* Filters & Search Bar */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8 items-center justify-between">
-          <div className="flex overflow-x-auto pb-2 md:pb-0 gap-2 w-full md:w-auto no-scrollbar">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveTab(cat.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                  activeTab === cat.id
-                    ? 'bg-primary text-white shadow-md'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex gap-3 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <input
-                type="text"
-                placeholder="Cari produk..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white"
-              />
+      <main className="section" style={{ paddingTop: '8rem' }}>
+        <div className="section-container">
+          {/* Header */}
+          <div className="section-header" style={{ textAlign: 'left', marginBottom: '3rem' }}>
+            <div className="section-eyebrow" style={{ justifyContent: 'flex-start' }}>
+              <Package size={14} /> Katalog Lengkap
             </div>
-            <div className="relative">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="pl-4 pr-10 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl appearance-none outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium dark:text-white cursor-pointer"
-              >
-                <option value="newest">Terbaru</option>
-                <option value="price-low">Harga Terendah</option>
-                <option value="price-high">Harga Tertinggi</option>
-                <option value="name">Nama A-Z</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-            </div>
+            <h1 className="section-title" style={{ margin: '0.5rem 0' }}>Produk Kami</h1>
+            <p className="section-subtitle" style={{ margin: '0' }}>
+              Temukan berbagai pilihan Frozen Food berkualitas dan Alat Tulis Kantor terlengkap.
+            </p>
           </div>
-        </div>
 
-        {/* Product Grid */}
-        {loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl h-[350px] animate-pulse" />
-            ))}
-          </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-800 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700">
-            <Package size={64} className="text-slate-300 mb-4" strokeWidth={1.5} />
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Produk tidak ditemukan</h3>
-            <p className="text-slate-500 mt-1">Coba gunakan kata kunci pencarian yang lain.</p>
-            <button 
-              onClick={() => {setSearchTerm(''); setActiveTab('all');}}
-              className="mt-6 px-6 py-2 bg-primary text-white rounded-xl font-semibold hover:bg-primary-dark transition-colors"
-            >
-              Reset Filter
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            <AnimatePresence mode="popLayout">
-              {filteredProducts.map((product) => (
-                <motion.div
-                  key={product.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.2 }}
+          {/* Filters & Search Bar */}
+          <div className="product-filter-bar">
+            <div className="flex-between">
+              <div className="filter-tabs">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveTab(cat.id)}
+                    className={`product-filter-tab ${activeTab === cat.id ? 'active' : ''}`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="product-search-mini">
+                <Search size={18} />
+                <input
+                  type="text"
+                  placeholder="Cari produk..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Urutkan:</span>
+              <div className="product-search-mini" style={{ width: '160px', height: '36px', padding: '0 0.5rem' }}>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  style={{ 
+                    background: 'transparent', 
+                    border: 'none', 
+                    color: 'var(--text-main)', 
+                    fontSize: '0.8rem', 
+                    fontWeight: 700,
+                    width: '100%',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
                 >
-                  <ProductCard product={product} onOpenDetail={setSelectedProduct} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                  <option value="newest">Terbaru</option>
+                  <option value="price-low">Harga Terendah</option>
+                  <option value="price-high">Harga Tertinggi</option>
+                  <option value="name">Nama A-Z</option>
+                </select>
+              </div>
+            </div>
           </div>
-        )}
+
+          {/* Product Grid */}
+          {loading ? (
+            <div className="product-grid">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="product-card-skeleton" />
+              ))}
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="empty-state" style={{ padding: '5rem 0' }}>
+              <Package size={64} strokeWidth={1} color="var(--border-main)" />
+              <p style={{ marginTop: '1rem', fontSize: '1.1rem', color: 'var(--text-muted)' }}>
+                Produk tidak ditemukan. Coba kata kunci lain.
+              </p>
+              <button 
+                onClick={() => {setSearchTerm(''); setActiveTab('all');}}
+                className="btn-hero-primary"
+                style={{ marginTop: '1.5rem', padding: '12px 24px' }}
+              >
+                Reset Pencarian
+              </button>
+            </div>
+          ) : (
+            <div className="product-grid">
+              {filteredProducts.map((product) => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  onOpenDetail={setSelectedProduct} 
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Product Detail Modal */}
