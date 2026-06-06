@@ -611,7 +611,10 @@ export default function Home() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.7 }}
             >
-              <div className="hero-nura-bg" aria-hidden="true" />
+              <div className="hero-nura-bg" aria-hidden="true">
+                <div className="hero-nura-blob hero-nura-blob-1" />
+                <div className="hero-nura-blob hero-nura-blob-2" />
+              </div>
 
               <div className="hero-container-new hero-container-nura" style={{ position: 'relative', zIndex: 4 }}>
                 <div className="hero-nura-layout">
@@ -621,16 +624,36 @@ export default function Home() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.7 }}
                   >
-                    <div className="hero-eyebrow-v2" style={{ background: 'rgba(255,255,255,0.15)', color: '#fff' }}>
+                    <div className="hero-eyebrow-v2 hero-eyebrow-nura">
                       <Bot size={14} />
                       <span>Powered by AI</span>
                     </div>
                     <h1 className="hero-title-new">
-                      Kenalan dengan <span>NURA</span>
+                      Kenalan dengan <span className="hero-nura-highlight">NURA</span>
                     </h1>
-                    <p className="hero-desc-new">
-                      Chef AI assistant yang siap bantu kamu masak frozen food dengan resep, tips, dan trik料理 praktis.
+                    <p className="hero-desc-new hero-desc-nura">
+                      Chef AI assistant yang siap membantu kamu memasak frozen food dengan resep, tips, dan trik yang praktis.
                     </p>
+
+                    <div className="hero-nura-features">
+                      {[
+                        { icon: '⚡', text: 'Respon cepat 24/7' },
+                        { icon: '🍳', text: 'Resep terlengkap' },
+                        { icon: '🎯', text: 'Rekomendasi personal' },
+                      ].map((f, i) => (
+                        <motion.div
+                          key={i}
+                          className="hero-nura-feature"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
+                        >
+                          <span className="hero-nura-feature-icon">{f.icon}</span>
+                          <span>{f.text}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+
                     <div className="hero-actions-new">
                       <Link href="/chef" className="btn-hero-primary btn-nura">
                         <Bot size={18} /> Chat dengan Nura
@@ -643,20 +666,26 @@ export default function Home() {
 
                   <motion.div
                     className="hero-nura-visual"
-                    initial={{ opacity: 0, scale: 0.92 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.15 }}
                   >
-                    <div className="hero-nura-glow hero-nura-glow-ring" />
-                    <Image
-                      src="/assets/images/nura.png"
-                      alt="Nura AI"
-                      width={620}
-                      height={620}
-                      unoptimized
-                      priority
-                      className="hero-nura-img"
-                    />
+                    <motion.div
+                      className="hero-nura-float"
+                      animate={{ y: [0, -10, 0] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <div className="hero-nura-glow hero-nura-glow-ring" />
+                      <Image
+                        src="/assets/images/nura.png"
+                        alt="Nura AI Assistant"
+                        width={1536}
+                        height={1024}
+                        unoptimized
+                        priority
+                        className="hero-nura-img"
+                      />
+                    </motion.div>
                   </motion.div>
                 </div>
               </div>
