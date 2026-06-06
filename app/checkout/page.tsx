@@ -201,18 +201,22 @@ export default function CheckoutPage() {
           .insert(orderItems);
         if (itemsError) throw itemsError;
 
-        // Update stock
+        // Update stock and sold_count
         for (const item of cart) {
           const { data: product } = await supabase
             .from('products')
-            .select('stock')
+            .select('stock, sold_count')
             .eq('id', item.id)
             .single();
-          if (product && typeof product.stock === 'number') {
-            const newStock = Math.max(0, product.stock - item.qty);
+          if (product) {
+            const newStock = typeof product.stock === 'number' ? Math.max(0, product.stock - item.qty) : 0;
+            const newSoldCount = (product.sold_count || 0) + item.qty;
             await supabase
               .from('products')
-              .update({ stock: newStock })
+              .update({ 
+                stock: newStock,
+                sold_count: newSoldCount
+              })
               .eq('id', item.id);
           }
         }

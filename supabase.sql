@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS products (
   price INTEGER NOT NULL,
   category TEXT NOT NULL,
   img TEXT NOT NULL,
+  sold_count INTEGER DEFAULT 0,
+  stock INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

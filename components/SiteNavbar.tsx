@@ -14,20 +14,23 @@ import {
   User as UserIcon,
   ChefHat,
   Package,
+  Box,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useCart } from '../lib/cart-context';
 
 export default function SiteNavbar() {
   const pathname = usePathname();
   const isChefPage = pathname === '/chef';
+  const isProductsPage = pathname === '/products';
+  const { cartCount, setIsCartOpen } = useCart();
 
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState('light');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [cartCount, setCartCount] = useState(0);
 
-  const isSolidNav = isChefPage;
+  const isSolidNav = isChefPage || isProductsPage;
 
   useEffect(() => {
     const saved = localStorage.getItem('hijrahTokoTheme') || 'light';
@@ -41,20 +44,12 @@ export default function SiteNavbar() {
       setUser(session?.user ?? null);
     });
 
-    const updateCart = () => {
-      const cart = JSON.parse(localStorage.getItem('hijrahTokoCart_guest') || '[]');
-      setCartCount(cart.reduce((acc: number, item: any) => acc + item.qty, 0));
-    };
-    updateCart();
-    window.addEventListener('storage', updateCart);
-
     const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
     window.addEventListener('scroll', onScroll);
 
     return () => {
       subscription.unsubscribe();
-      window.removeEventListener('storage', updateCart);
       window.removeEventListener('scroll', onScroll);
     };
   }, []);
@@ -86,20 +81,15 @@ export default function SiteNavbar() {
           </Link>
 
           <ul className="nav-links">
-            {navLink('/#home', 'Home')}
-            <li className="dropdown">
-              <Link href="/#produk" className="dropbtn">
-                Produk <ChevronDown className="chevron" size={16} />
+            {navLink('/', 'Home', pathname === '/')}
+            <li>
+              <Link href="/products" className={isProductsPage ? 'active' : ''}>
+                Produk
               </Link>
-              <div className="dropdown-content">
-                <Link href="/#produk">🧊 Frozen Food</Link>
-                <Link href="/#produk">📝 ATK</Link>
-                <Link href="/#produk">📦 Lainnya</Link>
-              </div>
             </li>
-            {navLink('/#testimoni', 'Testimoni')}
-            {navLink('/#inbox', 'Lacak')}
-            {navLink('/#kontak', 'Kontak')}
+            {navLink('/#keunggulan', 'Keunggulan')}
+            {navLink('/tracking', 'Lacak', pathname === '/tracking')}
+            {navLink('/#lokasi', 'Lokasi')}
             <li>
               <Link href="/chef" className={`dropbtn ${isChefPage ? 'active' : ''}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 <ChefHat size={14} />
@@ -129,7 +119,7 @@ export default function SiteNavbar() {
                     <Link href="/profile">
                       <UserIcon size={16} /> Profil Saya
                     </Link>
-                    <Link href="/#inbox">
+                    <Link href="/tracking">
                       <Package size={16} /> Pesanan Saya
                     </Link>
                     <Link href="/">Kembali ke Toko</Link>
@@ -146,7 +136,7 @@ export default function SiteNavbar() {
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            <Link href="/#checkout" className="cart-btn" aria-label="Keranjang">
+            <button type="button" className="cart-btn" onClick={() => setIsCartOpen(true)} aria-label="Keranjang">
               <ShoppingCart size={20} />
               <AnimatePresence>
                 {cartCount > 0 && (
@@ -160,7 +150,7 @@ export default function SiteNavbar() {
                   </motion.span>
                 )}
               </AnimatePresence>
-            </Link>
+            </button>
 
             <button type="button" className="mobile-toggle" onClick={() => setMobileOpen(true)} aria-label="Menu">
               <Menu size={24} />
@@ -190,11 +180,11 @@ export default function SiteNavbar() {
               </div>
               <div className="mobile-nav-scroll">
                 <ul className="mobile-nav-links">
-                  <li><Link href="/#home" onClick={() => setMobileOpen(false)}>Home</Link></li>
-                  <li><Link href="/#produk" onClick={() => setMobileOpen(false)}>Produk</Link></li>
-                  <li><Link href="/#testimoni" onClick={() => setMobileOpen(false)}>Testimoni</Link></li>
-                  <li><Link href="/#inbox" onClick={() => setMobileOpen(false)}>Lacak</Link></li>
-                  <li><Link href="/#kontak" onClick={() => setMobileOpen(false)}>Kontak</Link></li>
+                  <li><Link href="/" onClick={() => setMobileOpen(false)}>Home</Link></li>
+                  <li><Link href="/products" className={isProductsPage ? 'active' : ''} onClick={() => setMobileOpen(false)}>Produk</Link></li>
+                  <li><Link href="/#keunggulan" onClick={() => setMobileOpen(false)}>Keunggulan</Link></li>
+                  <li><Link href="/tracking" onClick={() => setMobileOpen(false)}>Lacak</Link></li>
+                  <li><Link href="/#lokasi" onClick={() => setMobileOpen(false)}>Lokasi</Link></li>
                   <li>
                     <Link href="/chef" className={isChefPage ? 'active' : ''} onClick={() => setMobileOpen(false)}>
                       Chef Virtual

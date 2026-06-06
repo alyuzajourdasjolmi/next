@@ -190,7 +190,12 @@ export default function Home() {
     }
   };
 
-  // Products filtered by category and search
+  // Best seller products (sorted by sold_count)
+  const bestSellerProducts = [...productsData]
+    .sort((a, b) => (b.sold_count || 0) - (a.sold_count || 0))
+    .slice(0, 8);
+
+  // Products filtered by category and search (for the regular grid if needed, but we use bestSeller for the section)
   const filteredProducts = productsData
     .filter((p) => activeTab === 'all' || p.category === activeTab)
     .filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -351,7 +356,7 @@ export default function Home() {
               </div>
             </li>
             <li>
-              <Link href={homeAnchor('#produk')} className={activeSection === 'produk' ? 'active' : ''}>
+              <Link href="/products" className={pathname === '/products' ? 'active' : ''}>
                 Produk
               </Link>
             </li>
@@ -473,8 +478,7 @@ export default function Home() {
               <div className="mobile-nav-scroll">
                 <ul className="mobile-nav-links">
                   <li><Link href={homeAnchor('#home')} onClick={() => setMobileNavOpen(false)}>🏠 Beranda</Link></li>
-                  <li><Link href={homeAnchor('#kategori')} onClick={() => setMobileNavOpen(false)}>📂 Kategori</Link></li>
-                  <li><Link href={homeAnchor('#produk')} onClick={() => setMobileNavOpen(false)}>📦 Produk Unggulan</Link></li>
+                  <li><Link href="/products" onClick={() => setMobileNavOpen(false)}>📦 Katalog Produk</Link></li>
                   <li><Link href={homeAnchor('#keunggulan')} onClick={() => setMobileNavOpen(false)}>✨ Keunggulan</Link></li>
                   <li><Link href={homeAnchor('#carapesan')} onClick={() => setMobileNavOpen(false)}>📖 Cara Pesan</Link></li>
                   <li><Link href="/tracking" onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</Link></li>
@@ -833,21 +837,29 @@ export default function Home() {
                 <div key={i} className="product-card-skeleton" />
               ))}
             </div>
-          ) : filteredProducts.length === 0 ? (
+          ) : bestSellerProducts.length === 0 ? (
             <div className="empty-state">
               <Package size={48} strokeWidth={1} color="#cbd5e1" />
               <p>Tidak ada produk ditemukan</p>
             </div>
           ) : (
-            <div className="product-grid">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onOpenDetail={setSelectedProduct}
-                />
-              ))}
-            </div>
+            <>
+              <div className="product-grid">
+                {bestSellerProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onOpenDetail={setSelectedProduct}
+                  />
+                ))}
+              </div>
+              
+              <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+                <Link href="/products" className="btn-hero-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  Lihat Semua Produk <ArrowRight size={18} />
+                </Link>
+              </div>
+            </>
           )}
         </div>
       </section>
