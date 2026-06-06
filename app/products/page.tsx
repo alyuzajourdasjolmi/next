@@ -87,7 +87,7 @@ export default function ProductsPage() {
 
           {/* Filters & Search Bar */}
           <div className="product-filter-bar">
-            <div className="flex-between">
+            <div className="filter-row">
               <div className="filter-tabs">
                 {categories.map((cat) => (
                   <button
@@ -99,40 +99,32 @@ export default function ProductsPage() {
                   </button>
                 ))}
               </div>
+            </div>
 
-              <div className="product-search-mini">
+            <div className="filter-actions-row">
+              <div className="product-search-mini search-expand">
                 <Search size={18} />
                 <input
                   type="text"
-                  placeholder="Cari produk..."
+                  placeholder="Cari produk dari semua kategori..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-            </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px', marginTop: '1rem' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Urutkan:</span>
-              <div className="product-search-mini" style={{ width: '160px', height: '36px', padding: '0 0.5rem' }}>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  style={{ 
-                    background: 'transparent', 
-                    border: 'none', 
-                    color: 'var(--text-main)', 
-                    fontSize: '0.8rem', 
-                    fontWeight: 700,
-                    width: '100%',
-                    outline: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value="newest">Terbaru</option>
-                  <option value="price-low">Harga Terendah</option>
-                  <option value="price-high">Harga Tertinggi</option>
-                  <option value="name">Nama A-Z</option>
-                </select>
+              <div className="sort-group">
+                <span className="sort-label">Urutkan:</span>
+                <div className="product-search-mini sort-select-box">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    <option value="newest">Terbaru</option>
+                    <option value="price-low">Harga Terendah</option>
+                    <option value="price-high">Harga Tertinggi</option>
+                    <option value="name">Nama A-Z</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
