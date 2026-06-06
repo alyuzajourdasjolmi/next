@@ -611,10 +611,7 @@ export default function Home() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.7 }}
             >
-              <div className="hero-nura-bg" aria-hidden="true">
-                <div className="hero-nura-blob hero-nura-blob-1" />
-                <div className="hero-nura-blob hero-nura-blob-2" />
-              </div>
+              <div className="hero-nura-bg" aria-hidden="true" />
 
               <div className="hero-container-new hero-container-nura" style={{ position: 'relative', zIndex: 4 }}>
                 <div className="hero-nura-layout">
@@ -666,28 +663,20 @@ export default function Home() {
 
                   <motion.div
                     className="hero-nura-visual"
-                    initial={{ opacity: 0, scale: 0.92, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    initial={{ opacity: 0, scale: 0.94 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                   >
                     <div className="hero-nura-card">
-                      <div className="hero-nura-card-glow" />
-                      <motion.div
-                        className="hero-nura-float"
-                        animate={{ y: [0, -8, 0] }}
-                        transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-                      >
-                        <Image
-                          src="/assets/images/nura.png"
-                          alt="Nura AI Assistant"
-                          width={1536}
-                          height={1024}
-                          unoptimized
-                          priority
-                          className="hero-nura-img"
-                        />
-                      </motion.div>
-                      <div className="hero-nura-card-shine" />
+                      <Image
+                        src="/assets/images/nura.png"
+                        alt="Nura AI Assistant"
+                        width={1536}
+                        height={1024}
+                        unoptimized
+                        priority
+                        className="hero-nura-img"
+                      />
                     </div>
                   </motion.div>
                 </div>
