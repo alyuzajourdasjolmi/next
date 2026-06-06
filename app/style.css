@@ -7698,18 +7698,24 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .prods-cat:hover {
   border-color: #e11d48;
   color: #e11d48;
+  transform: translateY(-1px);
 }
+
+.prods-cat:active { transform: scale(0.96); }
 
 .prods-cat.active {
   background: #e11d48;
   border-color: #e11d48;
   color: #fff;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
 }
 
 .prods-add-btn {
@@ -7944,10 +7950,18 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   color: #0f172a;
   border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
+  transition: padding-left 0.2s ease;
+}
+
+.prods-table tbody tr {
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .prods-table tbody tr:hover {
   background: #f8fafc;
+}
+.prods-table tbody tr:hover td {
+  padding-left: 1.2rem;
 }
 
 .prods-table tbody tr:last-child td {
@@ -8067,8 +8081,13 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   border-radius: 10px;
   border: none;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
+
+.prods-action:hover { transform: translateY(-2px) scale(1.05); }
+.prods-action:active { transform: scale(0.92); }
 
 .prods-action.edit {
   background: #fff1f2;
@@ -8077,6 +8096,7 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 .prods-action.edit:hover {
   background: #ffe4e6;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2);
 }
 
 .prods-action.delete {
@@ -8086,6 +8106,7 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 .prods-action.delete:hover {
   background: #fee2e2;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
 }
 
 .prods-empty {

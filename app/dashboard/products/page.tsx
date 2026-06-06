@@ -14,15 +14,19 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useDashboard } from '../../../lib/dashboard-context';
+import { useFeedback } from '../../../lib/feedback-context';
+import { ButtonSpinner } from '../../../components/Loading';
 
 export default function ProductsPage() {
   const { products, fetchData } = useDashboard();
+  const { success, error, showConfirm } = useFeedback();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [saving, setSaving] = useState(false);
   const [productForm, setProductForm] = useState({
     name: '',
     desc: '',
@@ -53,48 +57,58 @@ export default function ProductsPage() {
         setIsUploading(false);
         setUploadProgress(0);
       }, 1000);
-    } catch (error: any) {
-      console.error('Error uploading image:', error);
-      alert('Gagal mengunggah gambar: ' + error.message);
+    } catch (err: any) {
+      console.error('Error uploading image:', err);
+      error('Gagal Mengunggah Gambar', err.message || 'Terjadi kesalahan saat mengunggah gambar.');
       setIsUploading(false);
     }
   };
 
   const saveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (editingProductId) {
-        const { error } = await supabase
+        const { error: supaError } = await supabase
           .from('products')
           .update(productForm)
           .eq('id', editingProductId);
-        if (error) throw error;
-        alert('Produk berhasil diperbarui.');
+        if (supaError) throw supaError;
+        success('Produk Diperbarui', `${productForm.name} berhasil disimpan`);
       } else {
-        const { error } = await supabase.from('products').insert(productForm);
-        if (error) throw error;
-        alert('Produk berhasil ditambahkan.');
+        const { error: supaError } = await supabase.from('products').insert(productForm);
+        if (supaError) throw supaError;
+        success('Produk Ditambahkan', `${productForm.name} berhasil ditambahkan ke katalog`);
       }
       setProductForm({ name: '', desc: '', price: 0, category: 'frozen', img: '', stock: 0 });
       setEditingProductId(null);
       setShowProductForm(false);
       fetchData();
-    } catch (error: any) {
-      console.error('Error saving product:', error);
-      alert('Gagal menyimpan produk: ' + (error.message || "Pastikan kolom 'stock' sudah ada di database"));
+    } catch (err: any) {
+      error('Gagal Menyimpan Produk', err.message || "Pastikan kolom 'stock' sudah ada di database");
+    } finally {
+      setSaving(false);
     }
   };
 
-  const deleteProduct = async (id: number) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus produk ini?')) return;
-    try {
-      const { error } = await supabase.from('products').delete().eq('id', id);
-      if (error) throw error;
-      fetchData();
-    } catch (error) {
-      console.error('Error deleting product:', error);
-      alert('Gagal menghapus produk.');
-    }
+  const deleteProduct = (id: number, name: string) => {
+    showConfirm({
+      title: 'Hapus Produk?',
+      description: `Produk "${name}" akan dihapus permanen dan tidak dapat dikembalikan.`,
+      confirmText: 'Ya, Hapus',
+      cancelText: 'Batal',
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          const { error: supaError } = await supabase.from('products').delete().eq('id', id);
+          if (supaError) throw supaError;
+          success('Produk Dihapus', `${name} telah dihapus dari katalog`);
+          fetchData();
+        } catch (err: any) {
+          error('Gagal Menghapus Produk', err.message || 'Terjadi kesalahan saat menghapus produk.');
+        }
+      },
+    });
   };
 
   const openAddForm = () => {
@@ -119,28 +133,28 @@ export default function ProductsPage() {
     <section className="admin-products-page">
       {/* Stats */}
       <div className="prods-stats">
-        <div className="prods-stat">
+        <div className="prods-stat fb-stagger">
           <Package size={18} />
           <div>
             <strong>{products.length}</strong>
             <span>Total Produk</span>
           </div>
         </div>
-        <div className="prods-stat warn">
+        <div className="prods-stat warn fb-stagger">
           <AlertCircle size={18} />
           <div>
             <strong>{products.filter((p: any) => (p.stock || 0) > 0 && (p.stock || 0) <= 5).length}</strong>
             <span>Stok Menipis</span>
           </div>
         </div>
-        <div className="prods-stat danger">
+        <div className="prods-stat danger fb-stagger">
           <X size={18} />
           <div>
             <strong>{products.filter((p: any) => (p.stock || 0) <= 0).length}</strong>
             <span>Habis</span>
           </div>
         </div>
-        <div className="prods-stat accent">
+        <div className="prods-stat accent fb-stagger">
           <TrendingUp size={18} />
           <div>
             <strong>
@@ -176,7 +190,7 @@ export default function ProductsPage() {
             </button>
           ))}
         </div>
-        <button type="button" className="prods-add-btn" onClick={openAddForm}>
+        <button type="button" className="prods-add-btn fb-pressable" onClick={openAddForm}>
           <Plus size={15} /> Tambah Produk
         </button>
       </div>
@@ -266,12 +280,13 @@ export default function ProductsPage() {
               <div className="prods-form-actions">
                 <button
                   type="button"
-                  className="prods-btn-cancel"
+                  className="prods-btn-cancel fb-pressable"
                   onClick={() => setShowProductForm(false)}
                 >
                   Batal
                 </button>
-                <button type="submit" className="prods-btn-save">
+                <button type="submit" className="prods-btn-save fb-pressable" disabled={saving}>
+                  {saving ? <ButtonSpinner /> : null}
                   {editingProductId ? 'Simpan Perubahan' : 'Tambah Produk'}
                 </button>
               </div>
@@ -300,8 +315,8 @@ export default function ProductsPage() {
                 </td>
               </tr>
             ) : (
-              filteredProducts.map((product: any) => (
-                <tr key={product.id}>
+              filteredProducts.map((product: any, i: number) => (
+                <tr key={product.id} className="fb-row" style={{ animationDelay: `${Math.min(i, 8) * 0.04}s` }}>
                   <td>
                     <div className="prods-cell-name">
                       <div className="prods-cell-img">
@@ -365,7 +380,7 @@ export default function ProductsPage() {
                     <div className="prods-actions">
                       <button
                         type="button"
-                        className="prods-action edit"
+                        className="prods-action edit fb-pressable"
                         title="Edit"
                         onClick={() => openEditForm(product)}
                       >
@@ -373,9 +388,9 @@ export default function ProductsPage() {
                       </button>
                       <button
                         type="button"
-                        className="prods-action delete"
+                        className="prods-action delete fb-pressable"
                         title="Hapus"
-                        onClick={() => deleteProduct(product.id)}
+                        onClick={() => deleteProduct(product.id, product.name)}
                       >
                         <Trash2 size={14} />
                       </button>

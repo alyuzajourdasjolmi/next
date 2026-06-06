@@ -8,9 +8,11 @@ import {
   ORDER_STATUSES,
   ORDER_STATUS_LABEL,
 } from '../../../lib/dashboard-context';
+import { useFeedback } from '../../../lib/feedback-context';
 
 export default function TransactionsPage() {
   const { orders, fetchData } = useDashboard();
+  const { success, error, showConfirm } = useFeedback();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<(typeof ORDER_STATUSES)[number]>('all');
 
@@ -25,41 +27,58 @@ export default function TransactionsPage() {
     });
   }, [orders, searchTerm, statusFilter]);
 
-  const updateOrderStatus = async (orderId: number, status: string) => {
-    try {
-      // Kembalikan stok kalau cancel
-      if (status === 'cancelled') {
-        const order = orders.find((o: any) => o.id === orderId);
-        if (order && order.order_items) {
-          for (const item of order.order_items) {
-            const { data: product } = await supabase
-              .from('products')
-              .select('stock')
-              .eq('id', item.product_id)
-              .single();
-            if (product && typeof product.stock === 'number') {
-              await supabase
+  const cancelOrder = (orderId: number, customerName: string) => {
+    showConfirm({
+      title: 'Batalkan Pesanan?',
+      description: `Pesanan dari "${customerName}" akan dibatalkan. Stok produk akan dikembalikan otomatis.`,
+      confirmText: 'Ya, Batalkan',
+      cancelText: 'Tidak',
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          const order = orders.find((o: any) => o.id === orderId);
+          if (order && order.order_items) {
+            for (const item of order.order_items) {
+              const { data: product } = await supabase
                 .from('products')
-                .update({ stock: product.stock + item.qty })
-                .eq('id', item.product_id);
+                .select('stock')
+                .eq('id', item.product_id)
+                .single();
+              if (product && typeof product.stock === 'number') {
+                await supabase
+                  .from('products')
+                  .update({ stock: product.stock + item.qty })
+                  .eq('id', item.product_id);
+              }
             }
           }
+          const { error: supaError } = await supabase.from('orders').delete().eq('id', orderId);
+          if (supaError) throw supaError;
+          success('Pesanan Dibatalkan', `Pesanan #${orderId} telah dibatalkan, stok dikembalikan`);
+          fetchData();
+        } catch (err: any) {
+          error('Gagal Membatalkan Pesanan', err.message || 'Terjadi kesalahan');
         }
-        const { error } = await supabase.from('orders').delete().eq('id', orderId);
-        if (error) throw error;
-        fetchData();
-        return;
-      }
+      },
+    });
+  };
 
-      const { error } = await supabase
+  const updateOrderStatus = async (orderId: number, status: string) => {
+    if (status === 'cancelled') {
+      const order = orders.find((o: any) => o.id === orderId);
+      cancelOrder(orderId, order?.customer_name || 'Pelanggan');
+      return;
+    }
+    try {
+      const { error: supaError } = await supabase
         .from('orders')
         .update({ status })
         .eq('id', orderId);
-      if (error) throw error;
+      if (supaError) throw supaError;
+      success('Status Diperbarui', `Pesanan #${orderId} sekarang ${ORDER_STATUS_LABEL[status]}`);
       fetchData();
-    } catch (error: any) {
-      console.error('Error updating order:', error);
-      alert('Gagal memperbarui status pesanan: ' + (error.message || 'Error tidak diketahui'));
+    } catch (err: any) {
+      error('Gagal Memperbarui Status', err.message || 'Error tidak diketahui');
     }
   };
 
@@ -177,8 +196,8 @@ Status: ${order.status}</p>
                 </td>
               </tr>
             ) : (
-              filteredOrders.map((order: any) => (
-                <tr key={order.id}>
+              filteredOrders.map((order: any, i: number) => (
+                <tr key={order.id} className="fb-row" style={{ animationDelay: `${Math.min(i, 8) * 0.04}s` }}>
                   <td>
                     <div className="admin-customer-cell">
                       <strong>{order.customer_name}</strong>
@@ -232,7 +251,7 @@ Status: ${order.status}</p>
                     <div className="admin-action-row">
                       <button
                         type="button"
-                        className="icon-action info"
+                        className="icon-action info fb-pressable"
                         title="Cetak struk"
                         onClick={() => printReceipt(order)}
                       >
@@ -240,9 +259,9 @@ Status: ${order.status}</p>
                       </button>
                       <button
                         type="button"
-                        className="icon-action danger"
+                        className="icon-action danger fb-pressable"
                         title="Hapus"
-                        onClick={() => updateOrderStatus(order.id, 'cancelled')}
+                        onClick={() => cancelOrder(order.id, order.customer_name)}
                       >
                         <Trash2 size={16} />
                       </button>

@@ -4,43 +4,46 @@ import React from 'react';
 import { Trash2, UserCircle2, Users } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useDashboard } from '../../../lib/dashboard-context';
+import { useFeedback } from '../../../lib/feedback-context';
 
 export default function CustomersPage() {
   const { users, fetchData } = useDashboard();
+  const { success, error: showError, showConfirm } = useFeedback();
 
-  const deleteUser = async (userId: string, name: string) => {
-    if (
-      !confirm(
-        `Apakah Anda yakin ingin menghapus user "${name}" secara permanen? SELURUH data profil, riwayat pesanan, dan akun login mereka akan dihapus total dari sistem.`
-      )
-    ) {
-      return;
-    }
+  const deleteUser = (userId: string, name: string) => {
+    showConfirm({
+      title: 'Hapus Pengguna Permanen?',
+      description: `User "${name}" akan dihapus TOTAL dari sistem. Seluruh data profil, riwayat pesanan, dan akun login mereka akan hilang permanen dan tidak bisa dikembalikan.`,
+      confirmText: 'Ya, Hapus Permanen',
+      cancelText: 'Batal',
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          try {
+            await supabase.from('orders').update({ user_id: null }).eq('user_id', userId);
+          } catch (err) {
+            console.log('Kolom user_id mungkin belum ada di tabel orders, melewati...');
+          }
 
-    try {
-      try {
-        await supabase.from('orders').update({ user_id: null }).eq('user_id', userId);
-      } catch (err) {
-        console.log('Kolom user_id mungkin belum ada di tabel orders, melewati...');
-      }
+          const response = await fetch('/api/admin/delete-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId }),
+          });
 
-      const response = await fetch('/api/admin/delete-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
-      });
+          const result = await response.json();
+          if (!response.ok) {
+            throw new Error(result.error || 'Gagal menghapus user dari server.');
+          }
 
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error || 'Gagal menghapus user dari server.');
-      }
-
-      fetchData();
-      alert('User berhasil dihapus sepenuhnya dari sistem (Authentication & Profil).');
-    } catch (error: any) {
-      console.error('Error deleting user:', error);
-      alert('Gagal menghapus user: ' + error.message);
-    }
+          fetchData();
+          success('Pengguna Dihapus', `"${name}" telah dihapus dari sistem`);
+        } catch (err: any) {
+          console.error('Error deleting user:', err);
+          showError('Gagal Menghapus Pengguna', err.message);
+        }
+      },
+    });
   };
 
   return (
@@ -65,8 +68,8 @@ export default function CustomersPage() {
             </tr>
           </thead>
           <tbody>
-            {users.map((entry: any) => (
-              <tr key={entry.id}>
+            {users.map((entry: any, i: number) => (
+              <tr key={entry.id} className="fb-row" style={{ animationDelay: `${Math.min(i, 8) * 0.04}s` }}>
                 <td>
                   <div className="admin-user-cell">
                     <div className="avatar">
@@ -116,7 +119,7 @@ export default function CustomersPage() {
                 <td>
                   <div className="admin-action-row">
                     <button
-                      className="icon-action danger"
+                      className="icon-action danger fb-pressable"
                       title="Hapus Pengguna"
                       onClick={() => deleteUser(entry.id, entry.full_name)}
                     >

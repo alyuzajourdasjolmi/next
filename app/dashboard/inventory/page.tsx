@@ -21,6 +21,7 @@ export default function InventoryPage() {
       </div>
 
       <div
+        className="fb-stagger"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -29,11 +30,13 @@ export default function InventoryPage() {
         }}
       >
         <div
+          className="fb-pressable"
           style={{
             background: '#fef2f2',
             border: '1px solid #fecaca',
             padding: '1.25rem',
             borderRadius: 12,
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
         >
           <AlertCircle size={20} color="#dc2626" />
@@ -43,11 +46,13 @@ export default function InventoryPage() {
           </p>
         </div>
         <div
+          className="fb-pressable"
           style={{
             background: '#fffbeb',
             border: '1px solid #fde68a',
             padding: '1.25rem',
             borderRadius: 12,
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
         >
           <AlertCircle size={20} color="#d97706" />
@@ -57,11 +62,13 @@ export default function InventoryPage() {
           </p>
         </div>
         <div
+          className="fb-pressable"
           style={{
             background: '#f0fdf4',
             border: '1px solid #bbf7d0',
             padding: '1.25rem',
             borderRadius: 12,
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
         >
           <Package size={20} color="#16a34a" />
@@ -73,6 +80,7 @@ export default function InventoryPage() {
       </div>
 
       <div
+        className="fb-fade-up"
         style={{
           marginTop: '1.5rem',
           padding: '1rem',

@@ -441,9 +441,9 @@ body:has(.admin-v2) {
   font-size: 0.85rem; vertical-align: middle;
 }
 .admin-table tbody tr {
-  transition: background 0.15s;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
-.admin-table tbody tr:hover { background: #f8fafc; }
+.admin-table tbody tr:hover { background: #f8fafc; box-shadow: inset 3px 0 0 #e11d48; }
 .admin-table tbody tr:last-child td { border-bottom: none; }
 .admin-empty-row {
   text-align: center; padding: 2.5rem !important;

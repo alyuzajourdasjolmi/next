@@ -34,8 +34,8 @@ export default function ReviewsPage() {
                 </td>
               </tr>
             ) : (
-              reviews.map((review: any) => (
-                <tr key={review.id}>
+              reviews.map((review: any, i: number) => (
+                <tr key={review.id} className="fb-row" style={{ animationDelay: `${Math.min(i, 8) * 0.04}s` }}>
                   <td>
                     <strong>{review.name}</strong>
                   </td>
