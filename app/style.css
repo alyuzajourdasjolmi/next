@@ -10981,19 +10981,20 @@ body.dark-mode .footer-bottom {
 
 .location-contact-list li {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.875rem;
 }
 
 .loc-icon {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   transition: transform 0.25s ease;
+  line-height: 0;
 }
 
 .location-contact-list li:hover .loc-icon {
