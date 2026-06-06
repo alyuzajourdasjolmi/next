@@ -6126,9 +6126,9 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 .hero-nura-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
   width: 100%;
 }
 
@@ -6162,16 +6162,17 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   align-items: center;
   justify-content: center;
   z-index: 2;
-  min-height: 280px;
+  min-height: 380px;
+  width: 100%;
 }
 
 .hero-nura-glow-ring {
   position: absolute;
-  width: 420px;
-  height: 420px;
+  width: 560px;
+  height: 560px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 0, 85, 0.32) 0%, transparent 65%);
-  filter: blur(40px);
+  background: radial-gradient(circle, rgba(255, 0, 85, 0.35) 0%, transparent 65%);
+  filter: blur(50px);
   z-index: 0;
 }
 
@@ -6179,9 +6180,9 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   object-fit: contain;
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 0 40px rgba(255, 0, 85, 0.6));
+  filter: drop-shadow(0 0 50px rgba(255, 0, 85, 0.65));
   width: 100%;
-  max-width: 460px;
+  max-width: 620px;
   height: auto;
 }
 
@@ -6431,12 +6432,16 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 /* ── Hero V2 Responsive ── */
 @media (max-width: 1024px) {
   .hero-nura-glow-ring {
-    width: 320px;
-    height: 320px;
+    width: 420px;
+    height: 420px;
   }
 
   .hero-nura-img {
-    max-width: 340px;
+    max-width: 460px;
+  }
+
+  .hero-nura-visual {
+    min-height: 320px;
   }
 
   .hero-content-app {
@@ -6457,20 +6462,16 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
   .hero-nura-visual {
     order: -1;
-    min-height: 220px;
+    min-height: 260px;
   }
 
   .hero-nura-img {
-    max-width: 240px;
+    max-width: 280px;
   }
 
   .hero-nura-glow-ring {
-    width: 240px;
-    height: 240px;
-  }
-
-  .hero-nura-visual {
-    display: flex;
+    width: 320px;
+    height: 320px;
   }
 
   .hero-content-nura {
