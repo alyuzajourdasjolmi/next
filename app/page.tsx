@@ -911,11 +911,8 @@ export default function Home() {
               </div>
             </li>
             <li><Link href={homeAnchor('#testimoni')} className={activeSection === 'testimoni' ? 'active' : ''}>Testimoni</Link></li>
-            <li><Link href="/features" className={pathname === '/features' ? 'active' : ''}>Fitur</Link></li>
-            <li><Link href="/pricing" className={pathname === '/pricing' ? 'active' : ''}>Harga</Link></li>
-            <li><Link href="/about" className={pathname === '/about' ? 'active' : ''}>Tentang</Link></li>
             <li><Link href={homeAnchor('#inbox')} className={activeSection === 'inbox' ? 'active' : ''}>Lacak</Link></li>
-            <li><Link href="/contact" className={pathname === '/contact' ? 'active' : ''}>Kontak</Link></li>
+            <li><Link href={homeAnchor('#kontak')} className={activeSection === 'kontak' ? 'active' : ''}>Kontak</Link></li>
             <li className="nav-item-desktop-only">
               <button className="tutorial-btn" onClick={(e) => { e.preventDefault(); setTutorialStep(0); setIsTutorialOpen(true); }}>
                 <HelpCircle size={16} /> <span style={{ marginLeft: '6px' }}>Cara Pesan</span>
@@ -1027,11 +1024,8 @@ export default function Home() {
                   <li><Link href={homeAnchor('#testimoni')} onClick={() => setMobileNavOpen(false)}>⭐ Testimoni</Link></li>
                   <li><Link href={homeAnchor('#checkout')} onClick={() => setMobileNavOpen(false)}>🛒 Checkout</Link></li>
                   <li><Link href={homeAnchor('#inbox')} onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</Link></li>
-                  <li><Link href="/features" onClick={() => setMobileNavOpen(false)}>✨ Fitur</Link></li>
-                  <li><Link href="/pricing" onClick={() => setMobileNavOpen(false)}>💰 Harga</Link></li>
-                  <li><Link href="/about" onClick={() => setMobileNavOpen(false)}>ℹ️ Tentang</Link></li>
                   <li><Link href={homeAnchor('#lokasi')} onClick={() => setMobileNavOpen(false)}>📍 Lokasi</Link></li>
-                  <li><Link href="/contact" onClick={() => setMobileNavOpen(false)}>📞 Kontak</Link></li>
+                  <li><Link href={homeAnchor('#kontak')} onClick={() => setMobileNavOpen(false)}>📞 Kontak</Link></li>
                   {user && user?.email === ADMIN_EMAIL && (
                     <li style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
                       <Link href="/dashboard" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>⚙️ Dashboard Admin</Link>
@@ -2211,11 +2205,9 @@ export default function Home() {
             <ul>
               <li><Link href={homeAnchor('#home')}>Beranda</Link></li>
               <li><Link href={homeAnchor('#produk')}>Katalog Produk</Link></li>
-              <li><Link href="/features">Fitur</Link></li>
-              <li><Link href="/pricing">Harga</Link></li>
-              <li><Link href="/about">Tentang Kami</Link></li>
               <li><Link href={homeAnchor('#testimoni')}>Testimoni</Link></li>
               <li><Link href={homeAnchor('#lokasi')}>Lokasi Kami</Link></li>
+              <li><Link href={homeAnchor('#kontak')}>Kontak</Link></li>
             </ul>
           </div>
 
