@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./style.css";
@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#dc2626",
+};
+
 // Penambahan Meta Tag Verifikasi Google di sini
 export const metadata: Metadata = {
   title: "Hijrah Toko - Frozen Food & ATK Lengkap",
@@ -23,7 +27,6 @@ export const metadata: Metadata = {
     google: "DiDsLBn93uY2TjOmlRwh5sWJ9Ip6VU3aDt6S3m50NfE",
   },
   manifest: "/manifest.json",
-  themeColor: "#dc2626",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
