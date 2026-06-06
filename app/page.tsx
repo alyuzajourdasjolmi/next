@@ -969,36 +969,35 @@ export default function Home() {
 
           <div className="location-grid">
             <div className="location-info">
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-                {STORE_NAME}
-              </h3>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+              <h3 className="location-title">{STORE_NAME}</h3>
+              <p className="location-desc">
                 Pusat frozen food & ATK terlengkap di Padang Pariaman
               </p>
+              <div className="location-divider" />
               <ul className="location-contact-list">
                 <li>
-                  <span className="loc-icon"><MapPin size={16} /></span>
+                  <span className="loc-icon rose"><MapPin size={18} /></span>
                   <div>
                     <strong>Alamat</strong>
                     <span>Padang Pariaman, Sumatera Barat</span>
                   </div>
                 </li>
                 <li>
-                  <span className="loc-icon"><Phone size={16} /></span>
+                  <span className="loc-icon blue"><Phone size={18} /></span>
                   <div>
                     <strong>Telepon / WhatsApp</strong>
                     <span>0852-6396-5031</span>
                   </div>
                 </li>
                 <li>
-                  <span className="loc-icon"><Clock size={16} /></span>
+                  <span className="loc-icon amber"><Clock size={18} /></span>
                   <div>
                     <strong>Jam Operasional</strong>
                     <span>Senin – Sabtu, 08.00 – 21.00 WIB</span>
                   </div>
                 </li>
                 <li>
-                  <span className="loc-icon"><MessageSquare size={16} /></span>
+                  <span className="loc-icon purple"><MessageSquare size={18} /></span>
                   <div>
                     <strong>Email</strong>
                     <span>admin.hijrahtoko@gmail.com</span>
