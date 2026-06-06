@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   Settings, Store, Clock, Truck, Palette,
   Save, RotateCcw, Sun, Moon, Image,
+  Lock, Unlock, MapPin,
 } from 'lucide-react';
 import { useSettings } from '../../../lib/settings-context';
 import { DaySchedule } from '../../../lib/store-settings';
@@ -129,19 +130,64 @@ export default function SettingsPage() {
               onChange={(e) => set('address', e.target.value)} />
           </label>
 
-          <div className="admin-form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-            <label>Latitude
-              <input type="number" step="any" value={settings.lat}
-                onChange={(e) => set('lat', parseFloat(e.target.value) || 0)} />
-            </label>
-            <label>Longitude
-              <input type="number" step="any" value={settings.lon}
-                onChange={(e) => set('lon', parseFloat(e.target.value) || 0)} />
-            </label>
+          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1rem', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <MapPin size={16} color="var(--primary)" />
+                <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>Koordinat Toko</strong>
+                {settings.lockCoordinate && (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '0.25rem',
+                    padding: '0.2rem 0.55rem', borderRadius: 6,
+                    background: '#fef3c7', color: '#92400e',
+                    fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.02em',
+                  }}>
+                    <Lock size={11} /> TERKUNCI
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => set('lockCoordinate', !settings.lockCoordinate)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                  padding: '0.4rem 0.85rem', borderRadius: 8,
+                  border: `1.5px solid ${settings.lockCoordinate ? '#16a34a' : '#e11d48'}`,
+                  background: settings.lockCoordinate ? '#f0fdf4' : '#fef2f2',
+                  color: settings.lockCoordinate ? '#16a34a' : '#dc2626',
+                  cursor: 'pointer', fontWeight: 600, fontSize: '0.78rem',
+                  transition: 'all 0.2s',
+                }}
+              >
+                {settings.lockCoordinate ? (
+                  <><Unlock size={13} /> Buka Kunci</>
+                ) : (
+                  <><Lock size={13} /> Kunci Koordinat</>
+                )}
+              </button>
+            </div>
+
+            <div className="admin-form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+              <label>Latitude
+                <input type="number" step="any" value={settings.lat} disabled={settings.lockCoordinate}
+                  onChange={(e) => set('lat', parseFloat(e.target.value) || 0)}
+                  style={settings.lockCoordinate
+                    ? { background: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed' }
+                    : undefined} />
+              </label>
+              <label>Longitude
+                <input type="number" step="any" value={settings.lon} disabled={settings.lockCoordinate}
+                  onChange={(e) => set('lon', parseFloat(e.target.value) || 0)}
+                  style={settings.lockCoordinate
+                    ? { background: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed' }
+                    : undefined} />
+              </label>
+            </div>
+            <p style={{ fontSize: '0.78rem', color: '#6b7280', margin: '0.5rem 0 0' }}>
+              {settings.lockCoordinate
+                ? '🔒 Koordinat terkunci. Klik "Buka Kunci" untuk mengubahnya. Koordinat ini dipakai untuk marker peta & perhitungan ongkir otomatis.'
+                : '⚠️ Buka kunci untuk edit. Pastikan koordinat valid agar peta & ongkir akurat.'}
+            </p>
           </div>
-          <p style={{ fontSize: '0.78rem', color: '#6b7280', margin: '-0.5rem 0 0' }}>
-            Koordinat untuk marker peta & perhitungan ongkir otomatis.
-          </p>
         </div>
       )}
 

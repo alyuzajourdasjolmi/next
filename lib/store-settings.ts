@@ -15,6 +15,7 @@ export type StoreSettings = {
   address: string;
   lat: number;
   lon: number;
+  lockCoordinate: boolean;
   shippingNearMaxKm: number;
   shippingMaxKm: number;
   shippingNearBase: number;
@@ -48,6 +49,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   address: 'Padang Pariaman, Sumatera Barat',
   lat: -0.5940091,
   lon: 100.2129566,
+  lockCoordinate: true,
   shippingNearMaxKm: 2,
   shippingMaxKm: 20,
   shippingNearBase: 5000,
