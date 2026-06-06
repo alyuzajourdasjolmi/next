@@ -61,8 +61,22 @@ export default function ProductCard({ product, onOpenDetail, compact }: Props) {
       <div className="product-info" onClick={() => onOpenDetail(product)} style={{ cursor: 'pointer' }}>
         <h3 className="product-name">{product.name}</h3>
         <div className="product-price">Rp {product.price.toLocaleString('id-ID')}</div>
-        <div className="product-stock-hint">
-          {isOutOfStock ? 'Stok habis' : `Stok: ${product.stock || 0}`}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+          <div className="product-stock-hint">
+            {isOutOfStock ? 'Stok habis' : `Stok: ${product.stock || 0}`}
+          </div>
+          {product.sold_count > 0 && (
+            <div style={{ 
+              fontSize: '0.75rem', 
+              color: 'var(--text-muted)', 
+              background: 'var(--bg-surface-soft)', 
+              padding: '2px 8px', 
+              borderRadius: '6px',
+              fontWeight: 600
+            }}>
+              {product.sold_count}+ Terjual
+            </div>
+          )}
         </div>
       </div>
     </motion.article>

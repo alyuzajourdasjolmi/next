@@ -192,6 +192,8 @@ export default function Home() {
 
   // Best seller products (sorted by sold_count)
   const bestSellerProducts = [...productsData]
+    .filter((p) => activeTab === 'all' || p.category === activeTab)
+    .filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => (b.sold_count || 0) - (a.sold_count || 0))
     .slice(0, 8);
 
@@ -805,28 +807,35 @@ export default function Home() {
 
           {/* Filter tabs */}
           <div className="product-filter-bar">
-            {[
-              { id: 'all', label: 'Semua' },
-              { id: 'frozen', label: '🧊 Frozen' },
-              { id: 'atk', label: '📝 ATK' },
-              { id: 'other', label: '📦 Lainnya' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`product-filter-tab ${activeTab === tab.id ? 'active' : ''}`}
-              >
-                {tab.label}
-              </button>
-            ))}
-            <div className="product-search-mini">
-              <Search size={14} />
-              <input
-                type="text"
-                placeholder="Cari produk..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="filter-row" style={{ display: 'flex', justifyContent: 'center' }}>
+              <div className="filter-tabs">
+                {[
+                  { id: 'all', label: 'Semua Produk' },
+                  { id: 'frozen', label: '🧊 Frozen Food' },
+                  { id: 'atk', label: '📝 Alat Tulis' },
+                  { id: 'other', label: '📦 Lainnya' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`product-filter-tab ${activeTab === tab.id ? 'active' : ''}`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="filter-actions-row" style={{ marginTop: '0.5rem' }}>
+              <div className="product-search-mini search-expand">
+                <Search size={18} />
+                <input
+                  type="text"
+                  placeholder="Cari di produk best seller..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
