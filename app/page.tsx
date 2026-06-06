@@ -139,7 +139,7 @@ export default function Home() {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-      const sectionIds = ['home', 'kategori', 'produk', 'keunggulan', 'lokasi'];
+      const sectionIds = ['home', 'kategori', 'produk', 'keunggulan', 'carapesan', 'lokasi'];
       let current = '';
       for (const id of sectionIds) {
         const el = document.getElementById(id);
@@ -366,6 +366,11 @@ export default function Home() {
               </Link>
             </li>
             <li>
+              <Link href={homeAnchor('#carapesan')} className={activeSection === 'carapesan' ? 'active' : ''}>
+                Cara Pesan
+              </Link>
+            </li>
+            <li>
               <Link href={homeAnchor('#lokasi')} className={activeSection === 'lokasi' ? 'active' : ''}>
                 Lokasi
               </Link>
@@ -471,6 +476,7 @@ export default function Home() {
                   <li><Link href={homeAnchor('#kategori')} onClick={() => setMobileNavOpen(false)}>📂 Kategori</Link></li>
                   <li><Link href={homeAnchor('#produk')} onClick={() => setMobileNavOpen(false)}>📦 Produk Unggulan</Link></li>
                   <li><Link href={homeAnchor('#keunggulan')} onClick={() => setMobileNavOpen(false)}>✨ Keunggulan</Link></li>
+                  <li><Link href={homeAnchor('#carapesan')} onClick={() => setMobileNavOpen(false)}>📖 Cara Pesan</Link></li>
                   <li><Link href="/tracking" onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</Link></li>
                   <li><Link href={homeAnchor('#lokasi')} onClick={() => setMobileNavOpen(false)}>📍 Lokasi</Link></li>
                   {user && user?.email === ADMIN_EMAIL && (
@@ -908,6 +914,45 @@ export default function Home() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ── CARA PESAN ── */}
+      <section className="section tutorial-section" id="carapesan" style={{ background: 'var(--bg-surface-soft)' }}>
+        <div className="section-container">
+          <div className="section-header">
+            <div className="section-eyebrow">
+              <Sparkles size={14} /> Panduan Belanja
+            </div>
+            <h2 className="section-title">Cara Memesan</h2>
+            <p className="section-subtitle">Cukup 5 langkah mudah, pesanan siap diantar</p>
+          </div>
+
+          <div className="tutorial-grid">
+            {[
+              { icon: Search, title: 'Pilih Produk', desc: 'Jelajahi frozen food & ATK favorit, cari atau lihat per kategori.' },
+              { icon: ShoppingCart, title: 'Keranjang', desc: 'Review pesanan, atur jumlah, pastikan semua sesuai sebelum checkout.' },
+              { icon: PenLine, title: 'Checkout', desc: 'Isi data & alamat, pilih antar/jemput, tentukan metode bayar.' },
+              { icon: MessageSquare, title: 'Konfirmasi', desc: 'Pesanan terkirim, admin konfirmasi via WhatsApp dalam beberapa menit.' },
+              { icon: Package, title: 'Lacak', desc: 'Pantau status pesanan real-time lewat halaman Lacak atau dashboard.' },
+            ].map((step, i) => (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.4 }}
+                className="tutorial-card"
+              >
+                <div className="tutorial-step-num">{i + 1}</div>
+                <div className="tutorial-card-icon">
+                  <step.icon size={28} />
+                </div>
+                <h3 className="tutorial-card-title">{step.title}</h3>
+                <p className="tutorial-card-desc">{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
