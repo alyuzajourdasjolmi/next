@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
+import Script from 'next/script';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -255,6 +256,70 @@ export default function Home() {
   ];
 
   const heroSlideLabels = ['Belanja Lengkap', 'Install Aplikasi', 'NURA AI'];
+
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [leafletMap, setLeafletMap] = useState<any>(null);
+  const [leafletReady, setLeafletReady] = useState(false);
+
+  const initLeafletMap = useCallback(() => {
+    if (!mapRef.current || typeof window === 'undefined') return;
+    const L = (window as any).L;
+    if (!L) return;
+    if (mapRef.current.dataset.mapInit === 'true') return;
+    mapRef.current.dataset.mapInit = 'true';
+
+    const store = STORE_COORDINATES;
+    const newMap = L.map(mapRef.current, {
+      zoomControl: false,
+      scrollWheelZoom: true,
+    }).setView([store.lat, store.lon], 16);
+
+    L.control.zoom({ position: 'bottomleft' }).addTo(newMap);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 20,
+    }).addTo(newMap);
+
+    const customIcon = L.divIcon({
+      className: 'leaflet-store-marker',
+      html: `<div class="store-marker-pin"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+    });
+
+    L.marker([store.lat, store.lon], { icon: customIcon })
+      .addTo(newMap)
+      .bindPopup(
+        `<div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;padding:2px 0">${STORE_NAME}</div><div style="font-size:11px;color:#64748b">Padang Pariaman, Sumbar</div>`
+      );
+
+    newMap.once('moveend', () => newMap.invalidateSize());
+    setTimeout(() => { try { newMap.invalidateSize(); } catch (e) { /* ignore */ } }, 500);
+
+    setLeafletMap(newMap);
+    setLeafletReady(true);
+  }, []);
+
+  const centerMapToStore = useCallback(() => {
+    if (!leafletMap) return;
+    const store = STORE_COORDINATES;
+    leafletMap.setView([store.lat, store.lon], 16, { animate: true, duration: 0.5 });
+  }, [leafletMap]);
+
+  useEffect(() => {
+    if ((window as any).L) {
+      initLeafletMap();
+      return;
+    }
+    const check = setInterval(() => {
+      if ((window as any).L) {
+        initLeafletMap();
+        clearInterval(check);
+      }
+    }, 100);
+    return () => clearInterval(check);
+  }, [initLeafletMap]);
 
   return (
     <>
@@ -897,12 +962,14 @@ export default function Home() {
             </div>
 
             <div className="location-map">
-              <iframe
-                title="Lokasi Toko"
-                src={`https://www.openstreetmap.org/export/embed.html?bbox=${STORE_COORDINATES.lon - 0.01},${STORE_COORDINATES.lat - 0.01},${STORE_COORDINATES.lon + 0.01},${STORE_COORDINATES.lat + 0.01}&layer=mapnik&marker=${STORE_COORDINATES.lat},${STORE_COORDINATES.lon}`}
-                style={{ border: 0, width: '100%', height: '100%', borderRadius: 16 }}
-                loading="lazy"
-              />
+              <div ref={mapRef} className="location-map-container" />
+              <button
+                className="btn-reset-map"
+                onClick={centerMapToStore}
+                title="Pusatkan ke lokasi toko"
+              >
+                <MapPin size={16} /> Pusatkan Toko
+              </button>
             </div>
           </div>
         </div>
@@ -1080,6 +1147,23 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <Script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" strategy="lazyOnload" />
+      <style>{`
+        @import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+        .location-map-container { width: 100%; height: 100%; border-radius: 20px; z-index: 1; }
+        .location-map-container .leaflet-control-zoom { border: none !important; box-shadow: 0 4px 15px rgba(0,0,0,0.12) !important; border-radius: 12px !important; overflow: hidden; margin-bottom: 20px !important; margin-left: 12px !important; }
+        .location-map-container .leaflet-control-zoom a { color: #334155 !important; background: white !important; width: 36px !important; height: 36px !important; line-height: 36px !important; font-size: 18px !important; }
+        .location-map-container .leaflet-control-zoom a:hover { color: #e11d48 !important; background: #fff1f2 !important; }
+        .leaflet-store-marker { background: none !important; border: none !important; }
+        .store-marker-pin { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: linear-gradient(135deg, #e11d48, #be123c); border: 3px solid white; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 4px 12px rgba(225,29,72,0.4); }
+        .store-marker-pin svg { transform: rotate(45deg); filter: drop-shadow(0 0 2px rgba(0,0,0,0.2)); }
+        .leaflet-popup-content-wrapper { border-radius: 16px !important; padding: 2px 4px !important; box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important; }
+        .leaflet-popup-tip { box-shadow: none !important; }
+        .btn-reset-map { position: absolute; bottom: 16px; right: 16px; z-index: 1000; display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 0.8rem; font-weight: 700; color: #e11d48; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.2s ease; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .btn-reset-map:hover { background: #fff1f2; border-color: #fda4af; box-shadow: 0 6px 20px rgba(225,29,72,0.15); transform: translateY(-1px); }
+        .btn-reset-map:active { transform: translateY(0); }
+      `}</style>
     </>
   );
 }
