@@ -38,6 +38,7 @@ import {
   CheckCircle2,
   Bot,
   Wifi,
+  Navigation,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useCart } from '../lib/cart-context';
@@ -276,8 +277,8 @@ export default function Home() {
 
     L.control.zoom({ position: 'bottomleft' }).addTo(newMap);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap',
+    L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      attribution: '&copy; Google',
       maxZoom: 20,
     }).addTo(newMap);
 
@@ -963,13 +964,24 @@ export default function Home() {
 
             <div className="location-map">
               <div ref={mapRef} className="location-map-container" />
-              <button
-                className="btn-reset-map"
-                onClick={centerMapToStore}
-                title="Pusatkan ke lokasi toko"
-              >
-                <MapPin size={16} /> Pusatkan Toko
-              </button>
+              <div className="location-map-actions">
+                <button
+                  className="btn-map btn-map-reset"
+                  onClick={centerMapToStore}
+                  title="Pusatkan ke lokasi toko"
+                >
+                  <MapPin size={15} /> Pusatkan Toko
+                </button>
+                <a
+                  href={`https://www.google.com/maps/dir//${STORE_COORDINATES.lat},${STORE_COORDINATES.lon}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-map btn-map-gmaps"
+                  title="Buka di Google Maps"
+                >
+                  <Navigation size={15} /> Buka Google Maps
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -1160,9 +1172,14 @@ export default function Home() {
         .store-marker-pin svg { transform: rotate(45deg); filter: drop-shadow(0 0 2px rgba(0,0,0,0.2)); }
         .leaflet-popup-content-wrapper { border-radius: 16px !important; padding: 2px 4px !important; box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important; }
         .leaflet-popup-tip { box-shadow: none !important; }
-        .btn-reset-map { position: absolute; bottom: 16px; right: 16px; z-index: 1000; display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 0.8rem; font-weight: 700; color: #e11d48; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.2s ease; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .btn-reset-map:hover { background: #fff1f2; border-color: #fda4af; box-shadow: 0 6px 20px rgba(225,29,72,0.15); transform: translateY(-1px); }
-        .btn-reset-map:active { transform: translateY(0); }
+        .location-map-actions { position: absolute; bottom: 16px; right: 16px; z-index: 1000; display: flex; gap: 8px; }
+        .btn-map { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.2s ease; font-family: 'Plus Jakarta Sans', sans-serif; text-decoration: none; border: 1px solid #e2e8f0; }
+        .btn-map:hover { transform: translateY(-1px); }
+        .btn-map:active { transform: translateY(0); }
+        .btn-map-reset { background: white; color: #e11d48; }
+        .btn-map-reset:hover { background: #fff1f2; border-color: #fda4af; box-shadow: 0 6px 20px rgba(225,29,72,0.15); }
+        .btn-map-gmaps { background: #e11d48; color: white; border-color: #e11d48; }
+        .btn-map-gmaps:hover { background: #be123c; border-color: #be123c; box-shadow: 0 6px 20px rgba(225,29,72,0.3); }
       `}</style>
     </>
   );
