@@ -7,7 +7,9 @@ import {
   Lock, Unlock, MapPin,
 } from 'lucide-react';
 import { useSettings } from '../../../lib/settings-context';
+import { useFeedback } from '../../../lib/feedback-context';
 import { DaySchedule } from '../../../lib/store-settings';
+import { ButtonSpinner } from '../../../components/Loading';
 
 type Tab = 'info' | 'schedule' | 'shipping' | 'appearance';
 
@@ -22,18 +24,31 @@ const DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
 
 export default function SettingsPage() {
   const { settings, updateSettings, resetSettings } = useSettings();
+  const { success, showConfirm } = useFeedback();
   const [activeTab, setActiveTab] = useState<Tab>('info');
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaving(true);
+    // Simulate save
+    await new Promise((resolve) => setTimeout(resolve, 400));
     updateSettings({ ...settings });
-    setTimeout(() => {
-      setSaving(false);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    }, 400);
+    setSaving(false);
+    success('Pengaturan Tersimpan', 'Perubahan telah berhasil disimpan');
+  };
+
+  const handleReset = () => {
+    showConfirm({
+      title: 'Reset Pengaturan?',
+      description: 'Semua pengaturan akan dikembalikan ke nilai awal. Tindakan ini tidak dapat dibatalkan.',
+      confirmText: 'Ya, Reset',
+      cancelText: 'Batal',
+      variant: 'danger',
+      onConfirm: () => {
+        resetSettings();
+        success('Pengaturan Direset', 'Semua pengaturan telah dikembalikan ke nilai awal');
+      },
+    });
   };
 
   const set = (field: string, value: any) => updateSettings({ [field]: value } as any);
@@ -63,19 +78,22 @@ export default function SettingsPage() {
       <div className="admin-panel-header split">
         <h2><Settings size={18} /> Pengaturan Toko</h2>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button className="admin-sidebar-link" onClick={resetSettings}
+          <button className="admin-sidebar-link fb-pressable" onClick={handleReset}
             style={{ width: 'auto', padding: '0.5rem 1rem', color: '#64748b' }}>
             <RotateCcw size={14} /> Reset
           </button>
-          <button onClick={handleSave}
+          <button onClick={handleSave} disabled={saving}
+            className="fb-pressable"
             style={{
               padding: '0.5rem 1rem', borderRadius: 10, border: 'none',
-              background: saved ? '#16a34a' : 'var(--primary)', color: '#fff',
-              fontWeight: 600, cursor: 'pointer', fontSize: '0.82rem',
+              background: 'var(--primary)', color: '#fff',
+              fontWeight: 600, cursor: saving ? 'wait' : 'pointer', fontSize: '0.82rem',
               display: 'flex', alignItems: 'center', gap: '0.35rem',
               transition: 'background 0.3s',
+              opacity: saving ? 0.7 : 1,
             }}>
-            <Save size={14} /> {saving ? 'Menyimpan…' : saved ? 'Tersimpan!' : 'Simpan'}
+            {saving ? <ButtonSpinner /> : <Save size={14} />}
+            {saving ? 'Menyimpan…' : 'Simpan'}
           </button>
         </div>
       </div>

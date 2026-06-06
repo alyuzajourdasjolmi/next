@@ -76,27 +76,27 @@ export default function DashboardOverviewPage() {
     <>
       {/* KPI Cards */}
       <section className="admin-kpi-grid">
-        <article className="admin-kpi-card">
+        <article className="admin-kpi-card fb-stagger">
           <span className="kpi-icon green"><DollarSign size={18} /></span>
           <h3>Omzet Total</h3>
           <strong>Rp {totalRevenue.toLocaleString('id-ID')}</strong>
         </article>
-        <article className="admin-kpi-card">
+        <article className="admin-kpi-card fb-stagger">
           <span className="kpi-icon amber"><AlertCircle size={18} /></span>
           <h3>Pesanan Pending</h3>
           <strong>{pendingOrders}</strong>
         </article>
-        <article className="admin-kpi-card">
+        <article className="admin-kpi-card fb-stagger">
           <span className="kpi-icon blue"><Package size={18} /></span>
           <h3>Total Produk</h3>
           <strong>{totalProducts}</strong>
         </article>
-        <article className="admin-kpi-card">
+        <article className="admin-kpi-card fb-stagger">
           <span className="kpi-icon slate"><Users size={18} /></span>
           <h3>Total Pengguna</h3>
           <strong>{totalUsers}</strong>
         </article>
-        <article className="admin-kpi-card featured">
+        <article className="admin-kpi-card featured fb-stagger">
           <span className="kpi-icon rose"><TrendingUp size={18} /></span>
           <h3>Omzet Bulan Ini</h3>
           <strong>Rp {monthlyRevenue.toLocaleString('id-ID')}</strong>
@@ -142,17 +142,17 @@ export default function DashboardOverviewPage() {
         )}
 
         <div className="admin-summary-grid" style={{ marginBottom: '1.25rem' }}>
-          <div className="admin-summary-card">
+          <div className="admin-summary-card fb-stagger">
             <div className="summary-icon rose"><Package size={16} /></div>
             <h4>Pesanan Hari Ini</h4>
             <strong>{todayOrders.length}</strong>
           </div>
-          <div className="admin-summary-card">
+          <div className="admin-summary-card fb-stagger">
             <div className="summary-icon blue"><Package size={16} /></div>
             <h4>Produk Aktif</h4>
             <strong>{products.length}</strong>
           </div>
-          <div className="admin-summary-card">
+          <div className="admin-summary-card fb-stagger">
             <div className="summary-icon slate"><Users size={16} /></div>
             <h4>Total Pelanggan</h4>
             <strong>{users.length}</strong>
@@ -164,8 +164,8 @@ export default function DashboardOverviewPage() {
             Pesanan Terbaru
           </h4>
           <div className="admin-recent-list">
-            {orders.slice(0, 5).map((order: any) => (
-              <div key={order.id} className="admin-recent-item">
+            {orders.slice(0, 5).map((order: any, i: number) => (
+              <div key={order.id} className="admin-recent-item fb-row" style={{ animationDelay: `${i * 0.05}s` }}>
                 <div className="order-info">
                   <strong>{order.customer_name}</strong>
                   <span>Rp {order.grand_total.toLocaleString('id-ID')}</span>
