@@ -5778,14 +5778,14 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 .hero.hero-v2 {
   position: relative;
   overflow: hidden;
-  min-height: clamp(520px, 78vh, 680px);
+  min-height: clamp(580px, 82vh, 740px);
   display: block;
   padding: 0;
   background: #000;
 }
 
 .hero-v2 .hero-slide {
-  min-height: clamp(520px, 78vh, 680px);
+  min-height: clamp(580px, 82vh, 740px);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -6099,15 +6099,18 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 /* Slide 3: Nura */
 .hero-slide-nura {
-  background: #0a0612;
+  background: linear-gradient(135deg, #4c0519 0%, #831843 35%, #9f1239 70%, #500724 100%);
   position: relative;
+  overflow: hidden;
 }
 
 .hero-nura-bg {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(135deg, #1a0b2e 0%, #2a0a3e 50%, #0f172a 100%);
+    radial-gradient(ellipse at 70% 30%, rgba(244, 63, 94, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 70%, rgba(190, 18, 60, 0.45) 0%, transparent 55%),
+    linear-gradient(135deg, #4c0519 0%, #831843 50%, #500724 100%);
   z-index: 0;
   overflow: hidden;
 }
@@ -6115,25 +6118,25 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 .hero-nura-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(90px);
   pointer-events: none;
 }
 
 .hero-nura-blob-1 {
-  top: -10%;
-  right: 5%;
-  width: 500px;
-  height: 500px;
-  background: rgba(255, 0, 85, 0.35);
+  top: -15%;
+  right: -5%;
+  width: 520px;
+  height: 520px;
+  background: rgba(251, 113, 133, 0.55);
   animation: blob-float 8s ease-in-out infinite;
 }
 
 .hero-nura-blob-2 {
-  bottom: -20%;
-  left: 30%;
-  width: 450px;
-  height: 450px;
-  background: rgba(124, 58, 237, 0.3);
+  bottom: -25%;
+  left: 25%;
+  width: 480px;
+  height: 480px;
+  background: rgba(159, 18, 57, 0.6);
   animation: blob-float 10s ease-in-out infinite reverse;
 }
 
@@ -6147,18 +6150,18 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 1.5px),
-    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.04) 0%, transparent 1.5px);
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.06) 0%, transparent 1.5px),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 1.5px);
   background-size: 50px 50px, 70px 70px;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .hero-nura-layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
   width: 100%;
 }
 
@@ -6194,7 +6197,56 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   z-index: 2;
   width: 100%;
   height: 100%;
-  min-height: 400px;
+  min-height: 420px;
+}
+
+.hero-nura-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 640px;
+  padding: 1.5rem;
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 80px rgba(255, 0, 85, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.hero-nura-card-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  background: radial-gradient(circle, rgba(251, 113, 133, 0.4) 0%, transparent 65%);
+  filter: blur(60px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-nura-card-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%);
+  animation: shine-sweep 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shine-sweep {
+  0%, 100% { left: -100%; }
+  50% { left: 150%; }
 }
 
 .hero-nura-float {
@@ -6203,47 +6255,34 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
-}
-
-.hero-nura-glow-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  max-width: 600px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 0, 85, 0.4) 0%, rgba(255, 0, 85, 0.1) 40%, transparent 70%);
-  filter: blur(60px);
-  z-index: 0;
+  z-index: 1;
 }
 
 .hero-nura-img {
   object-fit: contain;
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 20px 50px rgba(255, 0, 85, 0.4));
+  filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.35));
   width: 100%;
-  max-width: 680px;
+  max-width: 600px;
   height: auto;
   display: block;
 }
 
 /* Nura title highlight */
 .hero-nura-highlight {
-  background: linear-gradient(135deg, #FF0055 0%, #ff3d7f 50%, #a855f7 100%);
+  background: linear-gradient(135deg, #fda4af 0%, #fb7185 50%, #f43f5e 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-shadow: 0 0 40px rgba(251, 113, 133, 0.4);
 }
 
 /* Nura description */
 .hero-desc-nura {
   font-size: 1.05rem;
   line-height: 1.65;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.82);
   max-width: 480px;
   margin-bottom: 1.5rem;
 }
@@ -6260,21 +6299,21 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.45rem 0.85rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 0.9rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: all 0.25s ease;
 }
 
 .hero-nura-feature:hover {
-  background: rgba(255, 0, 85, 0.12);
-  border-color: rgba(255, 0, 85, 0.35);
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
 }
 
@@ -6529,11 +6568,16 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 /* ── Hero V2 Responsive ── */
 @media (max-width: 1024px) {
   .hero-nura-img {
-    max-width: 520px;
+    max-width: 480px;
+  }
+
+  .hero-nura-card {
+    max-width: 540px;
+    padding: 1.25rem;
   }
 
   .hero-nura-visual {
-    min-height: 340px;
+    min-height: 360px;
   }
 
   .hero-nura-features {
@@ -6557,20 +6601,22 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 @media (max-width: 768px) {
   .hero-nura-layout {
     grid-template-columns: 1fr;
-    gap: 1.25rem;
+    gap: 1.5rem;
     text-align: center;
   }
 
   .hero-nura-visual {
     order: -1;
-    min-height: 280px;
+    min-height: 320px;
+  }
+
+  .hero-nura-card {
+    max-width: 420px;
+    padding: 1rem;
+    border-radius: 20px;
   }
 
   .hero-nura-img {
-    max-width: 360px;
-  }
-
-  .hero-nura-glow-ring {
     max-width: 380px;
   }
 
@@ -7473,13 +7519,8 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 /* ── Hero Final Layout Fix ── */
 .hero.hero-v2 {
-  min-height: 92vh;
-  height: 92vh;
-  max-height: 980px;
-  background:
-    radial-gradient(circle at 78% 34%, rgba(244, 63, 94, 0.2), transparent 30%),
-    radial-gradient(circle at 18% 12%, rgba(14, 165, 233, 0.12), transparent 28%),
-    linear-gradient(135deg, #111827 0%, #12101d 48%, #080b16 100%);
+  min-height: clamp(580px, 82vh, 740px);
+  max-height: 760px;
 }
 
 .hero-v2 .hero-slide {
@@ -7494,13 +7535,13 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 }
 
 .hero-v2 .hero-container-new {
-  width: min(1180px, calc(100% - 48px));
+  width: min(1240px, calc(100% - 48px));
   min-height: 0;
   height: 100%;
   display: flex;
   align-items: center;
   margin: 0 auto;
-  padding: 6.25rem 0 7rem;
+  padding: 5.5rem 0 4.5rem;
 }
 
 .hero-slide-toko .hero-content-new,
@@ -7515,13 +7556,13 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 .hero-title-new,
 .hero-title-app,
 .hero-nura-title {
-  font-size: clamp(3.25rem, 6vw, 5.75rem) !important;
+  font-size: clamp(3rem, 5.5vw, 5rem) !important;
   line-height: 0.98 !important;
   margin-bottom: 1.25rem !important;
 }
 
 .hero-title-app {
-  font-size: clamp(2.75rem, 5vw, 4.75rem) !important;
+  font-size: clamp(2.5rem, 4.5vw, 4.25rem) !important;
 }
 
 .hero-desc-new,
@@ -7576,18 +7617,26 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 }
 
 .hero-nura-visual {
-  position: absolute;
-  top: 50%;
-  right: max(3vw, calc((100vw - 1240px) / 2));
-  width: min(48vw, 660px);
-  transform: translateY(-50%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 2;
+  width: 100%;
+  min-height: 420px;
   opacity: 1;
+  transform: none;
+  top: auto;
+  right: auto;
+}
+
+.hero-nura-card {
+  max-width: 600px;
 }
 
 .hero-nura-img {
-  max-width: 660px;
-  filter: drop-shadow(0 30px 70px rgba(255, 0, 85, 0.35));
+  max-width: 560px;
+  filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.35));
 }
 
 .hero-feature-grid {
