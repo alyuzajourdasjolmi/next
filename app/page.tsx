@@ -973,7 +973,7 @@ export default function Home() {
                   <MapPin size={15} /> Pusatkan Toko
                 </button>
                 <a
-                  href={`https://www.google.com/maps/dir//${STORE_COORDINATES.lat},${STORE_COORDINATES.lon}`}
+                  href={`https://www.google.com/maps/search/${encodeURIComponent(STORE_NAME)}/@${STORE_COORDINATES.lat},${STORE_COORDINATES.lon},17z`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-map btn-map-gmaps"
