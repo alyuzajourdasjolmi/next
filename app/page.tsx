@@ -1159,18 +1159,18 @@ export default function Home() {
                     <span>Pengalaman Belanja Lebih Mudah</span>
                   </div>
 
-                  {/* Mixed-case title sesuai referensi */}
-                  <h1 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 'clamp(2.2rem, 4.5vw, 3.75rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: '1.25rem', letterSpacing: '-0.02em' }}>
+                  {/* Title */}
+                  <h1 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 'clamp(1.6rem, 3.2vw, 2.75rem)', fontWeight: 900, color: '#fff', lineHeight: 1.15, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
                     Belanja Frozen Food<br />
                     Favorit, <span style={{ color: 'var(--primary)' }}>Lebih Cepat</span><br />
                     di Aplikasi <span style={{ color: 'var(--primary)' }}>HijrahToko!</span>
                   </h1>
 
-                  <p className="hero-desc-new" style={{ marginBottom: '2rem' }}>
+                  <p className="hero-desc-new" style={{ marginBottom: '1.5rem' }}>
                     Install <strong>HijrahToko</strong> di layar utama Anda untuk pengalaman belanja yang lebih cepat, praktis, dan hemat kuota.
                   </p>
 
-                  {/* Feature badges — 1 row horizontal sesuai referensi */}
+                  {/* Feature pills — 2x2 grid lebih rapi */}
                   <div className="hero-features-row">
                     {[
                       { Icon: Zap, title: 'Akses Cepat', desc: 'Sekali klik, langsung belanja' },
@@ -1180,7 +1180,7 @@ export default function Home() {
                     ].map((b, i) => (
                       <div key={i} className="hero-feature-pill">
                         <div className="hero-feature-pill-icon"><b.Icon size={16} /></div>
-                        <div>
+                        <div className="hero-feature-pill-text">
                           <strong>{b.title}</strong>
                           <p>{b.desc}</p>
                         </div>

@@ -9542,33 +9542,33 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 /* ── Slide 2 Redesign: Features Row (1 row horizontal) ── */
 .hero-features-row {
-  display: flex;
-  gap: 0.65rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.75rem;
-  max-width: 560px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+  margin-bottom: 1.5rem;
+  max-width: 520px;
 }
 
 .hero-feature-pill {
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.625rem;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 12px;
-  padding: 0.55rem 0.75rem;
-  flex: 1;
-  min-width: 120px;
-  transition: border-color 0.2s;
+  padding: 0.65rem 0.875rem;
+  transition: all 0.2s;
+  min-width: 0;
 }
 
 .hero-feature-pill:hover {
   border-color: rgba(225, 29, 72, 0.35);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .hero-feature-pill-icon {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   background: rgba(225, 29, 72, 0.15);
   border: 1px solid rgba(225, 29, 72, 0.2);
@@ -9579,21 +9579,32 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   color: var(--primary);
 }
 
+.hero-feature-pill-text {
+  min-width: 0;
+  flex: 1;
+}
+
 .hero-feature-pill strong {
   display: block;
   font-size: 0.78rem;
   font-weight: 700;
   color: #ffffff;
-  line-height: 1.3;
+  line-height: 1.2;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hero-feature-pill p {
-  font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.45);
-  margin: 0;
-  line-height: 1.4;
+  font-size: 0.66rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0.1rem 0 0;
+  line-height: 1.3;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── Slide 2: Install Banner V2 ── */
@@ -9644,12 +9655,7 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 @media (max-width: 768px) {
   .hero-features-row {
-    gap: 0.45rem;
-  }
-
-  .hero-feature-pill {
-    min-width: calc(50% - 0.25rem);
-    flex: 0 0 calc(50% - 0.25rem);
+    gap: 0.5rem;
   }
 
   .hero-feature-pill p {
