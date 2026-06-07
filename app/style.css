@@ -8439,10 +8439,12 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 120px);
-  min-height: 520px;
+  /* Tidak ada max-height di desktop: biarkan sepanjang konten
+     sehingga semua item + tombol Bayar selalu kelihatan. */
+  max-height: none;
   position: sticky;
   top: 1rem;
+  align-self: start;
 }
 
 .pos-cart-head {
@@ -8514,10 +8516,12 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 /* Cart items */
 .pos-cart-items {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   overflow-y: auto;
-  min-height: 90px;
-  max-height: min(38vh, 320px);
+  min-height: 60px;
+  /* Batas atas supaya saat cart panjang banget, area ini tetap
+     scrollable — bukan untuk memotong bottom area. */
+  max-height: 50vh;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
 }
@@ -9181,8 +9185,6 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
   .pos-cart {
     position: static;
-    max-height: none;
-    min-height: 0;
   }
 
   .pos-cart-items {
