@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,12 +17,14 @@ import {
   MapPin,
   LogOut,
   CheckCircle2,
+  Phone,
+  Navigation as NavigationIcon,
+  Clock,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useCart } from '../lib/cart-context';
-import { ADMIN_EMAIL } from '../lib/store-constants';
+import { ADMIN_EMAIL, STORE_NAME, STORE_COORDINATES, STORE_ADDRESS, STORE_PHONE, STORE_HOURS } from '../lib/store-constants';
 
-const SECTION_IDS = ['home', 'kategori', 'produk', 'keunggulan', 'carapesan', 'lokasi'];
 const CATEGORIES = [
   { id: 'frozen', label: '🧊 Frozen Food' },
   { id: 'atk', label: '📝 ATK' },
@@ -45,8 +47,7 @@ export default function SiteNavbar() {
   const [theme, setTheme] = useState('light');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [activeSection, setActiveSection] = useState('home');
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  const [showLocation, setShowLocation] = useState(false);
 
   const isSolidNav = isChefPage || isProductsPage;
 
@@ -70,28 +71,8 @@ export default function SiteNavbar() {
     return () => {
       subscription.unsubscribe();
       window.removeEventListener('scroll', onScroll);
-      observerRef.current?.disconnect();
     };
   }, []);
-
-  // Scroll spy — only on homepage
-  useEffect(() => {
-    if (!isHome) return;
-    const els = SECTION_IDS.map((id) => document.getElementById(id)).filter(Boolean);
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const id = entry.target.id;
-            if (SECTION_IDS.includes(id)) setActiveSection(id);
-          }
-        }
-      },
-      { rootMargin: '-45% 0px -55% 0px' }
-    );
-    els.forEach((el) => el && observerRef.current!.observe(el));
-    return () => observerRef.current?.disconnect();
-  }, [isHome]);
 
   useEffect(() => {
     document.body.classList.toggle('dark-mode', theme === 'dark');
@@ -99,15 +80,6 @@ export default function SiteNavbar() {
   }, [theme]);
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
-
-  const anchor = (hash: string) => (isHome ? hash : `/${hash}`);
-
-  const scrollToSection = (hash: string) => {
-    if (isHome) {
-      const el = document.getElementById(hash.replace('#', ''));
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   const navToCategory = (e: React.MouseEvent, catId: string) => {
     if (isHome) {
@@ -117,14 +89,17 @@ export default function SiteNavbar() {
     }
   };
 
-  const isActive = (href: string) => pathname === href;
-  const isAnchorActive = (id: string) => isHome && activeSection === id;
-
-  const linkClass = (href: string, sectionId?: string) => {
-    if (sectionId && isAnchorActive(sectionId)) return 'active';
-    if (isActive(href)) return 'active';
-    return '';
+  const handleLokasiClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowLocation(true);
+    setMobileOpen(false);
   };
+
+  const openGoogleMaps = () => {
+    window.open(`https://www.google.com/maps?q=${STORE_COORDINATES.lat},${STORE_COORDINATES.lon}`, '_blank');
+  };
+
+  const isActive = (href: string) => pathname === href;
 
   return (
     <>
@@ -138,21 +113,10 @@ export default function SiteNavbar() {
           </Link>
 
           <ul className="nav-links">
-            {/* Beranda — only on non-home pages; on home use anchor */}
-            {isHome ? (
-              <li>
-                <a href="#home" className={linkClass('/', 'home')} onClick={(e) => { e.preventDefault(); scrollToSection('#home'); }}>
-                  Beranda
-                </a>
-              </li>
-            ) : (
-              <li><Link href="/" className={linkClass('/')}>Beranda</Link></li>
-            )}
-
-            {/* Kategori dropdown — only on homepage */}
+            {/* Kategori dropdown — hanya di homepage */}
             {isHome && (
               <li className="dropdown">
-                <a href="#kategori" className="dropbtn">
+                <a href="#kategori" className="dropbtn" onClick={(e) => e.preventDefault()}>
                   Kategori <ChevronDown className="chevron" size={16} />
                 </a>
                 <div className="dropdown-content">
@@ -165,44 +129,15 @@ export default function SiteNavbar() {
               </li>
             )}
 
-            {/* Produk */}
-            <li><Link href="/products" className={linkClass('/products')}>Produk</Link></li>
+            <li><Link href="/products" className={isActive('/products') ? 'active' : ''}>Produk</Link></li>
+            <li><Link href="/tracking" className={isActive('/tracking') ? 'active' : ''}>Lacak</Link></li>
 
-            {/* Keunggulan */}
-            {isHome ? (
-              <li>
-                <a href="#keunggulan" className={linkClass('/#keunggulan', 'keunggulan')} onClick={(e) => { e.preventDefault(); scrollToSection('#keunggulan'); }}>
-                  Keunggulan
-                </a>
-              </li>
-            ) : (
-              <li><Link href="/#keunggulan">Keunggulan</Link></li>
-            )}
+            <li>
+              <a href="#lokasi" className="" onClick={handleLokasiClick}>
+                Lokasi
+              </a>
+            </li>
 
-            {/* Cara Pesan — only on homepage */}
-            {isHome && (
-              <li>
-                <a href="#carapesan" className={linkClass('/#carapesan', 'carapesan')} onClick={(e) => { e.preventDefault(); scrollToSection('#carapesan'); }}>
-                  Cara Pesan
-                </a>
-              </li>
-            )}
-
-            {/* Lacak */}
-            <li><Link href="/tracking" className={linkClass('/tracking')}>Lacak</Link></li>
-
-            {/* Lokasi */}
-            {isHome ? (
-              <li>
-                <a href="#lokasi" className={linkClass('/#lokasi', 'lokasi')} onClick={(e) => { e.preventDefault(); scrollToSection('#lokasi'); }}>
-                  Lokasi
-                </a>
-              </li>
-            ) : (
-              <li><Link href="/#lokasi">Lokasi</Link></li>
-            )}
-
-            {/* Chef Virtual — always */}
             <li>
               <Link href="/chef" className={isChefPage ? 'active' : ''} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 <ChefHat size={14} />
@@ -295,41 +230,22 @@ export default function SiteNavbar() {
               </div>
               <div className="mobile-nav-scroll">
                 <ul className="mobile-nav-links">
-                  <li>
-                    <Link href={isHome ? '/' : '/'} onClick={() => setMobileOpen(false)}>
-                      🏠 Beranda
-                    </Link>
-                  </li>
                   {isHome && (
                     <>
                       {CATEGORIES.map((cat) => (
                         <li key={cat.id}>
-                          <Link href={anchor(`#${cat.id}`)} onClick={(e) => { e.preventDefault(); navToCategory(e as any, cat.id); setMobileOpen(false); }}>
+                          <a href={`#${cat.id}`} onClick={(e) => { navToCategory(e, cat.id); setMobileOpen(false); }}>
                             {cat.label}
-                          </Link>
+                          </a>
                         </li>
                       ))}
                       <li style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '0.5rem' }} />
                     </>
                   )}
                   <li><Link href="/products" onClick={() => setMobileOpen(false)}>📦 Katalog Produk</Link></li>
-                  <li>
-                    <Link href={anchor('#keunggulan')} onClick={(e) => { if (isHome) e.preventDefault(); scrollToSection('#keunggulan'); setMobileOpen(false); }}>
-                      ✨ Keunggulan
-                    </Link>
-                  </li>
-                  {isHome && (
-                    <li>
-                      <Link href={anchor('#carapesan')} onClick={(e) => { e.preventDefault(); scrollToSection('#carapesan'); setMobileOpen(false); }}>
-                        📖 Cara Pesan
-                      </Link>
-                    </li>
-                  )}
                   <li><Link href="/tracking" onClick={() => setMobileOpen(false)}>🔍 Lacak Pesanan</Link></li>
                   <li>
-                    <Link href={anchor('#lokasi')} onClick={(e) => { if (isHome) e.preventDefault(); scrollToSection('#lokasi'); setMobileOpen(false); }}>
-                      📍 Lokasi
-                    </Link>
+                    <a href="#lokasi" onClick={handleLokasiClick}>📍 Lokasi Toko</a>
                   </li>
                   <li><Link href="/chef" onClick={() => setMobileOpen(false)}>👨‍🍳 Chef Virtual</Link></li>
                   {user?.email === ADMIN_EMAIL && (
@@ -360,6 +276,106 @@ export default function SiteNavbar() {
                 )}
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal Lokasi — global, bisa dibuka dari halaman mana pun */}
+      <AnimatePresence>
+        {showLocation && (
+          <motion.div
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowLocation(false)}
+            style={{
+              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)',
+              backdropFilter: 'blur(10px)', zIndex: 2000,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 30 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: '#fff', borderRadius: 20, padding: '1.5rem',
+                maxWidth: 480, width: '100%', position: 'relative',
+                boxShadow: '0 30px 60px -10px rgba(0,0,0,0.3)',
+              }}
+            >
+              <button
+                onClick={() => setShowLocation(false)}
+                aria-label="Tutup"
+                style={{
+                  position: 'absolute', top: 12, right: 12,
+                  width: 36, height: 36, borderRadius: 10, border: 'none',
+                  background: 'var(--bg-surface-soft, #f1f5f9)',
+                  color: 'var(--text-main, #1e293b)', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <X size={18} />
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1rem' }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 12,
+                  background: 'var(--primary, #E11D48)', color: '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <MapPin size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text-main, #1e293b)' }}>
+                    Lokasi {STORE_NAME}
+                  </h3>
+                  <p style={{ margin: '0.15rem 0 0', fontSize: '0.78rem', color: 'var(--text-muted, #64748b)' }}>
+                    Kunjungi toko kami
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', gap: 12, padding: '0.75rem', background: 'var(--bg-surface-soft, #f8fafc)', borderRadius: 12 }}>
+                  <MapPin size={18} style={{ color: 'var(--primary, #E11D48)', flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-main, #1e293b)' }}>Alamat</strong>
+                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #64748b)' }}>{STORE_ADDRESS}</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 12, padding: '0.75rem', background: 'var(--bg-surface-soft, #f8fafc)', borderRadius: 12 }}>
+                  <Phone size={18} style={{ color: 'var(--primary, #E11D48)', flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-main, #1e293b)' }}>Telepon / WhatsApp</strong>
+                    <a href={`tel:${STORE_PHONE}`} style={{ fontSize: '0.82rem', color: 'var(--text-muted, #64748b)', textDecoration: 'none' }}>{STORE_PHONE}</a>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 12, padding: '0.75rem', background: 'var(--bg-surface-soft, #f8fafc)', borderRadius: 12 }}>
+                  <Clock size={18} style={{ color: 'var(--primary, #E11D48)', flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-main, #1e293b)' }}>Jam Operasional</strong>
+                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #64748b)' }}>{STORE_HOURS}</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={openGoogleMaps}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  padding: '0.85rem', borderRadius: 12, border: 'none',
+                  background: 'var(--primary, #E11D48)', color: '#fff',
+                  fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                <NavigationIcon size={16} /> Buka di Google Maps
+              </button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
