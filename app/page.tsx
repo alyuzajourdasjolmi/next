@@ -3,19 +3,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Script from 'next/script';
-import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import {
   ShoppingCart,
   Search,
-  Menu,
   X,
-  ChevronDown,
-  Moon,
-  Sun,
-  User as UserIcon,
-  LogOut,
   MapPin,
   Phone,
   MessageSquare,
@@ -44,25 +37,18 @@ import { supabase } from '../lib/supabase';
 import { useCart } from '../lib/cart-context';
 import { ADMIN_EMAIL, STORE_NAME, STORE_COORDINATES } from '../lib/store-constants';
 import { fetchRealSoldCounts, mergeSoldCount } from '../lib/product-stats';
+import SiteNavbar from '../components/SiteNavbar';
 import ProductCard from '../components/ProductCard';
 
 export default function Home() {
-  const pathname = usePathname();
-  const isHome = pathname === '/';
-  const homeAnchor = (hash: string) => (isHome ? hash : `/${hash}`);
-  const { cartCount, setIsCartOpen, addToCart } = useCart();
+  const { addToCart } = useCart();
 
   // Local state
   const [isClient, setIsClient] = useState(false);
   const [productsData, setProductsData] = useState<any[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
-  const [theme, setTheme] = useState('light');
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
-  const [user, setUser] = useState<any>(null);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [heroSlide, setHeroSlide] = useState(0);
   const [heroPaused, setHeroPaused] = useState(false);
@@ -71,38 +57,16 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
-    setTheme(localStorage.getItem('hijrahTokoTheme') || 'light');
   }, []);
 
-  // Theme effect
+  // Listen for category nav from SiteNavbar
   useEffect(() => {
-    if (isClient) {
-      document.body.classList.toggle('dark-mode', theme === 'dark');
-      localStorage.setItem('hijrahTokoTheme', theme);
-    }
-  }, [theme, isClient]);
-
-  // Auth listener
-  useEffect(() => {
-    if (!isClient) return;
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      setUser(session?.user || null);
-    });
-    return () => subscription.unsubscribe();
-  }, [isClient]);
-
-  // PWA install prompt
-  useEffect(() => {
-    const handler = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstallPrompt(true);
+    const handler = (e: Event) => {
+      const catId = (e as CustomEvent).detail?.category;
+      if (catId) setActiveTab(catId);
     };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    window.addEventListener('nav-category', handler);
+    return () => window.removeEventListener('nav-category', handler);
   }, []);
 
   // Fetch products
@@ -140,22 +104,6 @@ export default function Home() {
     fetchData();
   }, [isClient]);
 
-  // Scroll spy + scrolled state
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-      const sectionIds = ['home', 'kategori', 'produk', 'keunggulan', 'carapesan', 'lokasi'];
-      let current = '';
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (el && window.scrollY >= el.offsetTop - 200) current = id;
-      }
-      setActiveSection(current);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   // Hero auto-slide
   useEffect(() => {
     const timer = setInterval(() => {
@@ -163,20 +111,6 @@ export default function Home() {
     }, 6000);
     return () => clearInterval(timer);
   }, [heroPaused]);
-
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-  };
-
-  const navToCategory = (e: React.MouseEvent, cat: string) => {
-    e.preventDefault();
-    document.getElementById('produk')?.scrollIntoView({ behavior: 'smooth' });
-    setActiveTab(cat);
-    setMobileNavOpen(false);
-  };
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
@@ -337,193 +271,9 @@ export default function Home() {
   return (
     <>
       {/* Navbar */}
-      <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="navbar">
-        <div className="nav-container">
-          <Link href="/" className="nav-logo">
-            <img src="/assets/images/logo-hijrah-toko.png" alt="Logo Hijrah Toko" className="brand-logo" />
-            <span className="brand-text">
-              Hijrah<span>Toko</span>
-            </span>
-          </Link>
+      <SiteNavbar />
 
-          <ul className="nav-links">
-            <li>
-              <Link href={homeAnchor('#home')} className={activeSection === 'home' ? 'active' : ''}>
-                Beranda
-              </Link>
-            </li>
-            <li className="dropdown">
-              <Link href={homeAnchor('#kategori')} className="dropbtn">
-                Kategori <ChevronDown className="chevron" size={16} />
-              </Link>
-              <div className="dropdown-content">
-                <a href="#frozen" onClick={(e) => navToCategory(e, 'frozen')}>🧊 Frozen Food</a>
-                <a href="#atk" onClick={(e) => navToCategory(e, 'atk')}>📝 ATK</a>
-                <a href="#other" onClick={(e) => navToCategory(e, 'other')}>📦 Lainnya</a>
-              </div>
-            </li>
-            <li>
-              <Link href="/products" className={pathname === '/products' ? 'active' : ''}>
-                Produk
-              </Link>
-            </li>
-            <li>
-              <Link href="/tracking" className={pathname === '/tracking' ? 'active' : ''}>
-                Lacak
-              </Link>
-            </li>
-            <li>
-              <Link href={homeAnchor('#keunggulan')} className={activeSection === 'keunggulan' ? 'active' : ''}>
-                Keunggulan
-              </Link>
-            </li>
-            <li>
-              <Link href={homeAnchor('#carapesan')} className={activeSection === 'carapesan' ? 'active' : ''}>
-                Cara Pesan
-              </Link>
-            </li>
-            <li>
-              <Link href={homeAnchor('#lokasi')} className={activeSection === 'lokasi' ? 'active' : ''}>
-                Lokasi
-              </Link>
-            </li>
-          </ul>
-
-          <div className="nav-right">
-            <div className="nav-actions">
-              {user ? (
-                <div className="user-dropdown">
-                  <div className="user-profile-trigger">
-                    <div className="user-avatar">
-                      {user.user_metadata?.full_name?.charAt(0).toUpperCase() || <UserIcon size={18} />}
-                    </div>
-                    <span className="user-name-short">
-                      {user.user_metadata?.full_name?.split(' ')[0] || 'User'}
-                    </span>
-                  </div>
-                  <div className="user-menu-content">
-                    <div className="user-menu-header">
-                      <strong>{user.user_metadata?.full_name || 'Pelanggan'}</strong>
-                      <p>{user.email}</p>
-                    </div>
-                    <div className="user-menu-divider"></div>
-                    <Link href="/profile">
-                      <UserIcon size={16} /> Profil Saya
-                    </Link>
-                    <Link href="/tracking">
-                      <Package size={16} /> Pesanan Saya
-                    </Link>
-                    <Link href="/addresses">
-                      <MapPin size={16} /> Kelola Alamat
-                    </Link>
-                    {user?.email === ADMIN_EMAIL && (
-                      <Link href="/dashboard">
-                        <CheckCircle2 size={16} /> Dashboard Admin
-                      </Link>
-                    )}
-                    <div className="user-menu-divider"></div>
-                    <button className="user-logout-btn" onClick={handleLogout}>
-                      <LogOut size={16} /> Keluar
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <Link href="/login" className="btn-login-pill">
-                  Masuk
-                </Link>
-              )}
-            </div>
-
-            <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
-            <button className="cart-btn" onClick={() => setIsCartOpen(true)} aria-label="Buka keranjang">
-              <ShoppingCart size={20} />
-              <AnimatePresence>
-                {cartCount > 0 && (
-                  <motion.span
-                    className="cart-count"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    exit={{ scale: 0 }}
-                  >
-                    {cartCount}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </button>
-
-            <button className="mobile-toggle" onClick={() => setMobileNavOpen(true)}>
-              <Menu size={24} />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Mobile Nav */}
-      <AnimatePresence>
-        {mobileNavOpen && (
-          <motion.div
-            className="mobile-nav open"
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          >
-            <div className="mobile-nav-content">
-              <div className="mobile-nav-header">
-                <div className="mobile-nav-brand">
-                  <img src="/assets/images/logo-hijrah-toko.png" alt="Logo" />
-                  <span>Hijrah Toko</span>
-                </div>
-                <button className="mobile-nav-close" onClick={() => setMobileNavOpen(false)}>
-                  <X size={24} />
-                </button>
-              </div>
-
-              <div className="mobile-nav-scroll">
-                <ul className="mobile-nav-links">
-                  <li><Link href={homeAnchor('#home')} onClick={() => setMobileNavOpen(false)}>🏠 Beranda</Link></li>
-                  <li><Link href="/products" onClick={() => setMobileNavOpen(false)}>📦 Katalog Produk</Link></li>
-                  <li><Link href={homeAnchor('#keunggulan')} onClick={() => setMobileNavOpen(false)}>✨ Keunggulan</Link></li>
-                  <li><Link href={homeAnchor('#carapesan')} onClick={() => setMobileNavOpen(false)}>📖 Cara Pesan</Link></li>
-                  <li><Link href="/tracking" onClick={() => setMobileNavOpen(false)}>🔍 Lacak Pesanan</Link></li>
-                  <li><Link href={homeAnchor('#lokasi')} onClick={() => setMobileNavOpen(false)}>📍 Lokasi</Link></li>
-                  {user && user?.email === ADMIN_EMAIL && (
-                    <li style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
-                      <Link href="/dashboard" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>⚙️ Dashboard Admin</Link>
-                    </li>
-                  )}
-                </ul>
-              </div>
-
-              <div className="mobile-nav-footer">
-                {user ? (
-                  <div className="mobile-user-info">
-                    <div className="user-details">
-                      <div className="user-avatar">
-                        {user.user_metadata?.full_name?.charAt(0).toUpperCase() || 'U'}
-                      </div>
-                      <div>
-                        <strong>{user.user_metadata?.full_name || 'User'}</strong>
-                        <p>{user.email}</p>
-                      </div>
-                    </div>
-                    <button className="mobile-logout-btn" onClick={handleLogout}>
-                      Keluar
-                    </button>
-                  </div>
-                ) : (
-                  <Link href="/login" className="mobile-auth-btn" onClick={() => setMobileNavOpen(false)}>
-                    Masuk / Daftar
-                  </Link>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ── HERO ── */}
 
       {/* ── HERO ── */}
       <section
@@ -770,7 +520,7 @@ export default function Home() {
               return (
                 <motion.button
                   key={cat.id}
-                  onClick={(e) => navToCategory(e as any, cat.id)}
+                  onClick={() => { setActiveTab(cat.id); document.getElementById('produk')?.scrollIntoView({ behavior: 'smooth' }); }}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
