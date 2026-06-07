@@ -76,8 +76,9 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
 
   const discountAmount = Math.round(subtotal * (discount / 100));
   const afterDiscount = subtotal - discountAmount;
-  const ppnAmount = Math.round(afterDiscount * 0.11);
-  const total = afterDiscount + ppnAmount;
+  // Toko tidak menggunakan PPN — total = subtotal setelah diskon
+  const ppnAmount = 0;
+  const total = afterDiscount;
   const cashValue = Number(cashInput) || 0;
   const changeAmount = cashValue - total;
 
@@ -240,7 +241,6 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
       <div class="tot">
         <div class="tr"><span>Subtotal</span><span>Rp ${lastOrder.subtotal.toLocaleString("id-ID")}</span></div>
         ${lastOrder.discount > 0 ? `<div class="tr"><span>Diskon</span><span>- Rp ${lastOrder.discount.toLocaleString("id-ID")}</span></div>` : ""}
-        <div class="tr"><span>PPN (11%)</span><span>Rp ${lastOrder.ppn.toLocaleString("id-ID")}</span></div>
         <div class="tr gr"><span>Total</span><span>Rp ${lastOrder.total.toLocaleString("id-ID")}</span></div>
         ${lastOrder.paymentMethod === "Tunai" ? `<div class="tr"><span>Tunai</span><span>Rp ${lastOrder.cash.toLocaleString("id-ID")}</span></div><div class="tr"><span>Kembali</span><span>Rp ${lastOrder.change.toLocaleString("id-ID")}</span></div>` : ""}
         <div class="tr" style="font-size:9px;color:#666"><span>${lastOrder.paymentMethod}</span></div>
@@ -490,10 +490,6 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
                       <span>- Rp {discountAmount.toLocaleString("id-ID")}</span>
                     </div>
                   )}
-                  <div className="pos-sum-row">
-                    <span>PPN (11%)</span>
-                    <span>Rp {ppnAmount.toLocaleString("id-ID")}</span>
-                  </div>
                   <div className="pos-sum-row total">
                     <span>Total</span>
                     <strong>Rp {total.toLocaleString("id-ID")}</strong>
