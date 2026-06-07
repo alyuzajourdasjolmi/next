@@ -22,6 +22,7 @@ import { useCart } from '../../lib/cart-context';
 import ProductCard from '../../components/ProductCard';
 import SiteNavbar from '../../components/SiteNavbar';
 import { STORE_NAME } from '../../lib/store-constants';
+import { fetchRealSoldCounts, mergeSoldCount } from '../../lib/product-stats';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -46,12 +47,16 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .order('id', { ascending: true });
+        const [{ data, error }, realSold] = await Promise.all([
+          supabase.from('products').select('*').order('id', { ascending: true }),
+          fetchRealSoldCounts(),
+        ]);
         if (error) throw error;
-        setProducts(data || []);
+        const enriched = (data || []).map((p: any) => ({
+          ...p,
+          sold_count: mergeSoldCount(p, realSold),
+        }));
+        setProducts(enriched);
       } catch (err) {
         console.error('Error fetching products:', err);
       } finally {
@@ -139,27 +144,25 @@ export default function ProductsPage() {
 
           {/* ── FILTER & SEARCH ── */}
           <div className="product-filter-bar">
-            <div className="filter-row">
-              <div className="filter-tabs" style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-                {CATEGORIES.map((cat) => {
-                  const Icon = cat.icon;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => { setActiveTab(cat.id); setVisibleCount(ITEMS_PER_PAGE); }}
-                      className={`product-filter-tab ${activeTab === cat.id ? 'active' : ''}`}
-                    >
-                      <Icon size={14} />
-                      <span>{cat.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="filter-tabs-group">
+              {CATEGORIES.map((cat) => {
+                const Icon = cat.icon;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => { setActiveTab(cat.id); setVisibleCount(ITEMS_PER_PAGE); }}
+                    className={`product-filter-tab ${activeTab === cat.id ? 'active' : ''}`}
+                  >
+                    <Icon size={14} />
+                    <span>{cat.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="filter-actions-row" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', flex: 1 }}>
-              <div className="product-search-mini search-expand" style={{ minWidth: 200, flex: 1 }}>
-                <Search size={18} />
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginLeft: 'auto' }}>
+              <div className="product-search-mini" style={{ maxWidth: 240 }}>
+                <Search size={16} />
                 <input
                   type="text"
                   placeholder="Cari produk..."
@@ -167,27 +170,29 @@ export default function ProductsPage() {
                   onChange={(e) => { setSearchTerm(e.target.value); setVisibleCount(ITEMS_PER_PAGE); }}
                 />
                 {searchTerm && (
-                  <button type="button" onClick={() => setSearchTerm('')} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}>
-                    <X size={16} />
+                  <button type="button" onClick={() => setSearchTerm('')} className="search-clear">
+                    <X size={14} />
                   </button>
                 )}
               </div>
 
-              <div className="sort-group" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <div className="product-search-mini" style={{ minWidth: 150, maxWidth: 180 }}>
                 <SlidersHorizontal size={14} style={{ color: '#94a3b8' }} />
-                <div className="product-search-mini sort-select-box" style={{ minWidth: 140 }}>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    style={{ appearance: 'none', background: 'transparent', border: 'none', outline: 'none', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)', cursor: 'pointer', width: '100%', fontFamily: 'inherit', paddingRight: 4 }}
-                  >
-                    <option value="newest">Terbaru</option>
-                    <option value="best">Terlaris</option>
-                    <option value="price-low">Harga ↑</option>
-                    <option value="price-high">Harga ↓</option>
-                    <option value="name">A-Z</option>
-                  </select>
-                </div>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  style={{
+                    flex: 1, appearance: 'none', background: 'transparent', border: 'none',
+                    outline: 'none', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)',
+                    cursor: 'pointer', fontFamily: 'inherit', minWidth: 0, paddingRight: 4,
+                  }}
+                >
+                  <option value="newest">Terbaru</option>
+                  <option value="best">Terlaris</option>
+                  <option value="price-low">Harga Terendah</option>
+                  <option value="price-high">Harga Tertinggi</option>
+                  <option value="name">Nama A-Z</option>
+                </select>
               </div>
             </div>
           </div>

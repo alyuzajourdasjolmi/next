@@ -13,6 +13,7 @@ import { supabase } from '../../lib/supabase';
 import { useSearchParams } from 'next/navigation';
 import SiteNavbar from '../../components/SiteNavbar';
 import ChefChatArea from '../../components/ChefChatArea';
+import { fetchRealSoldCounts, mergeSoldCount } from '../../lib/product-stats';
 import './chef.css';
 
 type Product = {
@@ -109,17 +110,23 @@ function ChefContent() {
 
   const fetchProducts = async () => {
     setLoadingProducts(true);
+    const realSold = await fetchRealSoldCounts();
+
     const { data: frozenData } = await supabase
       .from('products')
       .select('*')
       .eq('category', 'frozen')
       .limit(4);
-    setProducts(frozenData || []);
+    setProducts(
+      (frozenData || []).map((p: any) => ({ ...p, sold_count: mergeSoldCount(p, realSold) }))
+    );
 
     const { data: allData } = await supabase
       .from('products')
       .select('*');
-    setAllProducts(allData || []);
+    setAllProducts(
+      (allData || []).map((p: any) => ({ ...p, sold_count: mergeSoldCount(p, realSold) }))
+    );
 
     setLoadingProducts(false);
   };

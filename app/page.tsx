@@ -43,6 +43,7 @@ import {
 import { supabase } from '../lib/supabase';
 import { useCart } from '../lib/cart-context';
 import { ADMIN_EMAIL, STORE_NAME, STORE_COORDINATES } from '../lib/store-constants';
+import { fetchRealSoldCounts, mergeSoldCount } from '../lib/product-stats';
 import ProductCard from '../components/ProductCard';
 
 export default function Home() {
@@ -109,12 +110,16 @@ export default function Home() {
     if (!isClient) return;
     const fetchData = async () => {
       try {
-        const { data: products, error } = await supabase
-          .from('products')
-          .select('*')
-          .order('id', { ascending: true });
+        const [{ data: products, error }, realSold] = await Promise.all([
+          supabase.from('products').select('*').order('id', { ascending: true }),
+          fetchRealSoldCounts(),
+        ]);
         if (error) throw error;
-        setProductsData(products || []);
+        const enriched = (products || []).map((p: any) => ({
+          ...p,
+          sold_count: mergeSoldCount(p, realSold),
+        }));
+        setProductsData(enriched);
       } catch (err) {
         console.error('Error fetching products:', err);
         // Fallback data
@@ -805,42 +810,38 @@ export default function Home() {
             <p className="section-subtitle">Pilihan produk terlaris dan favorit pelanggan</p>
           </div>
 
-          {/* Filter tabs */}
-          <div className="product-filter-bar" style={{ justifyContent: 'center' }}>
-            <div className="filter-row" style={{ display: 'flex', justifyContent: 'center' }}>
-              <div className="filter-tabs" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.35rem' }}>
-                {[
-                  { id: 'all', label: 'Semua' },
-                  { id: 'frozen', label: '🧊 Frozen' },
-                  { id: 'atk', label: '📝 ATK' },
-                  { id: 'other', label: '📦 Lainnya' },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`product-filter-tab ${activeTab === tab.id ? 'active' : ''}`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
+          {/* Filter card */}
+          <div className="product-filter-bar">
+            <div className="filter-tabs-group">
+              {[
+                { id: 'all', label: 'Semua' },
+                { id: 'frozen', label: '🧊 Frozen' },
+                { id: 'atk', label: '📝 ATK' },
+                { id: 'other', label: '📦 Lainnya' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`product-filter-tab ${activeTab === tab.id ? 'active' : ''}`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.35rem' }}>
-              <div className="product-search-mini" style={{ maxWidth: 280, marginLeft: 0 }}>
-                <Search size={16} />
-                <input
-                  type="text"
-                  placeholder="Cari produk..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                {searchTerm && (
-                  <button type="button" onClick={() => setSearchTerm('')} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0, lineHeight: 1 }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                  </button>
-                )}
-              </div>
+            <div className="product-search-mini">
+              <Search size={16} />
+              <input
+                type="text"
+                placeholder="Cari produk..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button type="button" onClick={() => setSearchTerm('')} className="search-clear">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+              )}
             </div>
           </div>
 
