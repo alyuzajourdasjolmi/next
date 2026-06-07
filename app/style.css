@@ -8451,6 +8451,7 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   padding: 1rem 1.25rem;
   background: #e11d48;
   color: #fff;
+  flex-shrink: 0;
 }
 
 .pos-cart-title {
@@ -8512,9 +8513,9 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
 
 /* Cart items */
 .pos-cart-items {
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
-  min-height: 60px;
+  min-height: 0;
   max-height: 260px;
 }
 
@@ -8652,6 +8653,11 @@ body.dark-mode .prof-action-danger:hover { background: rgba(220,38,38,0.1); bord
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  flex-shrink: 0;
+  background: #fff;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.04);
 }
 
 /* Fields */
