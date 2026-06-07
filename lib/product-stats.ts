@@ -45,21 +45,20 @@ export async function fetchRealSoldCounts(): Promise<SoldCountsMap> {
 }
 
 /**
- * Gabungkan sold_count statis dengan data penjualan riil.
- * Nilai akhir = max(staticSoldCount, realSoldCount) agar
- * produk lama yang punya baseline tinggi tidak "turun" angkanya.
+ * Pakai data penjualan riil saja (dari order_items via API route).
  *
- * - Produk baru yg memang baru laku → angka real langsung akurat
- * - Produk lama yg punya sold_count statis tinggi (mis. 49+)
- *   dari periode sebelumnya → tidak tiba-tiba turun ke 5 kalau
- *   order_items cuma catat 5 orderan terakhir
+ * Kolom `sold_count` statis di tabel products diabaikan — data
+ * tersebut bukan dari transaksi sebenarnya, melainkan input manual
+ * yang tidak akurat. Setelah ada orderan pertama, nilai ini akan
+ * di-update otomatis dari real count.
+ *
+ * Return 0 kalau belum ada orderan untuk produk ini. UI bisa
+ * sembunyikan label "terjual" kalau nilainya 0 (lihat ProductCard).
  */
 export function mergeSoldCount(
   product: any,
   realCounts: SoldCountsMap
 ): number {
   const pid = Number(product.id);
-  const real = realCounts[pid] || 0;
-  const staticCount = Number(product.sold_count || 0);
-  return Math.max(real, staticCount);
+  return realCounts[pid] || 0;
 }
