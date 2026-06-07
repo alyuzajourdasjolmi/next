@@ -69,12 +69,13 @@ export default function ReportsPage() {
           <BarChart3 size={18} />
           Laporan Penjualan
         </h2>
-        <button onClick={handleExportCSV} className="admin-btn admin-btn-primary">
+        <button onClick={handleExportCSV} className="admin-btn admin-btn-primary fb-pressable">
           <Upload size={16} style={{ transform: 'rotate(180deg)' }} />
           Export CSV
         </button>
       </div>
       <div
+        className="fb-fade-up"
         style={{
           padding: '1rem',
           background: '#f8fafc',

@@ -1,16 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
-  ChevronDown,
-  Filter,
   Package,
   ShoppingCart,
-  ArrowLeft,
   X,
   CheckCircle2,
+  Plus,
+  Minus,
+  SlidersHorizontal,
+  Sparkles,
+  ChevronDown,
+  Tag,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -18,6 +21,16 @@ import { supabase } from '../../lib/supabase';
 import { useCart } from '../../lib/cart-context';
 import ProductCard from '../../components/ProductCard';
 import SiteNavbar from '../../components/SiteNavbar';
+import { STORE_NAME } from '../../lib/store-constants';
+
+const ITEMS_PER_PAGE = 12;
+
+const CATEGORIES = [
+  { id: 'all', label: 'Semua Produk', icon: Package },
+  { id: 'frozen', label: 'Frozen Food', icon: Sparkles },
+  { id: 'atk', label: 'Alat Tulis', icon: Tag },
+  { id: 'other', label: 'Lainnya', icon: Package },
+];
 
 export default function ProductsPage() {
   const { addToCart } = useCart();
@@ -27,6 +40,8 @@ export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [qty, setQty] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -35,7 +50,6 @@ export default function ProductsPage() {
           .from('products')
           .select('*')
           .order('id', { ascending: true });
-
         if (error) throw error;
         setProducts(data || []);
       } catch (err) {
@@ -44,92 +58,156 @@ export default function ProductsPage() {
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
 
-  const filteredProducts = products
-    .filter((p) => activeTab === 'all' || p.category === activeTab)
-    .filter((p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.desc?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortBy === 'price-low') return a.price - b.price;
-      if (sortBy === 'price-high') return b.price - a.price;
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
-      return b.id - a.id; // newest
-    });
+  const filteredProducts = useMemo(() => {
+    return products
+      .filter((p) => activeTab === 'all' || p.category === activeTab)
+      .filter((p) =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.desc?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .sort((a, b) => {
+        if (sortBy === 'price-low') return a.price - b.price;
+        if (sortBy === 'price-high') return b.price - a.price;
+        if (sortBy === 'name') return a.name.localeCompare(b.name);
+        if (sortBy === 'best') return (b.sold_count || 0) - (a.sold_count || 0);
+        return b.id - a.id;
+      });
+  }, [products, activeTab, searchTerm, sortBy]);
 
-  const categories = [
-    { id: 'all', label: 'Semua Produk' },
-    { id: 'frozen', label: 'Frozen Food' },
-    { id: 'atk', label: 'Alat Tulis' },
-    { id: 'other', label: 'Lainnya' },
-  ];
+  const paginatedProducts = filteredProducts.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredProducts.length;
+
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: products.length };
+    products.forEach((p) => {
+      counts[p.category] = (counts[p.category] || 0) + 1;
+    });
+    return counts;
+  }, [products]);
+
+  const openDetail = (product: any) => {
+    setSelectedProduct(product);
+    setQty(1);
+  };
+
+  const handleAddToCart = () => {
+    if (!selectedProduct) return;
+    for (let i = 0; i < qty; i++) {
+      addToCart(selectedProduct);
+    }
+    setSelectedProduct(null);
+  };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ background: 'var(--bg-main)' }}>
       <SiteNavbar />
-      
-      <main className="section" style={{ paddingTop: '8rem' }}>
-        <div className="section-container">
-          {/* Header */}
-          <div className="section-header" style={{ textAlign: 'left', marginBottom: '3rem' }}>
-            <div className="section-eyebrow" style={{ justifyContent: 'flex-start' }}>
+
+      <main style={{ paddingTop: '6rem' }}>
+        <div className="section-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 1.5rem' }}>
+          {/* ── HEADER ── */}
+          <div style={{ marginBottom: '2.5rem' }}>
+            <div className="section-eyebrow" style={{ justifyContent: 'flex-start', marginBottom: '0.5rem' }}>
               <Package size={14} /> Katalog Lengkap
             </div>
-            <h1 className="section-title" style={{ margin: '0.5rem 0' }}>Produk Kami</h1>
-            <p className="section-subtitle" style={{ margin: '0' }}>
-              Temukan berbagai pilihan Frozen Food berkualitas dan Alat Tulis Kantor terlengkap.
+            <h1 className="section-title" style={{ margin: '0 0 0.35rem', textAlign: 'left', fontSize: '1.75rem' }}>
+              Produk {STORE_NAME}
+            </h1>
+            <p className="section-subtitle" style={{ textAlign: 'left', margin: '0 0 1rem' }}>
+              Temukan Frozen Food & ATK berkualitas untuk kebutuhan sehari-hari
             </p>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              {CATEGORIES.filter(c => c.id !== 'all').map((cat) => {
+                const Icon = cat.icon;
+                return (
+                  <div key={cat.id} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+                    padding: '0.3rem 0.75rem', borderRadius: 10,
+                    background: 'var(--bg-surface-soft)', border: '1px solid var(--border-main)',
+                    fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)',
+                  }}>
+                    <Icon size={14} />
+                    <span>{cat.label}</span>
+                    <span style={{ color: 'var(--primary)', fontWeight: 700 }}>{categoryCounts[cat.id] || 0}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Filters & Search Bar */}
+          {/* ── FILTER & SEARCH ── */}
           <div className="product-filter-bar">
             <div className="filter-row">
-              <div className="filter-tabs">
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setActiveTab(cat.id)}
-                    className={`product-filter-tab ${activeTab === cat.id ? 'active' : ''}`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
+              <div className="filter-tabs" style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                {CATEGORIES.map((cat) => {
+                  const Icon = cat.icon;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => { setActiveTab(cat.id); setVisibleCount(ITEMS_PER_PAGE); }}
+                      className={`product-filter-tab ${activeTab === cat.id ? 'active' : ''}`}
+                    >
+                      <Icon size={14} />
+                      <span>{cat.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="filter-actions-row">
-              <div className="product-search-mini search-expand">
+            <div className="filter-actions-row" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', flex: 1 }}>
+              <div className="product-search-mini search-expand" style={{ minWidth: 200, flex: 1 }}>
                 <Search size={18} />
                 <input
                   type="text"
-                  placeholder="Cari produk dari semua kategori..."
+                  placeholder="Cari produk..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => { setSearchTerm(e.target.value); setVisibleCount(ITEMS_PER_PAGE); }}
                 />
+                {searchTerm && (
+                  <button type="button" onClick={() => setSearchTerm('')} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}>
+                    <X size={16} />
+                  </button>
+                )}
               </div>
 
-              <div className="sort-group">
-                <span className="sort-label">Urutkan:</span>
-                <div className="product-search-mini sort-select-box">
+              <div className="sort-group" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <SlidersHorizontal size={14} style={{ color: '#94a3b8' }} />
+                <div className="product-search-mini sort-select-box" style={{ minWidth: 140 }}>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
+                    style={{ appearance: 'none', background: 'transparent', border: 'none', outline: 'none', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)', cursor: 'pointer', width: '100%', fontFamily: 'inherit', paddingRight: 4 }}
                   >
                     <option value="newest">Terbaru</option>
-                    <option value="price-low">Harga Terendah</option>
-                    <option value="price-high">Harga Tertinggi</option>
-                    <option value="name">Nama A-Z</option>
+                    <option value="best">Terlaris</option>
+                    <option value="price-low">Harga ↑</option>
+                    <option value="price-high">Harga ↓</option>
+                    <option value="name">A-Z</option>
                   </select>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Product Grid */}
+          {/* ── RESULTS INFO ── */}
+          {!loading && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              <span>{filteredProducts.length} produk ditemukan</span>
+              {activeTab !== 'all' && (
+                <button
+                  onClick={() => setActiveTab('all')}
+                  style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: 600, fontSize: '0.82rem', fontFamily: 'inherit' }}
+                >
+                  <X size={12} style={{ display: 'inline', verticalAlign: 'middle' }} /> Hapus filter
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* ── PRODUCT GRID ── */}
           {loading ? (
             <div className="product-grid">
               {[...Array(8)].map((_, i) => (
@@ -137,34 +215,62 @@ export default function ProductsPage() {
               ))}
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="empty-state" style={{ padding: '5rem 0' }}>
-              <Package size={64} strokeWidth={1} color="var(--border-main)" />
-              <p style={{ marginTop: '1rem', fontSize: '1.1rem', color: 'var(--text-muted)' }}>
-                Produk tidak ditemukan. Coba kata kunci lain.
+            <div className="empty-state" style={{ padding: '5rem 1.5rem' }}>
+              <div style={{ width: 80, height: 80, borderRadius: 20, background: 'var(--bg-surface-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                <Search size={36} strokeWidth={1.2} color="var(--text-muted)" />
+              </div>
+              <h3 style={{ margin: '0 0 0.5rem', color: 'var(--text-main)', fontSize: '1.15rem' }}>Produk Tidak Ditemukan</h3>
+              <p style={{ margin: '0 0 1.5rem', fontSize: '0.9rem' }}>
+                Coba gunakan kata kunci lain atau atur ulang filter
               </p>
-              <button 
-                onClick={() => {setSearchTerm(''); setActiveTab('all');}}
-                className="btn-hero-primary"
-                style={{ marginTop: '1.5rem', padding: '12px 24px' }}
+              <button
+                onClick={() => { setSearchTerm(''); setActiveTab('all'); setSortBy('newest'); }}
+                style={{
+                  padding: '0.7rem 1.5rem', borderRadius: 12, background: 'var(--primary)',
+                  color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer',
+                  fontFamily: 'inherit', fontSize: '0.9rem',
+                }}
               >
-                Reset Pencarian
+                Reset Filter
               </button>
             </div>
           ) : (
-            <div className="product-grid">
-              {filteredProducts.map((product) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
-                  onOpenDetail={setSelectedProduct} 
-                />
-              ))}
-            </div>
+            <>
+              <div className="product-grid">
+                {paginatedProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onOpenDetail={openDetail}
+                  />
+                ))}
+              </div>
+
+              {hasMore && (
+                <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+                  <button
+                    onClick={() => setVisibleCount((p) => p + ITEMS_PER_PAGE)}
+                    style={{
+                      padding: '0.8rem 2rem', borderRadius: 14, background: 'var(--bg-surface-soft)',
+                      border: '1px solid var(--border-main)', color: 'var(--text-main)',
+                      fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+                      fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.color = 'var(--primary)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-main)'; e.currentTarget.style.color = 'var(--text-main)'; }}
+                  >
+                    Tampilkan Lebih Banyak
+                    <ChevronDown size={16} />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>
 
-      {/* Product Detail Modal */}
+      {/* ── PRODUCT DETAIL MODAL ── */}
       <AnimatePresence>
         {selectedProduct && (
           <motion.div
@@ -174,14 +280,11 @@ export default function ProductsPage() {
             exit={{ opacity: 0 }}
             onClick={() => setSelectedProduct(null)}
             style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0,0,0,0.7)',
-              backdropFilter: 'blur(8px)',
+              position: 'fixed', inset: 0,
+              background: 'rgba(0,0,0,0.65)',
+              backdropFilter: 'blur(10px)',
               zIndex: 2000,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               padding: '1rem',
             }}
           >
@@ -189,6 +292,7 @@ export default function ProductsPage() {
               initial={{ opacity: 0, scale: 0.92, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.92, y: 30 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className="product-detail-modal"
               onClick={(e) => e.stopPropagation()}
             >
@@ -199,6 +303,7 @@ export default function ProductsPage() {
               >
                 <X size={20} />
               </button>
+
               <div className="modal-img-wrap">
                 {selectedProduct.img ? (
                   <Image
@@ -209,18 +314,42 @@ export default function ProductsPage() {
                     style={{ objectFit: 'cover' }}
                   />
                 ) : (
-                  <div className="product-img-placeholder">
+                  <div className="product-img-placeholder" style={{ height: '100%' }}>
                     <Package size={48} strokeWidth={1.4} />
                   </div>
                 )}
+                {(selectedProduct.sold_count || 0) >= 20 && (
+                  <div style={{
+                    position: 'absolute', top: '1rem', left: '1rem',
+                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                    color: '#fff', padding: '0.3rem 0.75rem', borderRadius: 999,
+                    fontSize: '0.72rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.3rem',
+                    boxShadow: '0 2px 8px rgba(245,158,11,0.4)',
+                  }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    Best Seller
+                  </div>
+                )}
               </div>
+
               <div className="modal-body">
                 <span className="product-category-pill">
                   {selectedProduct.category === 'frozen' ? '🧊 Frozen Food' : selectedProduct.category === 'atk' ? '📝 ATK' : '📦 Lainnya'}
                 </span>
                 <h2>{selectedProduct.name}</h2>
-                <p className="modal-price">Rp {selectedProduct.price.toLocaleString('id-ID')}</p>
-                <p className="modal-desc">{selectedProduct.desc}</p>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
+                  <p className="modal-price" style={{ margin: 0 }}>Rp {selectedProduct.price.toLocaleString('id-ID')}</p>
+                  {selectedProduct.sold_count > 0 && (
+                    <span style={{ fontSize: '0.78rem', color: '#ef4444', fontWeight: 600 }}>
+                      {selectedProduct.sold_count}+ terjual
+                    </span>
+                  )}
+                </div>
+
+                <p className="modal-desc">{selectedProduct.desc || 'Produk pilihan dari Hijrah Toko — kualitas terbaik dengan harga bersahabat.'}</p>
+
+                {/* Stock info */}
                 <div className="modal-stock">
                   {(selectedProduct.stock || 0) > 0 ? (
                     <span className="stock-available">
@@ -232,16 +361,64 @@ export default function ProductsPage() {
                     </span>
                   )}
                 </div>
+
+                {/* Quantity selector */}
+                {(selectedProduct.stock || 0) > 0 && (
+                  <div style={{ marginBottom: '0.75rem' }}>
+                    <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)', display: 'block', marginBottom: '0.4rem' }}>
+                      Jumlah
+                    </label>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 0, border: '1px solid var(--border-main)', borderRadius: 12, overflow: 'hidden' }}>
+                      <button
+                        onClick={() => setQty(Math.max(1, qty - 1))}
+                        disabled={qty <= 1}
+                        style={{
+                          width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          border: 'none', background: 'var(--bg-surface-soft)', cursor: 'pointer',
+                          color: qty <= 1 ? '#cbd5e1' : 'var(--text-main)', transition: 'all 0.15s',
+                          fontFamily: 'inherit',
+                        }}
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <input
+                        type="number"
+                        min={1}
+                        max={selectedProduct.stock}
+                        value={qty}
+                        onChange={(e) => setQty(Math.min(selectedProduct.stock, Math.max(1, Number(e.target.value) || 1)))}
+                        style={{
+                          width: 60, height: 40, textAlign: 'center', border: 'none', borderLeft: '1px solid var(--border-main)',
+                          borderRight: '1px solid var(--border-main)', fontWeight: 700, fontSize: '0.95rem',
+                          background: '#fff', outline: 'none', fontFamily: 'inherit',
+                          color: 'var(--text-main)',
+                        }}
+                      />
+                      <button
+                        onClick={() => setQty(Math.min(selectedProduct.stock, qty + 1))}
+                        disabled={qty >= selectedProduct.stock}
+                        style={{
+                          width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          border: 'none', background: 'var(--bg-surface-soft)', cursor: 'pointer',
+                          color: qty >= selectedProduct.stock ? '#cbd5e1' : 'var(--text-main)', transition: 'all 0.15s',
+                          fontFamily: 'inherit',
+                        }}
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <button
                   className="modal-add-btn"
                   disabled={(selectedProduct.stock || 0) <= 0}
-                  onClick={() => {
-                    addToCart(selectedProduct);
-                    setSelectedProduct(null);
-                  }}
+                  onClick={handleAddToCart}
                 >
                   <ShoppingCart size={18} />
-                  Tambah ke Keranjang
+                  {(selectedProduct.stock || 0) > 0
+                    ? `Tambah ke Keranjang • Rp ${(selectedProduct.price * qty).toLocaleString('id-ID')}`
+                    : 'Stok Habis'}
                 </button>
               </div>
             </motion.div>
@@ -249,10 +426,11 @@ export default function ProductsPage() {
         )}
       </AnimatePresence>
 
-      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-12">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-slate-500 text-sm">
-            &copy; {new Date().getFullYear()} Hijrah Toko. Semua hak cipta dilindungi.
+      {/* ── FOOTER ── */}
+      <footer style={{ borderTop: '1px solid var(--border-main)', padding: '2rem 0', marginTop: '4rem', textAlign: 'center' }}>
+        <div className="section-container">
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: 0 }}>
+            &copy; {new Date().getFullYear()} {STORE_NAME}. Semua hak cipta dilindungi.
           </p>
         </div>
       </footer>

@@ -806,13 +806,13 @@ export default function Home() {
           </div>
 
           {/* Filter tabs */}
-          <div className="product-filter-bar">
+          <div className="product-filter-bar" style={{ justifyContent: 'center' }}>
             <div className="filter-row" style={{ display: 'flex', justifyContent: 'center' }}>
-              <div className="filter-tabs">
+              <div className="filter-tabs" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.35rem' }}>
                 {[
-                  { id: 'all', label: 'Semua Produk' },
-                  { id: 'frozen', label: '🧊 Frozen Food' },
-                  { id: 'atk', label: '📝 Alat Tulis' },
+                  { id: 'all', label: 'Semua' },
+                  { id: 'frozen', label: '🧊 Frozen' },
+                  { id: 'atk', label: '📝 ATK' },
                   { id: 'other', label: '📦 Lainnya' },
                 ].map((tab) => (
                   <button
@@ -825,16 +825,21 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            
-            <div className="filter-actions-row" style={{ marginTop: '0.5rem' }}>
-              <div className="product-search-mini search-expand">
-                <Search size={18} />
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.35rem' }}>
+              <div className="product-search-mini" style={{ maxWidth: 280, marginLeft: 0 }}>
+                <Search size={16} />
                 <input
                   type="text"
-                  placeholder="Cari di produk best seller..."
+                  placeholder="Cari produk..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
+                {searchTerm && (
+                  <button type="button" onClick={() => setSearchTerm('')} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0, lineHeight: 1 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -864,7 +869,17 @@ export default function Home() {
               </div>
               
               <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-                <Link href="/products" className="btn-hero-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <Link href="/products" style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                  padding: '0.8rem 2rem', borderRadius: 14,
+                  background: 'linear-gradient(135deg, var(--primary), #be123c)',
+                  color: '#fff', fontWeight: 700, fontSize: '0.92rem',
+                  textDecoration: 'none', transition: 'all 0.25s',
+                  boxShadow: '0 6px 20px -4px rgba(225, 29, 72, 0.4)',
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 28px -6px rgba(225, 29, 72, 0.5)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 20px -4px rgba(225, 29, 72, 0.4)'; }}
+                >
                   Lihat Semua Produk <ArrowRight size={18} />
                 </Link>
               </div>

@@ -20,6 +20,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
+import { useFeedback } from "../lib/feedback-context";
 
 interface POSCashierProps {
   products: any[];
@@ -36,6 +37,7 @@ const CATEGORIES = [
 const QUICK_AMOUNTS = [50000, 100000, 200000, 500000, 1000000];
 
 export default function POSCashier({ products, onTransactionComplete }: POSCashierProps) {
+  const { warning, error, showConfirm } = useFeedback();
   const [cart, setCart] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -86,7 +88,7 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
   const addToCart = (product: any) => {
     const inCart = cart.find((i) => i.id === product.id)?.qty || 0;
     if (inCart + 1 > (product.stock || 0)) {
-      alert(`Stok tidak cukup! Sisa: ${product.stock || 0}`);
+      warning('Stok Tidak Cukup', `Hanya tersisa ${product.stock || 0} untuk ${product.name}`);
       return;
     }
     setCart((prev) => {
@@ -103,7 +105,7 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
         if (i.id !== id) return i;
         const nq = i.qty + delta;
         if (nq > (product?.stock || 0)) {
-          alert(`Stok tidak cukup! Sisa: ${product?.stock || 0}`);
+          warning('Stok Tidak Cukup', `Hanya tersisa ${product?.stock || 0} untuk ${product?.name}`);
           return i;
         }
         return { ...i, qty: Math.max(1, nq) };
@@ -114,15 +116,21 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
   const removeItem = (id: number) => setCart((p) => p.filter((i) => i.id !== id));
 
   const clearCart = () => {
-    if (cart.length > 0 && !confirm("Kosongkan keranjang?")) return;
-    setCart([]);
-    setCashInput("");
+    if (cart.length === 0) { setCart([]); setCashInput(""); return; }
+    showConfirm({
+      title: 'Kosongkan Keranjang?',
+      description: 'Semua item di keranjang akan dihapus.',
+      confirmText: 'Ya, Kosongkan',
+      cancelText: 'Batal',
+      variant: 'danger',
+      onConfirm: () => { setCart([]); setCashInput(""); },
+    });
   };
 
   const processPayment = async () => {
     if (cart.length === 0) return;
     if (paymentMethod === "cash" && cashValue < total) {
-      alert("Uang pelanggan kurang dari total belanja!");
+      warning('Uang Kurang', 'Uang pelanggan kurang dari total belanja!');
       return;
     }
 
@@ -188,7 +196,7 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
       setDiscount(0);
       onTransactionComplete();
     } catch (err: any) {
-      alert("Gagal memproses: " + (err.message || err));
+      error('Transaksi Gagal', err.message || 'Terjadi kesalahan saat memproses pembayaran');
     } finally {
       setIsProcessing(false);
     }
@@ -250,8 +258,8 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
   return (
     <>
       {showSuccess && lastOrder && (
-        <div className="pos-modal-overlay" onClick={() => setShowSuccess(false)}>
-          <div className="pos-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="pos-modal-overlay fb-fade-up" onClick={() => setShowSuccess(false)}>
+          <div className="pos-modal fb-fade-up" style={{ animationDelay: '0.08s' }} onClick={(e) => e.stopPropagation()}>
             <div className="pos-modal-icon">
               <CheckCircle2 size={48} strokeWidth={2} />
             </div>
@@ -295,7 +303,7 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
               <button type="button" className="pos-m-btn secondary" onClick={printReceipt}>
                 <Printer size={16} /> Cetak Struk
               </button>
-              <button type="button" className="pos-m-btn primary" onClick={() => setShowSuccess(false)}>
+              <button type="button" className="pos-m-btn primary fb-pressable" onClick={() => setShowSuccess(false)}>
                 Transaksi Baru
               </button>
             </div>
@@ -336,7 +344,7 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
         </div>
 
         <div className="pos-main">
-          <div className="pos-grid">
+          <div className="pos-grid fb-stagger">
             {filteredProducts.length === 0 ? (
               <div className="pos-grid-empty">
                 <Package size={40} />
@@ -346,7 +354,7 @@ export default function POSCashier({ products, onTransactionComplete }: POSCashi
               filteredProducts.map((product) => (
                 <div
                   key={product.id}
-                  className={`pos-card ${(product.stock || 0) <= 0 ? "out" : ""}`}
+                  className={`pos-card fb-pressable ${(product.stock || 0) <= 0 ? "out" : ""}`}
                   onClick={() => (product.stock || 0) > 0 && addToCart(product)}
                 >
                   <div className="pos-card-icon">
