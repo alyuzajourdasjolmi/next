@@ -318,8 +318,12 @@ export default function Home() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.7 }}
               >
-                <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}>
-                  <Image src={banner.image_url} alt={banner.title} fill unoptimized sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} />
+                <div style={{
+                  position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0,
+                  backgroundImage: `url(${banner.image_url})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}>
                   <div style={{ position: 'absolute', inset: 0, background: banner.bg_color || 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.6) 45%, rgba(0,0,0,0.15) 100%)' }} />
                 </div>
 
@@ -331,7 +335,16 @@ export default function Home() {
                     transition={{ duration: 0.7 }}
                   >
                     <h1 className="hero-title-new" style={{ fontSize: 'clamp(1.6rem, 3.2vw, 2.75rem)' }}>
-                      {banner.title.split(' ').map((w: string, i: number) => i === Math.floor(banner.title.split(' ').length / 2) ? <span key={i}>{w} </span> : `${w} `)}
+                      {(() => {
+                        const words = banner.title.split(' ');
+                        const lastWord = words.pop()!;
+                        return (
+                          <>
+                            {words.length > 0 && <>{words.join(' ')} </>}
+                            <span>{lastWord}</span>
+                          </>
+                        );
+                      })()}
                     </h1>
                     {banner.subtitle && <div className="hero-eyebrow-v2"><span>{banner.subtitle}</span></div>}
                     {banner.description && <p className="hero-desc-new">{banner.description}</p>}
