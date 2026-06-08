@@ -359,7 +359,24 @@ export default function BannersPage() {
                 background: '#f1f5f9',
               }}>
                 {banner.image_url ? (
-                  <img src={banner.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <>
+                    <img src={banner.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: (() => {
+                        const raw = banner.bg_color || '';
+                        const isGradient = raw.startsWith('linear-gradient') || raw.startsWith('radial-gradient');
+                        if (isGradient) return raw;
+                        if (raw.startsWith('#') && raw.length >= 7) {
+                          const r = parseInt(raw.slice(1, 3), 16);
+                          const g = parseInt(raw.slice(3, 5), 16);
+                          const b = parseInt(raw.slice(5, 7), 16);
+                          return `linear-gradient(to right, rgba(${r},${g},${b},0.88) 0%, rgba(${r},${g},${b},0.65) 45%, rgba(${r},${g},${b},0.15) 100%)`;
+                        }
+                        return 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.6) 45%, rgba(0,0,0,0.15) 100%)';
+                      })(),
+                    }} />
+                  </>
                 ) : (
                   <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <ImageIcon size={24} style={{ color: '#cbd5e1' }} />
@@ -624,11 +641,26 @@ export default function BannersPage() {
                   {form.image_url && (
                     <div style={{
                       marginTop: '0.6rem', width: '100%', height: 140, borderRadius: 12, overflow: 'hidden',
-                      background: '#f1f5f9', border: '1px solid #e2e8f0',
+                      background: '#f1f5f9', border: '1px solid #e2e8f0', position: 'relative',
                     }}>
                       <img src={form.image_url} alt="Preview"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        background: (() => {
+                          const raw = form.bg_color || '';
+                          const isGradient = raw.startsWith('linear-gradient') || raw.startsWith('radial-gradient');
+                          if (isGradient) return raw;
+                          if (raw.startsWith('#') && raw.length >= 7) {
+                            const r = parseInt(raw.slice(1, 3), 16);
+                            const g = parseInt(raw.slice(3, 5), 16);
+                            const b = parseInt(raw.slice(5, 7), 16);
+                            return `linear-gradient(to right, rgba(${r},${g},${b},0.88) 0%, rgba(${r},${g},${b},0.65) 45%, rgba(${r},${g},${b},0.15) 100%)`;
+                          }
+                          return 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.6) 45%, rgba(0,0,0,0.15) 100%)';
+                        })(),
+                      }} />
                     </div>
                   )}
                 </div>
