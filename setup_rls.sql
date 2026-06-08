@@ -105,6 +105,19 @@ CREATE POLICY "Admin all push_subscriptions" ON push_subscriptions
   FOR ALL USING (auth.email() = 'admin.hijrahtoko@gmail.com')
   WITH CHECK (auth.email() = 'admin.hijrahtoko@gmail.com');
 
+-- Banners: public read, admin write
+ALTER TABLE banners ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read banners" ON banners;
+DROP POLICY IF EXISTS "Admin write banners" ON banners;
+
+CREATE POLICY "Public read banners" ON banners
+  FOR SELECT USING (true);
+
+CREATE POLICY "Admin write banners" ON banners
+  FOR ALL USING (auth.email() = 'admin.hijrahtoko@gmail.com')
+  WITH CHECK (auth.email() = 'admin.hijrahtoko@gmail.com');
+
 -- Profiles: own read/write, admin all
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
