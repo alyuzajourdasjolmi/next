@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Image,
+  Image as ImageIcon,
   Plus,
   Edit3,
   Trash2,
@@ -12,6 +12,11 @@ import {
   ChevronUp,
   ChevronDown,
   GripVertical,
+  Sparkles,
+  ExternalLink,
+  Layers,
+  ToggleLeft,
+  ToggleRight,
 } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useFeedback } from '../../../lib/feedback-context';
@@ -43,12 +48,12 @@ const EMPTY_BANNER: Omit<Banner, 'id' | 'created_at'> = {
 };
 
 const COLOR_PRESETS = [
-  { label: 'Dark', value: '#111827' },
-  { label: 'Rose', value: '#881337' },
-  { label: 'Navy', value: '#172554' },
-  { label: 'Emerald', value: '#064e3b' },
-  { label: 'Amber', value: '#78350f' },
-  { label: 'Purple', value: '#3b0764' },
+  { label: 'Dark', value: '#111827', hex: '#111827' },
+  { label: 'Rose', value: '#881337', hex: '#881337' },
+  { label: 'Navy', value: '#172554', hex: '#172554' },
+  { label: 'Emerald', value: '#064e3b', hex: '#064e3b' },
+  { label: 'Amber', value: '#78350f', hex: '#78350f' },
+  { label: 'Purple', value: '#3b0764', hex: '#3b0764' },
 ];
 
 export default function BannersPage() {
@@ -59,6 +64,7 @@ export default function BannersPage() {
   const [editing, setEditing] = useState<Banner | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<Omit<Banner, 'id' | 'created_at'>>(EMPTY_BANNER);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
 
   const fetchBanners = async () => {
     setLoading(true);
@@ -113,7 +119,6 @@ export default function BannersPage() {
     if (!form.image_url.trim()) { showError('Validasi', 'URL gambar banner wajib diisi'); return; }
 
     try {
-      // Filter valid buttons (label + url must not be empty)
       const validButtons = form.buttons.filter((b) => b.label.trim() && b.url.trim());
       const payload = { ...form, buttons: validButtons, updated_at: new Date().toISOString() };
 
@@ -192,261 +197,590 @@ export default function BannersPage() {
     setForm({ ...form, buttons: form.buttons.filter((_, idx) => idx !== i) });
   };
 
-  // Preview for the form
   const activeBanners = banners.filter((b) => b.is_active).length;
+  const sortedBanners = [...banners].sort((a, b) => a.sort_order - b.sort_order);
 
   return (
-    <section className="admin-panel">
-      <div className="admin-panel-header split">
-        <h2>
-          <Image size={18} />
-          Kelola Banner Hero
-        </h2>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <span className="panel-chip">{banners.length} banner ({activeBanners} aktif)</span>
-          <button className="add-btn" onClick={openNew}>
-            <Plus size={16} /> Tambah Banner
+    <section style={{ padding: '1.5rem', minHeight: '100vh', background: '#f8fafc' }}>
+      {/* Header */}
+      <div style={{ marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #e11d48, #be123c)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Layers size={20} color="#fff" />
+              </div>
+              <div>
+                <h1 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
+                  Banner Hero
+                </h1>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>
+                  Kelola slider banner utama di halaman depan
+                </p>
+              </div>
+            </div>
+          </div>
+          <button onClick={() => fetchBanners()} style={{
+            padding: '0.5rem 1rem', borderRadius: 10, border: '1px solid #e2e8f0',
+            background: '#fff', color: '#64748b', fontWeight: 600, cursor: 'pointer',
+            fontFamily: 'inherit', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem',
+            transition: 'all 0.15s',
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+            Refresh
           </button>
+        </div>
+
+        {/* Stats */}
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <div style={{
+            flex: 1, padding: '0.85rem 1.1rem', background: '#fff', borderRadius: 14,
+            border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.75rem',
+          }}>
+            <div style={{
+              width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(135deg, #ede9fe, #ddd6fe)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <ImageIcon size={18} color="#7c3aed" />
+            </div>
+            <div>
+              <p style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>{banners.length}</p>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: '#94a3b8', fontWeight: 500 }}>Total Banner</p>
+            </div>
+          </div>
+          <div style={{
+            flex: 1, padding: '0.85rem 1.1rem', background: '#fff', borderRadius: 14,
+            border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.75rem',
+          }}>
+            <div style={{
+              width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Eye size={18} color="#16a34a" />
+            </div>
+            <div>
+              <p style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>{activeBanners}</p>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: '#94a3b8', fontWeight: 500 }}>Aktif</p>
+            </div>
+          </div>
+          <div style={{
+            flex: 1, padding: '0.85rem 1.1rem', background: '#fff', borderRadius: 14,
+            border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '0.75rem',
+          }}>
+            <div style={{
+              width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(135deg, #fef3c7, #fde68a)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <ToggleLeft size={18} color="#d97706" />
+            </div>
+            <div>
+              <p style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>{banners.length - activeBanners}</p>
+              <p style={{ margin: 0, fontSize: '0.72rem', color: '#94a3b8', fontWeight: 500 }}>Nonaktif</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ── BANNER LIST ── */}
+      {/* Add button */}
+      <div style={{ marginBottom: '1.25rem' }}>
+        <button onClick={openNew} style={{
+          padding: '0.7rem 1.25rem', borderRadius: 12, border: 'none',
+          background: 'linear-gradient(135deg, #e11d48, #be123c)', color: '#fff',
+          fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.85rem',
+          display: 'flex', alignItems: 'center', gap: '0.5rem',
+          boxShadow: '0 4px 14px -3px rgba(225,29,72,0.5)',
+          transition: 'all 0.2s',
+        }}>
+          <Plus size={18} strokeWidth={2.5} /> Tambah Banner Baru
+        </button>
+      </div>
+
+      {/* Banner List */}
       {loading ? (
-        <div style={{ padding: '4rem 0', textAlign: 'center', color: '#94a3b8' }}>Memuat banner...</div>
-      ) : banners.length === 0 ? (
         <div style={{ padding: '4rem 0', textAlign: 'center', color: '#94a3b8' }}>
-          <Image size={48} strokeWidth={1.2} style={{ margin: '0 auto 1rem', display: 'block', opacity: 0.3 }} />
-          <p style={{ fontWeight: 600, margin: '0 0 0.25rem', color: '#64748b' }}>Belum ada banner</p>
-          <p style={{ fontSize: '0.85rem', margin: 0 }}>Klik &quot;Tambah Banner&quot; untuk membuat banner hero pertama.</p>
+          <div style={{
+            width: 48, height: 48, borderRadius: 14, background: '#f1f5f9',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem',
+          }}>
+            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+            </motion.div>
+          </div>
+          <p style={{ fontWeight: 600, fontSize: '0.9rem' }}>Memuat banner...</p>
+        </div>
+      ) : sortedBanners.length === 0 ? (
+        <div style={{
+          padding: '4rem 2rem', textAlign: 'center', background: '#fff', borderRadius: 18,
+          border: '2px dashed #e2e8f0',
+        }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: 16, background: '#f1f5f9',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem',
+          }}>
+            <ImageIcon size={28} strokeWidth={1.5} style={{ color: '#cbd5e1' }} />
+          </div>
+          <p style={{ fontWeight: 700, fontSize: '1rem', color: '#334155', margin: '0 0 0.35rem' }}>
+            Belum ada banner
+          </p>
+          <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: '0 0 1.25rem', maxWidth: 320, marginLeft: 'auto', marginRight: 'auto' }}>
+            Buat banner hero pertama untuk ditampilkan di slider halaman depan.
+          </p>
+          <button onClick={openNew} style={{
+            padding: '0.6rem 1.5rem', borderRadius: 12, border: 'none',
+            background: '#e11d48', color: '#fff', fontWeight: 700, cursor: 'pointer',
+            fontFamily: 'inherit', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+          }}>
+            <Plus size={16} /> Buat Banner
+          </button>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {banners.map((banner) => (
-            <div
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          {sortedBanners.map((banner, idx) => (
+            <motion.div
               key={banner.id}
-              className="card-item"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: idx * 0.03 }}
               style={{
-                display: 'flex', alignItems: 'center', gap: '1rem',
-                padding: '0.85rem 1.25rem',
-                background: '#fff', border: '1px solid #e2e8f0', borderRadius: 14,
+                display: 'flex', alignItems: 'stretch', gap: 0,
+                background: '#fff', borderRadius: 16, overflow: 'hidden',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                opacity: banner.is_active ? 1 : 0.65,
+                transition: 'opacity 0.2s',
               }}
             >
-              {/* Preview image */}
+              {/* Preview */}
               <div style={{
-                width: 120, height: 68, borderRadius: 10, overflow: 'hidden',
-                background: '#f1f5f9', flexShrink: 0,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 180, minHeight: 110, flexShrink: 0, position: 'relative', overflow: 'hidden',
+                background: '#f1f5f9',
               }}>
                 {banner.image_url ? (
                   <img src={banner.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <Image size={20} style={{ color: '#cbd5e1' }} />
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <ImageIcon size={24} style={{ color: '#cbd5e1' }} />
+                  </div>
                 )}
+                {/* Order badge */}
+                <div style={{
+                  position: 'absolute', top: 8, left: 8,
+                  background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)',
+                  color: '#fff', fontSize: '0.65rem', fontWeight: 700, padding: '0.2rem 0.5rem',
+                  borderRadius: 6, letterSpacing: '0.05em',
+                }}>
+                  #{banner.sort_order + 1}
+                </div>
+                {/* Status dot */}
+                <div style={{
+                  position: 'absolute', top: 8, right: 8,
+                  width: 10, height: 10, borderRadius: '50%',
+                  background: banner.is_active ? '#22c55e' : '#94a3b8',
+                  border: '2px solid rgba(255,255,255,0.9)',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                }} />
               </div>
 
-              {/* Info */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <strong style={{ fontSize: '0.9rem', color: '#1e293b' }}>{banner.title}</strong>
-                  {banner.buttons?.length > 0 && (
-                    <span style={{ fontSize: '0.7rem', color: '#94a3b8', background: '#f1f5f9', padding: '0.15rem 0.45rem', borderRadius: 6 }}>
-                      {banner.buttons.length} tombol
-                    </span>
+              {/* Content */}
+              <div style={{ flex: 1, padding: '0.85rem 1rem', minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
+                  <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {banner.title}
+                  </h3>
+                  {banner.is_active ? (
+                    <span style={{
+                      fontSize: '0.6rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em',
+                      background: '#dcfce7', color: '#16a34a', padding: '0.15rem 0.45rem', borderRadius: 5,
+                      flexShrink: 0,
+                    }}>Aktif</span>
+                  ) : (
+                    <span style={{
+                      fontSize: '0.6rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em',
+                      background: '#f1f5f9', color: '#94a3b8', padding: '0.15rem 0.45rem', borderRadius: 5,
+                      flexShrink: 0,
+                    }}>Off</span>
                   )}
                 </div>
                 {banner.subtitle && (
-                  <p style={{ margin: '0.1rem 0 0', fontSize: '0.78rem', color: '#64748b' }}>{banner.subtitle}</p>
+                  <p style={{ margin: '0 0 0.25rem', fontSize: '0.78rem', color: '#64748b', fontWeight: 500 }}>
+                    {banner.subtitle}
+                  </p>
                 )}
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem', fontSize: '0.72rem', color: '#94a3b8' }}>
-                  <span>Urutan: {banner.sort_order}</span>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: banner.is_active ? '#22c55e' : '#cbd5e1', display: 'inline-block', alignSelf: 'center' }} />
-                  <span>{banner.is_active ? 'Aktif' : 'Nonaktif'}</span>
-                </div>
+                {banner.description && (
+                  <p style={{ margin: 0, fontSize: '0.72rem', color: '#94a3b8', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {banner.description}
+                  </p>
+                )}
+                {banner.buttons && banner.buttons.length > 0 && (
+                  <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+                    {banner.buttons.map((btn, bi) => (
+                      <span key={bi} style={{
+                        fontSize: '0.62rem', fontWeight: 600, padding: '0.15rem 0.4rem', borderRadius: 5,
+                        background: btn.style === 'primary' ? '#e11d48' : '#f1f5f9',
+                        color: btn.style === 'primary' ? '#fff' : '#64748b',
+                      }}>
+                        {btn.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Actions */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexShrink: 0 }}>
-                <button className="btn-icon-sm" onClick={() => moveOrder(banner, -1)} title="Naikkan urutan">
-                  <ChevronUp size={16} />
+              <div style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                gap: '0.2rem', padding: '0.5rem 0.6rem', borderLeft: '1px solid #f1f5f9',
+                background: '#fafbfc', flexShrink: 0,
+              }}>
+                <button onClick={() => moveOrder(banner, -1)} disabled={idx === 0}
+                  style={{
+                    width: 30, height: 30, borderRadius: 8, border: 'none', cursor: idx === 0 ? 'default' : 'pointer',
+                    background: idx === 0 ? '#f8fafc' : '#f1f5f9', color: idx === 0 ? '#cbd5e1' : '#64748b',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
+                  }}
+                  title="Naikkan urutan"
+                >
+                  <ChevronUp size={15} />
                 </button>
-                <button className="btn-icon-sm" onClick={() => moveOrder(banner, 1)} title="Turunkan urutan">
-                  <ChevronDown size={16} />
+                <button onClick={() => moveOrder(banner, 1)} disabled={idx === sortedBanners.length - 1}
+                  style={{
+                    width: 30, height: 30, borderRadius: 8, border: 'none', cursor: idx === sortedBanners.length - 1 ? 'default' : 'pointer',
+                    background: idx === sortedBanners.length - 1 ? '#f8fafc' : '#f1f5f9', color: idx === sortedBanners.length - 1 ? '#cbd5e1' : '#64748b',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
+                  }}
+                  title="Turunkan urutan"
+                >
+                  <ChevronDown size={15} />
                 </button>
-                <button className="btn-icon-sm" onClick={() => toggleActive(banner)} title={banner.is_active ? 'Nonaktifkan' : 'Aktifkan'}>
-                  {banner.is_active ? <EyeOff size={16} /> : <Eye size={16} />}
+                <div style={{ width: 20, height: 1, background: '#e2e8f0', margin: '0.1rem 0' }} />
+                <button onClick={() => toggleActive(banner)}
+                  style={{
+                    width: 30, height: 30, borderRadius: 8, border: 'none', cursor: 'pointer',
+                    background: banner.is_active ? '#dcfce7' : '#f1f5f9',
+                    color: banner.is_active ? '#16a34a' : '#94a3b8',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
+                  }}
+                  title={banner.is_active ? 'Nonaktifkan' : 'Aktifkan'}
+                >
+                  {banner.is_active ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
-                <button className="btn-icon-sm" onClick={() => openEdit(banner)} title="Edit">
-                  <Edit3 size={16} />
+                <button onClick={() => openEdit(banner)}
+                  style={{
+                    width: 30, height: 30, borderRadius: 8, border: 'none', cursor: 'pointer',
+                    background: '#eff6ff', color: '#3b82f6',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
+                  }}
+                  title="Edit"
+                >
+                  <Edit3 size={15} />
                 </button>
-                <button className="btn-icon-sm danger" onClick={() => handleDelete(banner)} title="Hapus">
-                  <Trash2 size={16} />
+                <button onClick={() => handleDelete(banner)}
+                  style={{
+                    width: 30, height: 30, borderRadius: 8, border: 'none', cursor: 'pointer',
+                    background: '#fef2f2', color: '#ef4444',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
+                  }}
+                  title="Hapus"
+                >
+                  <Trash2 size={15} />
                 </button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}
 
       {/* ── FORM MODAL ── */}
-      {showForm && (
-        <div className="modal-overlay" onClick={closeForm}
-          style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)',
-            backdropFilter: 'blur(10px)', zIndex: 2000,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
-          }}
-        >
+      <AnimatePresence>
+        {showForm && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            onClick={closeForm}
             style={{
-              background: '#fff', borderRadius: 20, padding: '1.5rem',
-              maxWidth: 720, width: '100%', maxHeight: '90vh', overflowY: 'auto',
-              boxShadow: '0 30px 60px -10px rgba(0,0,0,0.3)',
+              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+              backdropFilter: 'blur(12px)', zIndex: 2000,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Image size={18} />
-                {editing ? 'Edit Banner' : 'Tambah Banner Baru'}
-              </h3>
-              <button onClick={closeForm} className="btn-icon-sm" aria-label="Tutup">✕</button>
-            </div>
-
-            {/* Title */}
-            <div className="form-group" style={{ marginBottom: '1rem' }}>
-              <label className="form-label">Judul Banner *</label>
-              <input className="form-input" type="text" value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="Promo Frozen Food Spesial" />
-            </div>
-
-            {/* Subtitle + Description */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-              <div className="form-group">
-                <label className="form-label">Subtitle (opsional)</label>
-                <input className="form-input" type="text" value={form.subtitle || ''}
-                  onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
-                  placeholder="Belanja Hemat 50%" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Deskripsi (opsional)</label>
-                <input className="form-input" type="text" value={form.description || ''}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="Promo berlaku hingga akhir bulan" />
-              </div>
-            </div>
-
-            {/* Image URL */}
-            <div className="form-group" style={{ marginBottom: '1rem' }}>
-              <label className="form-label">URL Gambar *</label>
-              <input className="form-input" type="text" value={form.image_url}
-                onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                placeholder="/assets/images/hero-toko.jpeg atau https://..." />
-              {form.image_url && (
-                <div style={{ marginTop: '0.5rem', width: 160, height: 90, borderRadius: 8, overflow: 'hidden', background: '#f1f5f9' }}>
-                  <img src={form.image_url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                </div>
-              )}
-            </div>
-
-            {/* Background Color */}
-            <div className="form-group" style={{ marginBottom: '1rem' }}>
-              <label className="form-label">Warna Latar Gradient</label>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {COLOR_PRESETS.map((c) => (
-                  <button key={c.value} type="button" onClick={() => setForm({ ...form, bg_color: c.value })}
-                    style={{
-                      width: 36, height: 36, borderRadius: 10, border: form.bg_color === c.value ? '3px solid #e11d48' : '2px solid #e2e8f0',
-                      background: c.value, cursor: 'pointer', transition: 'all 0.15s',
-                    }}
-                    title={c.label}
-                  />
-                ))}
-                <input type="color" value={form.bg_color}
-                  onChange={(e) => setForm({ ...form, bg_color: e.target.value })}
-                  style={{ width: 36, height: 36, borderRadius: 10, border: '2px solid #e2e8f0', cursor: 'pointer', padding: 0 }} />
-              </div>
-            </div>
-
-            {/* Buttons (max 2) */}
-            <div style={{ marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <label className="form-label" style={{ margin: 0 }}>Tombol (maks. 2)</label>
-                {form.buttons.length < 2 && (
-                  <button type="button" onClick={addButton} style={{
-                    background: 'none', border: '1px dashed #cbd5e1', borderRadius: 8, padding: '0.3rem 0.6rem',
-                    fontSize: '0.78rem', color: '#64748b', cursor: 'pointer', fontWeight: 600, fontFamily: 'inherit',
-                  }}>
-                    + Tambah Tombol
-                  </button>
-                )}
-              </div>
-              {form.buttons.length === 0 && (
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>Belum ada tombol. Banner akan tampil tanpa tombol aksi.</p>
-              )}
-              {form.buttons.map((btn, i) => (
-                <div key={i} style={{
-                  display: 'flex', gap: '0.5rem', alignItems: 'center',
-                  padding: '0.75rem', background: '#f8fafc', borderRadius: 10, marginBottom: '0.5rem',
-                }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', width: 16 }}>
-                    {i + 1}
-                  </span>
-                  <input className="form-input" type="text" value={btn.label}
-                    onChange={(e) => updateButton(i, 'label', e.target.value)}
-                    placeholder="Label tombol" style={{ flex: 1, minWidth: 0 }} />
-                  <input className="form-input" type="text" value={btn.url}
-                    onChange={(e) => updateButton(i, 'url', e.target.value)}
-                    placeholder="URL / tautan" style={{ flex: 1.5, minWidth: 0 }} />
-                  <select className="form-input" value={btn.style}
-                    onChange={(e) => updateButton(i, 'style', e.target.value as 'primary' | 'outline')}
-                    style={{ width: 100, flexShrink: 0 }}>
-                    <option value="primary">Primary</option>
-                    <option value="outline">Outline</option>
-                  </select>
-                  <button type="button" onClick={() => removeButton(i)} className="btn-icon-sm danger" title="Hapus tombol">
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            {/* Sort Order + Active toggle */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
-              <div className="form-group">
-                <label className="form-label">Urutan</label>
-                <input className="form-input" type="number" min={0} value={form.sort_order}
-                  onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })} />
-              </div>
-              <div className="form-group" style={{ display: 'flex', alignItems: 'center', paddingTop: '1.5rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem', color: '#1e293b' }}>
-                  <input type="checkbox" checked={form.is_active}
-                    onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
-                    style={{ width: 18, height: 18, accentColor: '#e11d48' }} />
-                  Tampilkan banner ini
-                </label>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
-              <button onClick={closeForm} style={{
-                padding: '0.65rem 1.25rem', borderRadius: 12, border: '1px solid #e2e8f0',
-                background: '#fff', color: '#64748b', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.85rem',
-              }}>Batal</button>
-              <button onClick={handleSave} style={{
-                padding: '0.65rem 1.5rem', borderRadius: 12, border: 'none',
-                background: '#e11d48', color: '#fff', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.85rem',
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 30 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: '#fff', borderRadius: 20, padding: 0,
+                maxWidth: 700, width: '100%', maxHeight: '90vh', overflow: 'hidden',
+                boxShadow: '0 30px 60px -10px rgba(0,0,0,0.35)',
+              }}
+            >
+              {/* Modal Header */}
+              <div style={{
+                padding: '1.25rem 1.5rem', borderBottom: '1px solid #f1f5f9',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                background: '#fafbfc',
               }}>
-                {editing ? 'Simpan Perubahan' : 'Tambah Banner'}
-              </button>
-            </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #e11d48, #be123c)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {editing ? <Edit3 size={18} color="#fff" /> : <Plus size={18} color="#fff" />}
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
+                      {editing ? 'Edit Banner' : 'Banner Baru'}
+                    </h3>
+                    <p style={{ margin: 0, fontSize: '0.72rem', color: '#94a3b8' }}>
+                      {editing ? 'Ubah detail banner yang dipilih' : 'Isi detail untuk banner hero baru'}
+                    </p>
+                  </div>
+                </div>
+                <button onClick={closeForm} style={{
+                  width: 32, height: 32, borderRadius: 8, border: 'none', cursor: 'pointer',
+                  background: '#f1f5f9', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>✕</button>
+              </div>
+
+              {/* Modal Body */}
+              <div style={{ padding: '1.25rem 1.5rem', overflowY: 'auto', maxHeight: 'calc(90vh - 140px)' }}>
+                {/* Title */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                    Judul Banner <span style={{ color: '#e11d48' }}>*</span>
+                  </label>
+                  <input type="text" value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    placeholder="Contoh: Promo Spesial Bulan Ini"
+                    style={{
+                      width: '100%', padding: '0.65rem 0.85rem', borderRadius: 10, border: '1.5px solid #e2e8f0',
+                      fontSize: '0.85rem', fontFamily: 'inherit', outline: 'none', transition: 'border-color 0.15s',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                {/* Subtitle + Description */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                      Subtitle
+                    </label>
+                    <input type="text" value={form.subtitle || ''}
+                      onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
+                      placeholder="Belanja Hemat 50%"
+                      style={{
+                        width: '100%', padding: '0.65rem 0.85rem', borderRadius: 10, border: '1.5px solid #e2e8f0',
+                        fontSize: '0.85rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                      Deskripsi
+                    </label>
+                    <input type="text" value={form.description || ''}
+                      onChange={(e) => setForm({ ...form, description: e.target.value })}
+                      placeholder="Promo berlaku hingga akhir bulan"
+                      style={{
+                        width: '100%', padding: '0.65rem 0.85rem', borderRadius: 10, border: '1.5px solid #e2e8f0',
+                        fontSize: '0.85rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Image URL */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                    URL Gambar <span style={{ color: '#e11d48' }}>*</span>
+                  </label>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input type="text" value={form.image_url}
+                      onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                      placeholder="/assets/images/hero-toko.jpeg"
+                      style={{
+                        flex: 1, padding: '0.65rem 0.85rem', borderRadius: 10, border: '1.5px solid #e2e8f0',
+                        fontSize: '0.85rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+                      }}
+                    />
+                    {form.image_url && (
+                      <a href={form.image_url} target="_blank" rel="noopener noreferrer"
+                        style={{
+                          width: 40, height: 40, borderRadius: 10, border: '1.5px solid #e2e8f0',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: '#64748b', textDecoration: 'none', flexShrink: 0,
+                        }}>
+                        <ExternalLink size={16} />
+                      </a>
+                    )}
+                  </div>
+                  {form.image_url && (
+                    <div style={{
+                      marginTop: '0.6rem', width: '100%', height: 140, borderRadius: 12, overflow: 'hidden',
+                      background: '#f1f5f9', border: '1px solid #e2e8f0',
+                    }}>
+                      <img src={form.image_url} alt="Preview"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Background Color */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                    Warna Latar Overlay
+                  </label>
+                  <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                    {COLOR_PRESETS.map((c) => (
+                      <button key={c.value} type="button" onClick={() => setForm({ ...form, bg_color: c.value })}
+                        style={{
+                          width: 32, height: 32, borderRadius: 8,
+                          border: form.bg_color === c.value ? '3px solid #e11d48' : '2px solid #e2e8f0',
+                          background: c.hex, cursor: 'pointer', transition: 'all 0.15s',
+                        }}
+                        title={c.label}
+                      />
+                    ))}
+                    <input type="color" value={form.bg_color}
+                      onChange={(e) => setForm({ ...form, bg_color: e.target.value })}
+                      style={{ width: 32, height: 32, borderRadius: 8, border: '2px solid #e2e8f0', cursor: 'pointer', padding: 0 }} />
+                    <span style={{ fontSize: '0.72rem', color: '#94a3b8', marginLeft: '0.25rem' }}>atau custom</span>
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                      Tombol Aksi <span style={{ color: '#94a3b8', fontWeight: 500 }}>(maks. 2)</span>
+                    </label>
+                    {form.buttons.length < 2 && (
+                      <button type="button" onClick={addButton} style={{
+                        background: 'none', border: '1.5px dashed #cbd5e1', borderRadius: 8,
+                        padding: '0.3rem 0.65rem', fontSize: '0.72rem', color: '#64748b',
+                        cursor: 'pointer', fontWeight: 700, fontFamily: 'inherit', transition: 'all 0.15s',
+                      }}>
+                        + Tambah
+                      </button>
+                    )}
+                  </div>
+                  {form.buttons.length === 0 && (
+                    <p style={{ margin: 0, fontSize: '0.78rem', color: '#94a3b8', fontStyle: 'italic' }}>
+                      Banner akan tampil tanpa tombol aksi.
+                    </p>
+                  )}
+                  {form.buttons.map((btn, i) => (
+                    <div key={i} style={{
+                      display: 'flex', gap: '0.4rem', alignItems: 'center',
+                      padding: '0.65rem', background: '#f8fafc', borderRadius: 10, marginBottom: '0.4rem',
+                      border: '1px solid #f1f5f9',
+                    }}>
+                      <span style={{
+                        fontSize: '0.65rem', fontWeight: 700, color: '#94a3b8', width: 18, textAlign: 'center',
+                        background: '#e2e8f0', borderRadius: 5, padding: '0.15rem 0', flexShrink: 0,
+                      }}>
+                        {i + 1}
+                      </span>
+                      <input type="text" value={btn.label}
+                        onChange={(e) => updateButton(i, 'label', e.target.value)}
+                        placeholder="Label tombol"
+                        style={{
+                          flex: 1, minWidth: 0, padding: '0.5rem 0.65rem', borderRadius: 8, border: '1.5px solid #e2e8f0',
+                          fontSize: '0.8rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+                        }}
+                      />
+                      <input type="text" value={btn.url}
+                        onChange={(e) => updateButton(i, 'url', e.target.value)}
+                        placeholder="URL"
+                        style={{
+                          flex: 1.5, minWidth: 0, padding: '0.5rem 0.65rem', borderRadius: 8, border: '1.5px solid #e2e8f0',
+                          fontSize: '0.8rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+                        }}
+                      />
+                      <select value={btn.style}
+                        onChange={(e) => updateButton(i, 'style', e.target.value as 'primary' | 'outline')}
+                        style={{
+                          width: 90, flexShrink: 0, padding: '0.5rem', borderRadius: 8, border: '1.5px solid #e2e8f0',
+                          fontSize: '0.78rem', fontFamily: 'inherit', outline: 'none', background: '#fff',
+                        }}>
+                        <option value="primary">Primary</option>
+                        <option value="outline">Outline</option>
+                      </select>
+                      <button type="button" onClick={() => removeButton(i)} style={{
+                        width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer',
+                        background: '#fef2f2', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }} title="Hapus tombol">
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Sort + Active */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                      Urutan Tampil
+                    </label>
+                    <input type="number" min={0} value={form.sort_order}
+                      onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })}
+                      style={{
+                        width: '100%', padding: '0.65rem 0.85rem', borderRadius: 10, border: '1.5px solid #e2e8f0',
+                        fontSize: '0.85rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>
+                      Status
+                    </label>
+                    <button type="button" onClick={() => setForm({ ...form, is_active: !form.is_active })}
+                      style={{
+                        width: '100%', padding: '0.65rem 0.85rem', borderRadius: 10,
+                        border: '1.5px solid #e2e8f0', background: form.is_active ? '#dcfce7' : '#f1f5f9',
+                        color: form.is_active ? '#16a34a' : '#94a3b8',
+                        fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'inherit',
+                        display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'center',
+                        transition: 'all 0.15s',
+                      }}>
+                      {form.is_active ? <ToggleRight size={18} /> : <ToggleLeft size={18} />}
+                      {form.is_active ? 'Aktif' : 'Nonaktif'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div style={{
+                padding: '1rem 1.5rem', borderTop: '1px solid #f1f5f9',
+                display: 'flex', gap: '0.6rem', justifyContent: 'flex-end', background: '#fafbfc',
+              }}>
+                <button onClick={closeForm} style={{
+                  padding: '0.6rem 1.25rem', borderRadius: 10, border: '1.5px solid #e2e8f0',
+                  background: '#fff', color: '#64748b', fontWeight: 700, cursor: 'pointer',
+                  fontFamily: 'inherit', fontSize: '0.82rem', transition: 'all 0.15s',
+                }}>Batal</button>
+                <button onClick={handleSave} style={{
+                  padding: '0.6rem 1.5rem', borderRadius: 10, border: 'none',
+                  background: 'linear-gradient(135deg, #e11d48, #be123c)', color: '#fff',
+                  fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.82rem',
+                  boxShadow: '0 4px 14px -3px rgba(225,29,72,0.5)', transition: 'all 0.15s',
+                }}>
+                  {editing ? 'Simpan Perubahan' : 'Tambah Banner'}
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </section>
   );
 }
