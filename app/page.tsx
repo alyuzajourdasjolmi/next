@@ -50,6 +50,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [banners, setBanners] = useState<any[]>([]);
   const [heroSlide, setHeroSlide] = useState(0);
   const [heroPaused, setHeroPaused] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -104,13 +105,29 @@ export default function Home() {
     fetchData();
   }, [isClient]);
 
+  // Fetch active banners
+  useEffect(() => {
+    if (!isClient) return;
+    supabase.from('banners')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true })
+      .order('id', { ascending: true })
+      .then(({ data, error }) => {
+        if (!error && data && data.length > 0) {
+          setBanners(data);
+        }
+      });
+  }, [isClient]);
+
   // Hero auto-slide
+  const slideCount = banners.length || 3;
   useEffect(() => {
     const timer = setInterval(() => {
-      if (!heroPaused) setHeroSlide((p) => (p + 1) % 3);
+      if (!heroPaused) setHeroSlide((p) => (p + 1) % slideCount);
     }, 6000);
     return () => clearInterval(timer);
-  }, [heroPaused]);
+  }, [heroPaused, slideCount]);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
@@ -274,8 +291,6 @@ export default function Home() {
       <SiteNavbar />
 
       {/* ── HERO ── */}
-
-      {/* ── HERO ── */}
       <section
         className="hero hero-v2"
         id="home"
@@ -293,208 +308,254 @@ export default function Home() {
         </div>
 
         <AnimatePresence mode="wait">
-          {heroSlide === 0 && (
-            <motion.div
-              key="slide-toko"
-              className="hero-slide hero-slide-toko"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.7 }}
-            >
-              <div
-                className="hero-bg-image"
-                style={{ inset: 0, width: '100%', height: '100%', borderRadius: 0, border: 'none', boxShadow: 'none', transform: 'none', top: 0, right: 0, bottom: 0, left: 0 }}
+          {banners.length > 0 ? banners.map((banner, idx) => (
+            heroSlide === idx && (
+              <motion.div
+                key={banner.id}
+                className="hero-slide"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.7 }}
               >
-                <Image src="/assets/images/hero-toko.jpeg" alt="Toko Hijrah TOKO" fill priority unoptimized sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.6) 45%, rgba(0,0,0,0.15) 100%)' }} />
-              </div>
+                <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}>
+                  <Image src={banner.image_url} alt={banner.title} fill unoptimized sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: banner.bg_color || 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.6) 45%, rgba(0,0,0,0.15) 100%)' }} />
+                </div>
 
-              <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
-                <motion.div
-                  className="hero-content-new hero-slide-toko"
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.7 }}
-                >
-                  <div className="hero-eyebrow-v2">
-                    <Sparkles size={14} />
-                    <span>Satu Pintu Solusi Anda</span>
-                  </div>
-                  <h1 className="hero-title-new">HIJRAH<span>TOKO</span></h1>
-                  <p className="hero-desc-new">
-                    Menghadirkan kenyamanan belanja <strong>Frozen Food</strong> premium dan kelengkapan <strong>ATK</strong> dalam satu genggaman modern.
-                  </p>
-                  <div className="hero-actions-new">
-                    <motion.a
-                      href="#kategori"
-                      className="btn-hero-primary"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      Jelajahi Produk <ShoppingCart size={18} />
-                    </motion.a>
-                    <motion.a
-                      href="https://wa.me/6285263965031"
-                      className="btn-hero-outline"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <MessageSquare size={18} /> Hubungi Admin
-                    </motion.a>
-                  </div>
-
-                  <div className="hero-trust-row">
-                    <div className="hero-trust-item">
-                      <div className="hero-trust-avatars">
-                        <span className="hero-trust-avatar" style={{ background: 'linear-gradient(135deg, #f43f5e, #e11d48)' }}>A</span>
-                        <span className="hero-trust-avatar" style={{ background: 'linear-gradient(135deg, #a855f7, #7c3aed)' }}>B</span>
-                        <span className="hero-trust-avatar" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>C</span>
-                      </div>
-                      <div>
-                        <strong>1.000+</strong>
-                        <span>Pelanggan puas</span>
-                      </div>
-                    </div>
-                    <div className="hero-trust-divider"></div>
-                    <div className="hero-trust-item">
-                      <div className="hero-trust-rating">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={14} fill="#f59e0b" stroke="#f59e0b" />
+                <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
+                  <motion.div
+                    className="hero-content-new"
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.7 }}
+                  >
+                    <h1 className="hero-title-new" style={{ fontSize: 'clamp(1.6rem, 3.2vw, 2.75rem)' }}>
+                      {banner.title.split(' ').map((w: string, i: number) => i === Math.floor(banner.title.split(' ').length / 2) ? <span key={i}>{w} </span> : `${w} `)}
+                    </h1>
+                    {banner.subtitle && <div className="hero-eyebrow-v2"><span>{banner.subtitle}</span></div>}
+                    {banner.description && <p className="hero-desc-new">{banner.description}</p>}
+                    {banner.buttons && banner.buttons.length > 0 && (
+                      <div className="hero-actions-new">
+                        {banner.buttons.map((btn: any, bi: number) => (
+                          btn.style === 'outline' ? (
+                            <a key={bi} href={btn.url} className="btn-hero-outline">{btn.label}</a>
+                          ) : (
+                            <a key={bi} href={btn.url} className="btn-hero-primary">{btn.label}</a>
+                          )
                         ))}
                       </div>
-                      <div>
-                        <strong>4.9 / 5.0</strong>
-                        <span>Rating toko</span>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
-          )}
-
-          {heroSlide === 1 && (
-            <motion.div
-              key="slide-promo"
-              className="hero-slide hero-slide-app"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.7 }}
-            >
-              <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}>
-                <Image src="/assets/images/hero-aplikasi.jpeg" alt="Frozen Food" fill unoptimized sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'right center' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(10,10,10,0.97) 0%, rgba(10,10,10,0.85) 40%, rgba(10,10,10,0.4) 70%, rgba(10,10,10,0.1) 100%)' }} />
-              </div>
-
-              <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
+                    )}
+                  </motion.div>
+                </div>
+              </motion.div>
+            )
+          )) : (
+            <>
+              {heroSlide === 0 && (
                 <motion.div
-                  className="hero-content-new hero-content-app"
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  key="slide-toko"
+                  className="hero-slide hero-slide-toko"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.7 }}
                 >
-                  <div className="hero-eyebrow-v2">
-                    <Download size={14} />
-                    <span>Aplikasi Mobile Ready</span>
+                  <div
+                    className="hero-bg-image"
+                    style={{ inset: 0, width: '100%', height: '100%', borderRadius: 0, border: 'none', boxShadow: 'none', transform: 'none', top: 0, right: 0, bottom: 0, left: 0 }}
+                  >
+                    <Image src="/assets/images/hero-toko.jpeg" alt="Toko Hijrah TOKO" fill priority unoptimized sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.6) 45%, rgba(0,0,0,0.15) 100%)' }} />
                   </div>
-                  <h1 className="hero-title-new" style={{ fontSize: 'clamp(1.6rem, 3.2vw, 2.75rem)' }}>
-                    Belanja Lebih <span>Cepat & Praktis</span>
-                  </h1>
-                  <p className="hero-desc-new">
-                    Install aplikasi <strong>{STORE_NAME}</strong> di HP Anda. Akses katalog, keranjang, dan tracking pesanan dalam satu sentuhan.
-                  </p>
-                  <div className="hero-actions-new">
-                    <button
-                      onClick={handleInstallClick}
-                      className="btn-hero-primary"
-                      style={{ border: 'none', cursor: 'pointer' }}
+
+                  <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
+                    <motion.div
+                      className="hero-content-new hero-slide-toko"
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.7 }}
                     >
-                      <Download size={18} /> Install Aplikasi
-                    </button>
-                    <a href="#produk" className="btn-hero-outline">
-                      <ShoppingCart size={18} /> Lihat Produk
-                    </a>
-                  </div>
-
-                  <div className="hero-feature-grid-app">
-                    {[
-                      { icon: Check, text: 'Akses cepat dari home screen' },
-                      { icon: Bell, text: 'Notifikasi promo & pesanan' },
-                      { icon: Wifi, text: 'Mode hemat data' },
-                    ].map((f, i) => (
-                      <div key={i} className="hero-feature-item-app">
-                        <span className="hero-feature-icon-app"><f.icon size={16} /></span>
-                        <span>{f.text}</span>
+                      <div className="hero-eyebrow-v2">
+                        <Sparkles size={14} />
+                        <span>Satu Pintu Solusi Anda</span>
                       </div>
-                    ))}
+                      <h1 className="hero-title-new">HIJRAH<span>TOKO</span></h1>
+                      <p className="hero-desc-new">
+                        Menghadirkan kenyamanan belanja <strong>Frozen Food</strong> premium dan kelengkapan <strong>ATK</strong> dalam satu genggaman modern.
+                      </p>
+                      <div className="hero-actions-new">
+                        <motion.a
+                          href="#kategori"
+                          className="btn-hero-primary"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          Jelajahi Produk <ShoppingCart size={18} />
+                        </motion.a>
+                        <motion.a
+                          href="https://wa.me/6285263965031"
+                          className="btn-hero-outline"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <MessageSquare size={18} /> Hubungi Admin
+                        </motion.a>
+                      </div>
+
+                      <div className="hero-trust-row">
+                        <div className="hero-trust-item">
+                          <div className="hero-trust-avatars">
+                            <span className="hero-trust-avatar" style={{ background: 'linear-gradient(135deg, #f43f5e, #e11d48)' }}>A</span>
+                            <span className="hero-trust-avatar" style={{ background: 'linear-gradient(135deg, #a855f7, #7c3aed)' }}>B</span>
+                            <span className="hero-trust-avatar" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>C</span>
+                          </div>
+                          <div>
+                            <strong>1.000+</strong>
+                            <span>Pelanggan puas</span>
+                          </div>
+                        </div>
+                        <div className="hero-trust-divider"></div>
+                        <div className="hero-trust-item">
+                          <div className="hero-trust-rating">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} size={14} fill="#f59e0b" stroke="#f59e0b" />
+                            ))}
+                          </div>
+                          <div>
+                            <strong>4.9 / 5.0</strong>
+                            <span>Rating toko</span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
                   </div>
                 </motion.div>
-              </div>
-            </motion.div>
-          )}
+              )}
 
-          {heroSlide === 2 && (
-            <motion.div
-              key="slide-nura"
-              className="hero-slide hero-slide-nura"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.7 }}
-            >
-              <div className="hero-bg-image-right">
-                <Image
-                  src="/assets/images/nura.png"
-                  alt="Nura AI Assistant"
-                  fill
-                  unoptimized
-                  sizes="50vw"
-                  priority
-                  style={{ objectFit: 'contain', objectPosition: 'center' }}
-                />
-              </div>
-
-              <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
+              {heroSlide === 1 && (
                 <motion.div
-                  className="hero-content-new hero-content-nura"
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  key="slide-promo"
+                  className="hero-slide hero-slide-app"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.7 }}
                 >
-                  <div className="hero-eyebrow-v2">
-                    <Bot size={14} />
-                    <span>Powered by AI</span>
+                  <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}>
+                    <Image src="/assets/images/hero-aplikasi.jpeg" alt="Frozen Food" fill unoptimized sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'right center' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(10,10,10,0.97) 0%, rgba(10,10,10,0.85) 40%, rgba(10,10,10,0.4) 70%, rgba(10,10,10,0.1) 100%)' }} />
                   </div>
-                  <h1 className="hero-title-new">
-                    Kenalan dengan <span>NURA</span>
-                  </h1>
-                  <p className="hero-desc-new">
-                    Chef AI assistant yang siap membantu kamu memasak frozen food dengan resep, tips, dan trik yang praktis.
-                  </p>
-                  <div className="hero-actions-new">
-                    <Link href="/chef" className="btn-hero-primary btn-nura">
-                      <Bot size={18} /> Chat dengan Nura
-                    </Link>
-                    <a href="#produk" className="btn-hero-outline">
-                      <ShoppingCart size={18} /> Lihat Produk
-                    </a>
+
+                  <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
+                    <motion.div
+                      className="hero-content-new hero-content-app"
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.7 }}
+                    >
+                      <div className="hero-eyebrow-v2">
+                        <Download size={14} />
+                        <span>Aplikasi Mobile Ready</span>
+                      </div>
+                      <h1 className="hero-title-new" style={{ fontSize: 'clamp(1.6rem, 3.2vw, 2.75rem)' }}>
+                        Belanja Lebih <span>Cepat & Praktis</span>
+                      </h1>
+                      <p className="hero-desc-new">
+                        Install aplikasi <strong>{STORE_NAME}</strong> di HP Anda. Akses katalog, keranjang, dan tracking pesanan dalam satu sentuhan.
+                      </p>
+                      <div className="hero-actions-new">
+                        <button
+                          onClick={handleInstallClick}
+                          className="btn-hero-primary"
+                          style={{ border: 'none', cursor: 'pointer' }}
+                        >
+                          <Download size={18} /> Install Aplikasi
+                        </button>
+                        <a href="#produk" className="btn-hero-outline">
+                          <ShoppingCart size={18} /> Lihat Produk
+                        </a>
+                      </div>
+
+                      <div className="hero-feature-grid-app">
+                        {[
+                          { icon: Check, text: 'Akses cepat dari home screen' },
+                          { icon: Bell, text: 'Notifikasi promo & pesanan' },
+                          { icon: Wifi, text: 'Mode hemat data' },
+                        ].map((f, i) => (
+                          <div key={i} className="hero-feature-item-app">
+                            <span className="hero-feature-icon-app"><f.icon size={16} /></span>
+                            <span>{f.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
                   </div>
                 </motion.div>
-              </div>
-            </motion.div>
+              )}
+
+              {heroSlide === 2 && (
+                <motion.div
+                  key="slide-nura"
+                  className="hero-slide hero-slide-nura"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.7 }}
+                >
+                  <div className="hero-bg-image-right">
+                    <Image
+                      src="/assets/images/nura.png"
+                      alt="Nura AI Assistant"
+                      fill
+                      unoptimized
+                      sizes="50vw"
+                      priority
+                      style={{ objectFit: 'contain', objectPosition: 'center' }}
+                    />
+                  </div>
+
+                  <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
+                    <motion.div
+                      className="hero-content-new hero-content-nura"
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.7 }}
+                    >
+                      <div className="hero-eyebrow-v2">
+                        <Bot size={14} />
+                        <span>Powered by AI</span>
+                      </div>
+                      <h1 className="hero-title-new">
+                        Kenalan dengan <span>NURA</span>
+                      </h1>
+                      <p className="hero-desc-new">
+                        Chef AI assistant yang siap membantu kamu memasak frozen food dengan resep, tips, dan trik yang praktis.
+                      </p>
+                      <div className="hero-actions-new">
+                        <Link href="/chef" className="btn-hero-primary btn-nura">
+                          <Bot size={18} /> Chat dengan Nura
+                        </Link>
+                        <a href="#produk" className="btn-hero-outline">
+                          <ShoppingCart size={18} /> Lihat Produk
+                        </a>
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )}
+            </>
           )}
         </AnimatePresence>
 
         {/* Slide indicators */}
         <div className="hero-slide-dots">
-          {heroSlideLabels.map((label, i) => (
+          {Array.from({ length: banners.length || 3 }).map((_, i) => (
             <button
               key={i}
               onClick={() => setHeroSlide(i)}
               className={`hero-dot ${heroSlide === i ? 'active' : ''}`}
-              aria-label={`Slide ${i + 1}: ${label}`}
+              aria-label={`Slide ${i + 1}`}
             />
           ))}
         </div>

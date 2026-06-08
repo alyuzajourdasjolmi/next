@@ -21,6 +21,7 @@ import {
   RefreshCw,
   Loader2,
   Lock,
+  Image,
 } from 'lucide-react';
 import { DashboardProvider, useDashboard } from '../../lib/dashboard-context';
 import './dashboard.css';
@@ -36,6 +37,7 @@ const navItems: NavItem[] = [
   { href: '/dashboard/inventory', label: 'Stok', icon: Package },
   { href: '/dashboard/scanner', label: 'Scanner', icon: ScanLine },
   { href: '/dashboard/reviews', label: 'Ulasan', icon: Edit3 },
+  { href: '/dashboard/banners', label: 'Banner', icon: Image },
   { href: '/dashboard/reports', label: 'Analitik', icon: BarChart3 },
   { href: '/dashboard/settings', label: 'Toko', icon: Settings },
 ];
