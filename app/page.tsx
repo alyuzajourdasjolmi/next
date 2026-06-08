@@ -324,7 +324,18 @@ export default function Home() {
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }}>
-                  <div style={{ position: 'absolute', inset: 0, background: banner.bg_color || 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.6) 45%, rgba(0,0,0,0.15) 100%)' }} />
+                  {(() => {
+                    const raw = banner.bg_color || '';
+                    const isGradient = raw.startsWith('linear-gradient') || raw.startsWith('radial-gradient');
+                    let overlayBg = raw;
+                    if (!isGradient && raw.startsWith('#') && raw.length >= 7) {
+                      const r = parseInt(raw.slice(1, 3), 16);
+                      const g = parseInt(raw.slice(3, 5), 16);
+                      const b = parseInt(raw.slice(5, 7), 16);
+                      overlayBg = `linear-gradient(to right, rgba(${r},${g},${b},0.88) 0%, rgba(${r},${g},${b},0.65) 45%, rgba(${r},${g},${b},0.15) 100%)`;
+                    }
+                    return <div style={{ position: 'absolute', inset: 0, background: overlayBg || 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.6) 45%, rgba(0,0,0,0.15) 100%)' }} />;
+                  })()}
                 </div>
 
                 <div className="hero-container-new" style={{ position: 'relative', zIndex: 4 }}>
