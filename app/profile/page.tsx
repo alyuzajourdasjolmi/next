@@ -27,6 +27,23 @@ const menuVariants = {
   show: (i: number) => ({ opacity: 1, y: 0, transition: { delay: 0.06 * i, duration: 0.35 } }),
 };
 
+const inputCls = 'prof-input';
+
+const Section = ({ title, icon: Icon, children, delay = 0 }: any) => (
+  <motion.div
+    className="prof-card"
+    initial={{ opacity: 0, y: 16 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay, duration: 0.4 }}
+  >
+    <div className="prof-card-head">
+      <Icon size={18} />
+      <h2>{title}</h2>
+    </div>
+    {children}
+  </motion.div>
+);
+
 export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -115,23 +132,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  const Section = ({ title, icon: Icon, children, delay = 0 }: any) => (
-    <motion.div
-      className="prof-card"
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4 }}
-    >
-      <div className="prof-card-head">
-        <Icon size={18} />
-        <h2>{title}</h2>
-      </div>
-      {children}
-    </motion.div>
-  );
-
-  const inputCls = 'prof-input';
 
   return (
     <div className="prof-page">
