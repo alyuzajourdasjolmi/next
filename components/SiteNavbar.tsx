@@ -23,7 +23,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useCart } from '../lib/cart-context';
-import { ADMIN_EMAIL, STORE_NAME, STORE_COORDINATES, STORE_ADDRESS, STORE_PHONE, STORE_HOURS } from '../lib/store-constants';
+import { ADMIN_EMAIL, STORE_NAME } from '../lib/store-constants';
+import { loadSettings, StoreSettings } from '../lib/store-settings';
 
 const CATEGORIES = [
   { id: 'frozen', label: '🧊 Frozen Food' },
@@ -48,6 +49,7 @@ export default function SiteNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [showLocation, setShowLocation] = useState(false);
+  const [settings, setSettings] = useState<StoreSettings>(loadSettings());
 
   const isSolidNav = isChefPage || isProductsPage;
 
@@ -56,6 +58,8 @@ export default function SiteNavbar() {
     const saved = localStorage.getItem('hijrahTokoTheme') || 'light';
     setTheme(saved);
     document.body.classList.toggle('dark-mode', saved === 'dark');
+
+    setSettings(loadSettings());
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -96,7 +100,25 @@ export default function SiteNavbar() {
   };
 
   const openGoogleMaps = () => {
-    window.open(`https://www.google.com/maps?q=${STORE_COORDINATES.lat},${STORE_COORDINATES.lon}`, '_blank');
+    window.open(`https://www.google.com/maps?q=${settings.lat},${settings.lon}`, '_blank');
+  };
+
+  const formatSchedule = (schedule: StoreSettings['schedule']): string => {
+    const activeDays = Object.entries(schedule).filter(([, s]) => s.active);
+    if (activeDays.length === 0) return 'Tutup';
+    const grouped: Record<string, string[]> = {};
+    for (const [day, s] of activeDays) {
+      const key = `${s.open}–${s.close}`;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(day);
+    }
+    return Object.entries(grouped)
+      .map(([time, days]) => {
+        if (days.length === 7) return `Setiap Hari: ${time.replace('–', '.00–').replace(/\d{2}$/, m => m + ' WIB')}`;
+        if (days.length >= 5 && days.includes('Senin') && days.includes('Sabtu')) return `Senin–Sabtu: ${time.replace('–', '.00–').replace(/\d{2}$/, m => m + ' WIB')}`;
+        return `${days.join(', ')}: ${time.replace('–', '.00–').replace(/\d{2}$/, m => m + ' WIB')}`;
+      })
+      .join('\n');
   };
 
   const isActive = (href: string) => pathname === href;
@@ -331,7 +353,7 @@ export default function SiteNavbar() {
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text-main, #1e293b)' }}>
-                    Lokasi {STORE_NAME}
+                    Lokasi {settings.storeName || STORE_NAME}
                   </h3>
                   <p style={{ margin: '0.15rem 0 0', fontSize: '0.78rem', color: 'var(--text-muted, #64748b)' }}>
                     Kunjungi toko kami
@@ -344,21 +366,21 @@ export default function SiteNavbar() {
                   <MapPin size={18} style={{ color: 'var(--primary, #E11D48)', flexShrink: 0, marginTop: 2 }} />
                   <div>
                     <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-main, #1e293b)' }}>Alamat</strong>
-                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #64748b)' }}>{STORE_ADDRESS}</span>
+                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #64748b)' }}>{settings.address}</span>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 12, padding: '0.75rem', background: 'var(--bg-surface-soft, #f8fafc)', borderRadius: 12 }}>
                   <Phone size={18} style={{ color: 'var(--primary, #E11D48)', flexShrink: 0, marginTop: 2 }} />
                   <div>
                     <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-main, #1e293b)' }}>Telepon / WhatsApp</strong>
-                    <a href={`tel:${STORE_PHONE}`} style={{ fontSize: '0.82rem', color: 'var(--text-muted, #64748b)', textDecoration: 'none' }}>{STORE_PHONE}</a>
+                    <a href={`tel:${settings.phone}`} style={{ fontSize: '0.82rem', color: 'var(--text-muted, #64748b)', textDecoration: 'none' }}>{settings.phone}</a>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 12, padding: '0.75rem', background: 'var(--bg-surface-soft, #f8fafc)', borderRadius: 12 }}>
                   <Clock size={18} style={{ color: 'var(--primary, #E11D48)', flexShrink: 0, marginTop: 2 }} />
                   <div>
                     <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-main, #1e293b)' }}>Jam Operasional</strong>
-                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #64748b)' }}>{STORE_HOURS}</span>
+                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted, #64748b)', whiteSpace: 'pre-line' }}>{formatSchedule(settings.schedule)}</span>
                   </div>
                 </div>
               </div>
