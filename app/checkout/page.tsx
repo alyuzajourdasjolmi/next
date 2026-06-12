@@ -29,8 +29,8 @@ import {
   PAYMENT_METHODS,
   calculateShipping,
   haversineDistanceKm,
-  STORE_COORDINATES,
 } from '../../lib/store-constants';
+import { loadSettings } from '../../lib/store-settings';
 
 const ORDER_INFO_KEY = 'hijrahTokoOrderInfo';
 
@@ -95,12 +95,23 @@ export default function CheckoutPage() {
   }, [orderInfo, submitted]);
 
   const shipInfo = useMemo(() => {
+    const s = loadSettings();
     return calculateShipping(
       orderInfo.deliveryMethod,
       orderInfo.customerLatitude ? Number(orderInfo.customerLatitude) : null,
       orderInfo.customerLongitude ? Number(orderInfo.customerLongitude) : null,
       Boolean(orderInfo.customerMapsLink),
-      subtotal
+      subtotal,
+      {
+        storeLat: s.lat,
+        storeLon: s.lon,
+        nearMaxKm: s.shippingNearMaxKm,
+        maxKm: s.shippingMaxKm,
+        nearBase: s.shippingNearBase,
+        farBase: s.shippingFarBase,
+        farPerKm: s.shippingFarPerKm,
+        discounts: s.shippingDiscounts,
+      }
     );
   }, [orderInfo, subtotal]);
 

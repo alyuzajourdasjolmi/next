@@ -49,8 +49,31 @@ export function calculateShipping(
   lat: number | null,
   lon: number | null,
   hasMapsLink: boolean,
-  subtotal: number
+  subtotal: number,
+  overrides?: {
+    storeLat?: number;
+    storeLon?: number;
+    nearMaxKm?: number;
+    maxKm?: number;
+    nearBase?: number;
+    farBase?: number;
+    farPerKm?: number;
+    discounts?: { min: number; amount: number }[];
+  }
 ): ShipInfo {
+  const storeLat = overrides?.storeLat ?? STORE_COORDINATES.lat;
+  const storeLon = overrides?.storeLon ?? STORE_COORDINATES.lon;
+  const nearMaxKm = overrides?.nearMaxKm ?? SHIPPING_NEAR_MAX_KM;
+  const maxKm = overrides?.maxKm ?? SHIPPING_MAX_KM;
+  const nearBase = overrides?.nearBase ?? SHIPPING_NEAR_BASE;
+  const farBase = overrides?.farBase ?? SHIPPING_FAR_BASE;
+  const farPerKm = overrides?.farPerKm ?? SHIPPING_FAR_PER_KM;
+  const discounts = overrides?.discounts ?? [
+    { min: 250000, amount: 10000 },
+    { min: 200000, amount: 7000 },
+    { min: 150000, amount: 3000 },
+  ];
+
   if (deliveryMethod === 'pickup') {
     return {
       distanceKm: 0,
@@ -72,9 +95,9 @@ export function calculateShipping(
     };
   }
   const dist = Number(
-    haversineDistanceKm(STORE_COORDINATES.lat, STORE_COORDINATES.lon, lat, lon).toFixed(2)
+    haversineDistanceKm(storeLat, storeLon, lat, lon).toFixed(2)
   );
-  if (dist > SHIPPING_MAX_KM) {
+  if (dist > maxKm) {
     return {
       distanceKm: dist,
       shippingCost: null,
@@ -87,22 +110,26 @@ export function calculateShipping(
 
   let cost: number;
   let detail: string;
-  if (dist <= SHIPPING_NEAR_MAX_KM) {
-    cost = SHIPPING_NEAR_BASE;
-    detail = `0 - 2 km: tarif dasar Rp ${SHIPPING_NEAR_BASE.toLocaleString('id-ID')}.`;
+  if (dist <= nearMaxKm) {
+    cost = nearBase;
+    detail = `0 - ${nearMaxKm} km: tarif dasar Rp ${nearBase.toLocaleString('id-ID')}.`;
   } else {
-    const extraDist = dist - SHIPPING_NEAR_MAX_KM;
-    const extraCost = Math.ceil(extraDist) * SHIPPING_FAR_PER_KM;
-    cost = SHIPPING_FAR_BASE + extraCost;
-    detail = `> 2 km: tarif dasar Rp ${SHIPPING_FAR_BASE.toLocaleString('id-ID')} + ${Math.ceil(
+    const extraDist = dist - nearMaxKm;
+    const extraCost = Math.ceil(extraDist) * farPerKm;
+    cost = farBase + extraCost;
+    detail = `> ${nearMaxKm} km: tarif dasar Rp ${farBase.toLocaleString('id-ID')} + ${Math.ceil(
       extraDist
-    )} km x Rp ${SHIPPING_FAR_PER_KM.toLocaleString('id-ID')}.`;
+    )} km x Rp ${farPerKm.toLocaleString('id-ID')}.`;
   }
 
+  const sortedDiscounts = [...discounts].sort((a, b) => b.min - a.min);
   let discount = 0;
-  if (subtotal >= 250000) discount = 10000;
-  else if (subtotal >= 200000) discount = 7000;
-  else if (subtotal >= 150000) discount = 3000;
+  for (const d of sortedDiscounts) {
+    if (subtotal >= d.min) {
+      discount = d.amount;
+      break;
+    }
+  }
 
   const finalCost = Math.max(cost - discount, 0);
   if (discount) {
