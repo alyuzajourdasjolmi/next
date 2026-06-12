@@ -15,12 +15,12 @@ CREATE POLICY "Public read products" ON products
 CREATE POLICY "Admin write products" ON products
   FOR ALL USING (auth.email() = 'admin.hijrahtoko@gmail.com')
   WITH CHECK (auth.email() = 'admin.hijrahtoko@gmail.com');
-
+          
 -- Reviews: public read & insert, admin delete
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Public read reviews" ON reviews;
-DROP POLICY IF EXISTS "Public insert reviews" ON reviews;
+DROP POLICY IF EXISTS "Public insert reviews" ON reviews; 
 DROP POLICY IF EXISTS "Admin delete reviews" ON reviews;
 
 CREATE POLICY "Public read reviews" ON reviews
